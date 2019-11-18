@@ -6,37 +6,37 @@
 
 Clone https://github.com/reyesj5/moodzaic
 
-Cd into /moodzaic
+Cd into `/moodzaic`
 
-Run python3 -m venv env
+Run `python3 -m venv env`
 
-Run source env/bin/activate
+Run `source env/bin/activate`
 
-Run pip install -r requirements.txt
+Run `pip install -r requirements.txt`
 
-Cd into /moodzaic/moodaic_django
+Cd into `/moodzaic/moodaic_django`
 
-Run python3 manage.py makemigrations
+Run `python3 manage.py makemigrations`
 
-Run python3 manage.py migrate
+Run `python3 manage.py migrate`
 
-Cd into /moodzaic/moodzaic_django/frontend
+Cd into `/moodzaic/moodzaic_django/frontend`
 
-Run npm install
+Run `npm install`
 
-Run npm install node.js
+Run `npm install node.js`
 
-Run npm run start
+Run `npm run start`
 
-In a new window, cd into /moodzaic/
+In a new window, cd into `/moodzaic/`
 
-Run source env/bin/activate
+Run `source env/bin/activate`
 
-Cd into /moodzaic/moodaic_django
+Cd into `/moodzaic/moodaic_django`
 
-Run python3 manage.py runserver
+Run `python3 manage.py runserver`
 
-It will possibly fail, so run  python3 manage.py runserver again until it works
+It will possibly fail, so run  `python3 manage.py runserver` again until it works
 
 ## Navigation
 
