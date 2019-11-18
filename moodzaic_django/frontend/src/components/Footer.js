@@ -27,7 +27,7 @@ const Footer = () => (
             <List link inverted>
               <List.Item >Molly Fortnow</List.Item>
               <List.Item >Daniel Steinberg</List.Item>
-              <List.Item >Jersey Fonseca</List.Item>
+              <List.Item as='a' target="_blank" href="https://www.jerseyfonseca.com/">Jersey Fonseca</List.Item>
               <List.Item >Emil Sohlberg</List.Item>
               <List.Item >Marco Anaya</List.Item>
               <List.Item >Zipporah Klain</List.Item>

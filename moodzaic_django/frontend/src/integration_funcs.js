@@ -30,6 +30,7 @@ const API_URL = 'http://localhost:8000/api/';
       const url = `${API_URL}community/all`;
       return axios.get(url).then(response => response.data);
   }
+
   export function getCommunity(name) {
       const url = `${API_URL}$community/{name}`;
       return axios.get(url).then(response => response.data);
@@ -44,7 +45,7 @@ const API_URL = 'http://localhost:8000/api/';
   // }
 
   export function createCommunity(community){
-      return axios.post('${API_URL}community/', {
+      return axios.post('${API_URL}community/create', {
         name: community.name,
         users: community.users
       })

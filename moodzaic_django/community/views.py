@@ -18,14 +18,10 @@ logger = logging.getLogger(__name__)
 #     serializer_class = CommunitySerializer
 
 @api_view(['POST'])
-def makeCommunity(request):
+def createCommunity(request):
     if request.method == 'POST':
         serializer = CommunitySerializer(data=request.data)
-        # logger.error(serializer.is_valid())
-        # logger.error(serializer.data)
-        # logger.error(serializer.errors)
         if serializer.is_valid():
-            logger.error("is valid")
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.data)
@@ -35,7 +31,7 @@ class CommunityListCreate(generics.ListCreateAPIView):
     serializer_class = CommunitySerializer
     logger.error("this happened")
 
-@api_view(['GET', 'POST', 'DELETE'])
+@api_view(['GET'])
 def communityDetails(request, name):
     """
     Retrieve, update or get a community by name.
