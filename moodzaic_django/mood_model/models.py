@@ -7,10 +7,9 @@ import numpy as np
 from users.models import User, Observation
 from mood_model.mood_neural_network import MoodNeuralNetwork
 
-
+# Class holds the values of the Machine Learning model, which are then linked to individual users.
 class Weights(models.Model):
 
-    # ...
     user = models.OneToOneField(
         User,
         unique=True,
@@ -31,7 +30,7 @@ class Weights(models.Model):
     def getData(self, obs, observations, timeframe):
         today = obs.date.today()
         week_ago = today - datetime.timedelta(days=timeframe)
-        weekly_data = observations.objects.filter(date__gte=week_ago, date__lte=today)
+        weekly_data = observations.filter(date__gte=week_ago, date__lte=today)
 
         days_with_obs = weekly_data.__len__
 
@@ -44,7 +43,9 @@ class Weights(models.Model):
             exercise_sum += past_obs.exercise
             work_sum += past_obs.work
 
-        return exercise_sum / days_with_obs, work_sum / days_with_obs
+        return exercise_sum, work_sum
+        # return exercise_sum / days_with_obs, work_sum / days_with_obs
+        # will consider averages in the future as a data point
 
 
     def transformUserData(self, timeframe):
@@ -67,15 +68,22 @@ class Weights(models.Model):
         return np.array(input_data), np.array(mood_data)
 
 
-    def retrain(self):
-
+    def getWeightBiasDictionaries(self):
         weights = self.weights_int_list.split(',')
         biases = self.bias_int_list.split(',')
+        weightDict = {}
+        biasDict = {}
+        for i in range(len(weights)):
+            if i < 21:
+                biasDict['bias' + str(i)] = float(biases[i])
+            weightDict['weight' + str(i)] = float(weights[i])
+        return weightDict, biasDict
 
-        model = MoodNeuralNetwork(weights=weights, biases=biases)
+    def retrain(self):
+        weightDict, biasDict = self.getWeightBiasDictionaries()
+        model = MoodNeuralNetwork(weights=weightDict, biases=biasDict)
         input_data, mood_data = self.transformUserData(7)
         model.train(input_data, mood_data)
-
         weightDict = model.getWeights()
         weights = []
         for i in range(len(weightDict)):
@@ -85,17 +93,16 @@ class Weights(models.Model):
         biasDict = model.getBiases()
         biases = []
         for i in range(len(biasDict)):
-            weights.append(biasDict["weight" + str(i)])
+            biases.append(biasDict["bias" + str(i)])
         self.setWeightsBias(biases)
 
         return True
 
     def predict(self):
-        weights = self.weights_int_list.split(',')
-        biases = self.bias_int_list.split(',')
-        model = MoodNeuralNetwork(weights=weights, biases=biases)
+        weightDict, biasDict = self.getWeightBiasDictionaries()
+        model = MoodNeuralNetwork(weights=weightDict, biases=biasDict)
         input_data, mood_data = self.transformUserData(1)
-        outout = model.feedforward(input_data)
+        output = model.feedforward(input_data[0])
         mood = model.roundClass(output)
         return mood
         #self.user.profile.setNotifications()

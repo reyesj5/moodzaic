@@ -39,27 +39,28 @@ class MoodNeuralNetwork:
                 # self._biases["bias" + str(i)] = np.random.uniform()
                 self._biases["bias" + str(i)] = 1.0
         # network
-        for i in range(4):
-            self._network.append([])
-        weightCounter = 0
-        biasCounter = 0
-        for i in range(11):
-            self._network[0].append({'weights' : np.arange(weightCounter, weightCounter + 11, 1)})
-            weightCounter += 11
-            self._network[0][i]['bias'] = i
-            biasCounter += 1
-        for i in range(6):
-            self._network[1].append({'weights' : np.arange(weightCounter, weightCounter + 11, 1)})
-            weightCounter += 11
-            self._network[1][i]['bias'] = i
-            biasCounter += 1
-        for i in range(3):
-            self._network[2].append({'weights' : np.arange(weightCounter, weightCounter + 6, 1)})
-            weightCounter += 6
-            self._network[2][i]['bias'] = i
-            biasCounter += 1
-        self._network[3].append({'weights' : np.arange(weightCounter, weightCounter + 3, 1)})
-        self._network[3][0]['bias'] = biasCounter
+        if len(self._network) == 0:
+            for i in range(4):
+                self._network.append([])
+            weightCounter = 0
+            biasCounter = 0
+            for i in range(11):
+                self._network[0].append({'weights' : np.arange(weightCounter, weightCounter + 11, 1)})
+                weightCounter += 11
+                self._network[0][i]['bias'] = i
+                biasCounter += 1
+            for i in range(6):
+                self._network[1].append({'weights' : np.arange(weightCounter, weightCounter + 11, 1)})
+                weightCounter += 11
+                self._network[1][i]['bias'] = i
+                biasCounter += 1
+            for i in range(3):
+                self._network[2].append({'weights' : np.arange(weightCounter, weightCounter + 6, 1)})
+                weightCounter += 6
+                self._network[2][i]['bias'] = i
+                biasCounter += 1
+            self._network[3].append({'weights' : np.arange(weightCounter, weightCounter + 3, 1)})
+            self._network[3][0]['bias'] = biasCounter
 
     def getWeights(self):
         return self._weights
@@ -71,9 +72,11 @@ class MoodNeuralNetwork:
         return self._emotions
 
     def setEmotions(self, newEmotions):
-        if not newEmotions:
+        if not (newEmotions == self._emotions):
             self._emotions = newEmotions
             self.nclasses = len(self._emotions)
+            return True
+        return False
 
     def setWeights(self, newWeights, filename = False):
         if filename:
@@ -84,6 +87,7 @@ class MoodNeuralNetwork:
             self._weights = weights
         else:
             self._weights = newWeights
+        return True
 
     def setBias(self, newBiases, filename = False):
         if filename:
@@ -94,6 +98,7 @@ class MoodNeuralNetwork:
             self._biases = biases
         else:
             self._biases = newBiases
+        return True
 
     def feedforward(self, x, training = False):
         # normalize x
@@ -228,14 +233,16 @@ class MoodNeuralNetwork:
                     if int(all_y_trues[i]) == int(self.roundClass(y_preds[i])):
                         counter += 1
                 accuracy = count/y_preds.shape[0]
-                print("Epoch %d loss: %.3f accuracy: %.2f%%" % (epoch, loss, accuracy*100))
+                print("Epoch %d loss: %.3f" % (epoch, loss))
+                # print("Epoch %d loss: %.3f accuracy: %.2f%%" % (epoch, loss, accuracy*100))
 
     def saveModel(self, filename):
         with open(filename + '_weights.json', 'w') as fp:
             json.dump(self._weights, fp)
         with open(filename + '_biases.json', 'w') as fp:
             json.dump(self._biases, fp)
-            
+        return True
+
     def normalize(self, data):
         averages = [8,1,4,3,3,0,0,0,0,5,20]
         for i in range(data.shape[0]):

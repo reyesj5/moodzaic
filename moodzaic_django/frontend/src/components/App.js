@@ -54,6 +54,9 @@ class App extends Component {
             <Route path="/MyMood">
               <MoodPage />
             </Route>
+            <Route path="/Login">
+              <LoginForm callback = {this.toggleLogIn} />
+            </Route>
             <Route path="/Welcome">
               <SetupPage />
             </Route>
@@ -66,7 +69,8 @@ class App extends Component {
             <Route path="/">
               {this.state.LoggedIn ?
                 <Redirect to="/Profile" /> :
-                <LoginForm callback = {this.toggleLogIn} />}
+                <LoginForm callback = {this.toggleLogIn} />
+              }
             </Route>
           </Switch>
         </Router>

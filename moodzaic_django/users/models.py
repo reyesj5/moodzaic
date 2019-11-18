@@ -1,6 +1,7 @@
 from django.db import models
 from datetime import date
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
 
 #from community.models import Community
@@ -164,19 +165,29 @@ class Profile(models.Model):
         ## TODO:
         #goal: goal
         #post: str
-        if not (isinstance(goal, type('str'))):
-            return False
-        if len(goal) > 30:
-            return False
-        self.goal = goal
-        self.save()
-        return True
         return
 
-    def makePost(self, post):
+    def makePost(self, post, community):
         ## TODO
         #post: str
-        return
+        if not (isinstance(post, type('a'))):
+            return False
+        if not (isinstance(community, type('a'))):
+            return False
+        try:
+            community = self.user.community_set.get(name = community)
+        except ObjectDoesNotExist:
+            return False
+        if len(post) > 1000:
+            return False
+        if not post:
+            return False
+        if self.user in community.users.all():
+            post = community.post_set.create(post = post, community = community, poster = self.user)
+            post.save()
+            return True
+        else:
+            return False
 
 class Observation(models.Model):
     date = models.DateField('date observed', auto_now_add=True, blank=True)
