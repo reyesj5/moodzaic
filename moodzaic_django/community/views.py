@@ -12,10 +12,11 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
-# class CommunityListCreate(generics.ListCreateAPIView):
-#     queryset = Community.objects.all()
-#     serializer_class = CommunitySerializer
+@api_view(['GET'])
+def allCommunities(request):
+    communities = Community.objects.all()
+    serializer = CommunitySerializer(communities, many=True)
+    return Response(serializer.data)
 
 @api_view(['POST'])
 def createCommunity(request):
@@ -26,19 +27,18 @@ def createCommunity(request):
             return Response(serializer.data)
         return Response(serializer.data)
 
-class CommunityListCreate(generics.ListCreateAPIView):
-    queryset = Community.objects.all()
-    serializer_class = CommunitySerializer
-    logger.error("this happened")
-
-@api_view(['GET'])
+@api_view(['GET', 'PUT'])
 def communityDetails(request, name):
     """
     Retrieve, update or get a community by name.
     """
-    try:
-        community = Community.objects.get(name=name)
-        serializer = CommunitySerializer(community,context={'request': request})
-        return Response(serializer.data)
-    except Community.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    if request.method == 'GET':
+        try:
+            community = Community.objects.get(name=name)
+            serializer = CommunitySerializer(community,context={'request': request})
+            return Response(serializer.data)
+        except Community.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+    # elif request.method == 'PUT':
+    #     try:
+    #         # TODO

@@ -1,7 +1,12 @@
 from django.test import TestCase
+from rest_framework import status
+from rest_framework.test import APITestCase, APIClient
 
+from community.views import *
 from community.models import Community, Post
 from users.models import User
+
+import json
 
 # Create your tests here.
 
@@ -112,6 +117,29 @@ class CommunityTestCase(TestCase):
         self.assertNotIn(fitnessUser, fitnessCommunity.getUsers())
         self.assertEqual(num, fitnessCommunity.getUsers().count())
 
+class ViewsCommunityTests(APITestCase):
+
+    client = APIClient()
+
+    # Tests getting all communities
+    def test_allCommunities(self):
+
+        # There should be no communities returned
+        response = self.client.get('/api/community/all', format='json')
+        self.assertEqual(json.loads(response.content), [])
+
+        # There should only be one community returned
+        Community.objects.create(name = "fitness")
+        response = self.client.get('/api/community/all', format='json')
+        self.assertEqual(json.loads(response.content), [{'id': 1, 'name': 'fitness', 'users': []}])
+
+        # There should be two communities returned
+        Community.objects.create(name = "sleep")
+        response = self.client.get('/api/community/all', format='json')
+        self.assertEqual(json.loads(response.content), [{'id': 1, 'name': 'fitness', 'users': []}, {'id': 2, 'name': 'sleep', 'users': []}])
+
+    def test_createCommunity(self):
+        
 
 class PostTestCase(TestCase):
 
