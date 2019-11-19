@@ -7,5 +7,5 @@ urlpatterns = [
     path('api/all/community', views.allCommunities),
     url(r'^api/community/(?P<name>[\w]+)$', views.communityDetails),
     path('api/create/community', views.createCommunity),
-    path('api/delete/community', views.createCommunity),
+    # path('api/delete/community', views.createCommunity),
 ]
