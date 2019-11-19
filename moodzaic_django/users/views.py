@@ -3,7 +3,12 @@ from users.serializers import UserSerializer, ProfileSerializer#, ObservationSer
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-#from rest_framework import generics
+from rest_framework import generics
+
+class UserListCreate(generics.ListCreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
 
 @api_view(['GET', 'POST'])
 def user_list(request):
