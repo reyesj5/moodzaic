@@ -276,15 +276,20 @@ class MoodTestCase(TestCase):
 class ViewsUserTest(APITestCase):
 
     def setUp(self):
-        self.user1 =  {"username": "emil", "password": "snibby", "first_name": "name", "last_name": "lastname", "email": "email@email.ema"}
+        self.user1 = {"username": "emil", "password": "snibby", "first_name": "name", "last_name": "lastname", "email": "email@email.ema"}
+        self.user2 = {"username": "marco", "password": "dogdog", "first_name": "name", "last_name": "lastname", "email": "dog@email.ema"}
         User.objects.create(**self.user1)
+        User.objects.create(**self.user2)
 
     def test_all_users(self):
         response = self.client.get('/api/users/all', format="json")
-        self.assertEqual(json.loads(response.content), [self.user1])
+        self.assertEqual(json.loads(response.content), [self.user1, self.user2])
 
     def test_get_user(self):
 
         response = self.client.get('/api/users/emil', format="json")
         user = json.loads(response.content)
         self.assertEqual(json.loads(response.content), self.user1)
+        response = self.client.get('/api/users/marco', format="json")
+        user = json.loads(response.content)
+        self.assertEqual(json.loads(response.content), self.user2)
