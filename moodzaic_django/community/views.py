@@ -22,6 +22,8 @@ def allCommunities(request):
 def createCommunity(request):
     if request.method == 'POST':
         serializer = CommunitySerializer(data=request.data)
+        serializer.is_valid()
+        logger.error(serializer.errors)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
