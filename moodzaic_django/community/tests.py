@@ -1,7 +1,12 @@
 from django.test import TestCase
+from rest_framework import status
+from rest_framework.test import APITestCase, APIClient
 
+from community.views import *
 from community.models import Community, Post
 from users.models import User
+
+import json
 
 # Create your tests here.
 
@@ -111,6 +116,51 @@ class CommunityTestCase(TestCase):
         fitnessCommunity.removeUserFromCommunity(fitnessUser)
         self.assertNotIn(fitnessUser, fitnessCommunity.getUsers())
         self.assertEqual(num, fitnessCommunity.getUsers().count())
+
+class ViewsCommunityTests(APITestCase):
+
+    client = APIClient()
+    user1 =  {"username": "emil", "password": "snibby", "first_name": "name", "last_name": "lastname", "email": "email@email.ema"}
+    user2 = {"username": "marco", "password": "dogdog", "first_name": "name", "last_name": "lastname", "email": "dog@email.ema"}
+    # Tests getting all communities
+    def test_allCommunities(self):
+
+        # There should be no communities returned
+        response = self.client.get('/api/all/community', format='json')
+        self.assertEqual(json.loads(response.content), [])
+
+        # There should only be one community returned
+        Community.objects.create(name = "fitness")
+        response = self.client.get('/api/all/community', format='json')
+        self.assertEqual(json.loads(response.content), [{'name': 'fitness', 'users': []}])
+
+        # There should be two communities returned
+        Community.objects.create(name = "sleep")
+        response = self.client.get('/api/all/community', format='json')
+        self.assertEqual(json.loads(response.content), [{'name': 'fitness', 'users': []}, {'name': 'sleep', 'users': []}])
+
+    def test_createCommunity(self):
+        url = '/api/create/community'
+        data = {'id': '0','name': 'fitness', 'users': [self.user1]}
+        response = self.client.post(url, data, format='json')
+        # self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Community.objects.count(), 1)
+        self.assertEqual(Community.objects.get().name, 'fitness')
+
+    def test_updateCommunity(self):
+        url = '/api/community/'
+        data = {'id': '0','name': 'fitness', 'users': [self.user1]}
+        response = self.client.post('/api/create/community', data, format='json')
+        
+        data['name'] = "emilland"
+        print(data)
+        response = self.client.put(url + 'fitness', data, format='json')
+
+        # self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Community.objects.count(), 1)
+        self.assertEqual(Community.objects.get().name, 'emilland')
+        self.assertEqual(Community.objects.get().users.all().count(), 1)
+
 
 
 class PostTestCase(TestCase):
