@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from '../components/App';
-import renderer from 'react-test-renderer';
-import { render, unmountComponentAtNode } from "react-dom";
-import { act } from "react-dom/test-utils";
+// import renderer from 'react-test-renderer';
+// import { render, unmountComponentAtNode } from "react-dom";
+// import { act } from "react-dom/test-utils";
 
 describe('App (root) component', () => {
   //beforeEach stuff

@@ -89,11 +89,13 @@ class MoodPage extends React.Component {
               </Form.Field>
             </Form>
             <br />
+          <Router>
           <Link to="/Profile">
             <Button color='teal' fluid size='large'>
               Submit
             </Button>
           </Link>
+          </Router>
         </Container>
         <Footer />
       </div>

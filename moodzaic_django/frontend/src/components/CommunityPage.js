@@ -34,13 +34,13 @@ class CommunityPage extends React.Component {
     // var  self  =  this;
     const communities = await getAllCommunities();
     this.setState({ CommunityList: communities});
-    // this.setState(prevState => ({
-    //   MyCommunityList: (this.state.CommunityList).filter((community) => {
-    //     return(
-    //       community.users.includes(this.props.user)
-    //     )
-    //   })
-    // }))
+    this.setState(prevState => ({
+      MyCommunityList: (this.state.CommunityList).filter((community) => {
+        return(
+          community.users.includes(this.props.user)
+        )
+      })
+    }))
   }
 
   componentDidUpdate() {
@@ -65,11 +65,11 @@ class CommunityPage extends React.Component {
     const community = this.state.Community;
     const myCommunityList = this.state.MyCommunityList;
     const communityList = this.state.CommunityList;
-    const username = this.props.user.username;
+    const user = this.props.user;
     let myPage, myButton;
 
     if (community !== '') {
-      myPage = <Community myCommunity = {community} username = {username} />;
+      myPage = <Community myCommunity = {community} username = {user} />;
       myButton =
       <Button color='teal' fluid size='large' onClick = {this.OpenCommunity('')}>
         See My Communities
@@ -85,7 +85,7 @@ class CommunityPage extends React.Component {
     }
 
     else {
-      myPage = <AllCommunities allCommunities = {communityList} myCommunities = {myCommunityList}/>;
+      myPage = <AllCommunities allCommunities = {communityList} myCommunities = {myCommunityList} user={user}/>;
       myButton =
       <Button color='teal' fluid size='large' onClick = {this.toggleAddMode}>
         See My Communities
