@@ -178,3 +178,33 @@ class PostTestCase(TestCase):
         ##test changing the User that posted a Post
         firstPost.setPoster(fitnessUser2)
         self.assertEqual(fitnessUser2, firstPost.getPoster())
+
+class CommentTestCase(TestCase):
+
+    def setUp(self):
+        Community.objects.create(name = "fitness")
+        Community.objects.create(name = "sleep")
+        User.objects.create(username = "emil")
+        User.objects.create(username = "jersey")
+        fitnessCommunity = Community.objects.get(name = "fitness")
+        fitnessUser = User.objects.get(username = "emil")
+        fitnessUser2 = User.objects.get(username = "jersey")
+        Post.objects.create(post = "Hello world", community = fitnessCommunity, poster = fitnessUser)
+        Post.objects.create(post = "Bye world")
+        p = Post.objects.get(post = "Hello world")
+        Comment.objects.create(post = "Wow, hi!", community = fitnessCommunity, poster = fitnessUser2, originalPost = p)
+
+    def test_getOriginalPost(self):
+        firstComment = Comment.objects.get(post = "Wow, hi!")
+        firstPost = Post.objects.get(post = "Hello world")
+
+        self.assertEqual(firstPost, firstComment.getOriginalPost())
+
+    def test_setOriginalPost(self):
+        firstComment = Comment.objects.get(post = "Wow, hi!")
+        firstPost = Post.objects.get(post = "Hello world")
+        secondPost = Post.objects.get(post = "Wow, hi!")
+
+        self.assertEqual(firstPost, firstComment.getOriginalPost())
+        firstComment.setOriginalPost(secondPost)
+        self.assertEqual(secondPost, firstComment.getOriginalPost())
