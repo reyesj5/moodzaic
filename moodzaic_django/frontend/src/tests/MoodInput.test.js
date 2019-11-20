@@ -1,13 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import MoodPage from '../components/MoodInput';
+import { BrowserRouter as Router, Link } from "react-router-dom";
 // import { unmountComponentAtNode } from "react-dom";
 
 describe('MoodPage component', () => {
   //beforeEach stuff
   it('renders without crashing', () => {
     const div = document.createElement('div');
-    ReactDOM.render(<MoodPage />, div);
+    ReactDOM.render(
+      <Router>
+        <MoodPage />
+      </ Router>, div);
     ReactDOM.unmountComponentAtNode(div);
   });
 });
