@@ -125,6 +125,10 @@ class WeightsTestCase(TestCase):
         profile = user.profile
         obs = Observation.objects.filter(user__user__username=profile.user.username).first()
         #goals, goals completed, goals missed, goals ratio, past mood score
+        obs.ngoals = 5
+        obs.missedGoals = 2
+        obs.goalRatio = 2/5
+        obs.pastMoodScore = 4
         testWeights.updateLongtermData()
         self.assertFalse(3,obs.ngoals)
         self.assertTrue(5,obs.ngoals)
