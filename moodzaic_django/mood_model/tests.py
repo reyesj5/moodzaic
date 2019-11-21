@@ -16,7 +16,7 @@ class WeightsTestCase(TestCase):
         profile1 = Profile.objects.create(user=user1)
 
         mood1 = Mood.objects.create(name='Happy', mood=4)
-        Observation.objects.create(date=datetime.strptime('10:20', '%H:%M').time(), sleep=4.4, exercise=1.1, meals=2, work=1.1, user=profile1, mood=mood1)
+        Observation.objects.create(date=datetime.strptime('11/20/2019, 10:20', '%m/%d/%Y, %H:%M').time(), sleep=4.4, exercise=1.1, meals=2, work=1.1, user=profile1, mood=mood1)
 
         Weights.objects.create(
             user=User.objects.get(username="user1"),
@@ -119,6 +119,32 @@ class WeightsTestCase(TestCase):
         self.assertEqual(len(weightDict), 208)
         self.assertEqual(len(biasDict), 21)
 
+    def test_updateLongtermData(self):
+        testWeights = Weights.objects.first()
+        user = testWeights.user
+        profile = user.profile
+        obs = Observation.objects.filter(user__user__username=profile.user.username).first()
+        #goals, goals completed, goals missed, goals ratio, past mood score
+        testWeights.updateLongtermData()
+        self.assertFalse(3,obs.ngoals)
+        self.assertTrue(5,obs.ngoals)
+        self.assertFalse(0,obs.missedGoals)
+        self.assertTrue(2,obs.missedGoals)
+        self.assertFalse(0.5,obs.goalRatio)
+        self.assertTrue(2/5,obs.goalRatio)
+        self.assertFalse(4,obs.pastMoodScore)
+        self.assertTrue(8,obs.pastmMoodScore)
+
+
+    def test_updateMoodPrediction(self):
+        testWeights = Weights.objects.first()
+        user = testWeights.user
+        profile = user.profile
+        obs = Observation.objects.filter(user__user__username=profile.user.username).first()
+        oldMood = obs.mood.name
+        testWeights.updateMoodPrediction()
+        self.assertNotEqual(oldMood,obs.mood.name)
+        self.assertEqual("Happy",obs.mood.name)
 
 
 # Testing the methods for our neural network to predict moods
