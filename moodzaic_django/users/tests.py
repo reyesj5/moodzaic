@@ -272,6 +272,38 @@ class MoodTestCase(TestCase):
         testMood.setMood(-66)
         self.assertEqual(testMood.mood, 2)
 
+class ViewsObservationsTest(APITestCase):
+    def setUp(self):
+        client = APIClient()
+        self.mood1 = {'name':"sad", 'mood': '2'}
+        self.user1 =  {"username": "emil", "password": "snibby", "first_name": "name", "last_name": "lastname", "email": "email@email.ema"}
+        self.observation1 = {'sleep': '7',
+            'exercise':'3',
+            'meals':'2',
+            'mood': self.mood1,
+            'user': self.user1}
+        self.observation2 = {'sleep': '9',
+            'exercise':'4',
+            'meals':'3',
+            'mood': self.mood1,
+            'user': self.user1}
+
+    def test_getAllUserObservation(self):
+        url = '/api/emil/observations'
+        response = self.client.get(url, format="json")
+        self.assertEqual(json.loads(response.content), self.observation1)
+    
+    def test_postObervation(self):
+        url = 'api/emil/observations'
+        data = self.observation2
+        response = self.client.get(url, data, format="json")
+
+        data = self.observation1
+        response = self.client.get(url, data, format="json")
+
+        response = self.client.get(url, format="json")
+        self.assertEqual(json.loads(response.content), [self.observation1, self.observation2])
+
 
 class ViewsUserTest(APITestCase):
     def setUp(self):
@@ -293,7 +325,6 @@ class ViewsUserTest(APITestCase):
         "gender": "man", 
         "username": "emil", 
         "user": self.user1 }
-
 
         Profile.objects.create(**self.profile1)
     
