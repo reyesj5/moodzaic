@@ -282,7 +282,7 @@ class ViewsUserTest(APITestCase):
         User.objects.create(**self.user2)
 
     def test_all_users(self):
-        response = self.client.get('/api/users/all', format="json")
+        response = self.client.get('/api/all/users/', format="json")
         self.assertEqual(json.loads(response.content), [self.user1, self.user2])
 
     def test_get_user(self):

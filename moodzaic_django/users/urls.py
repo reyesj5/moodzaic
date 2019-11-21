@@ -3,9 +3,10 @@ from . import views
 from django.conf.urls import url
 
 urlpatterns = [
-    path('api/users/all', views.user_list ),
-    url(r'^api/users/(?P<username>[\w]+)$', views.user_detail),
-    #url(r'^api/users/(?P<username>[\w]+)/observations$', views.user_observations_list),
-    path('api/profiles/', views.profile_list ),
+    path('api/all/users/', views.allUsers ),
+    url(r'^api/users/(?P<username>[\w]+)$', views.userDetails),
+    url(r'^api/users/(?P<username>[\w]+)/observations$', views.allUserObservations),
+    url(r'^api/users/(?P<username>[\w]+)/goals$', views.getUserGoals),
+    path('api/all/profiles/', views.profile_list ),
     url(r'^api/profiles/(?P<username>[\w]+)$', views.profile_detail),
 ]

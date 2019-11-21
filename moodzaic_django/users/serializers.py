@@ -15,10 +15,11 @@ class ProfileSerializer(serializers.ModelSerializer):
         model = Profile
         fields = ('username', 'age', 'gender', 'user')
 
-# class ObservationSerializer(serializers.ModelSerializer):
-#     user = serializers.RelatedField(many=True, read_only=True)
+class ObservationSerializer(serializers.ModelSerializer):
+    user = serializers.RelatedField(many=True, read_only=True)
 
-#     class Meta:
+    class Meta:
 
-#         model = Observation
-#         fields = ('date', 'sleep', 'exercise', 'meals', 'reminder_list')
+        model = Observation
+        fields = ('date', 'sleep', 'exercise', 'meals', 'reminder_list')
+
