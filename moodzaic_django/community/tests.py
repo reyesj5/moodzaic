@@ -1,7 +1,12 @@
 from django.test import TestCase
+from rest_framework import status
+from rest_framework.test import APITestCase, APIClient
 
+from community.views import *
 from community.models import Community, Post, Comment
 from users.models import User
+
+import json
 
 # Create your tests here.
 
@@ -112,6 +117,120 @@ class CommunityTestCase(TestCase):
         self.assertNotIn(fitnessUser, fitnessCommunity.getUsers())
         self.assertEqual(num, fitnessCommunity.getUsers().count())
 
+# All tests in this class are testing our API handling functions.
+# We test if GET, PUT, & POST requests successfully complete what they need to do.
+# Testing these allow us to ensure that functions called from the frontend will work as intended
+class ViewsPostTests(APITestCase):
+    def setUp(self):
+        client = APIClient()
+        self.user1 =  {"username": "emil", "password": "snibby", "first_name": "name", "last_name": "lastname", "email": "email@email.ema"}
+        self.community1 = {'id': '0','name': 'fitness', 'users': [self.user1]}
+        self.post1 = {'id': '23', 'post': 'Hey everyone, lmaooo XD!!', 'community': self.community1, 'poster': self.user1}
+        self.comment1 = {'id': '12', 'originalPost': self.post1 }
+
+    def test_getPost(self):
+        response = self.client.get('api/posts/23', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(json.loads(response.content).post, self.post1['post'])
+
+    def test_createPost(self):
+        url = '/api/create/posts'
+        data = self.post1
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Post.objects.count(), 1)
+        self.assertEqual(Post.objects.get().post, 'Hey everyone, lmaooo XD!!')
+    
+    def test_setPost(self):
+        url = '/api/create/posts'
+        data = self.post1
+        response = self.client.post(url, data, format='json')
+        
+        data['post'] = 'alas, i am rip'
+        response = self.client.put('api/posts/23', data, format='json')
+
+        self.assertEqual(Post.objects.count(), 1)
+        self.assertEqual(Post.objects.get().post, 'alas, i am rip')
+    
+    def test_getOriginPost(self):
+        url = 'api/comments/12'
+        response = self.client.post(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(json.loads(response.content).post, self.post1.post)
+    
+class ViewsCommunityTests(APITestCase):
+
+    client = APIClient()
+    user1 =  {"username": "emil", "password": "snibby", "first_name": "name", "last_name": "lastname", "email": "email@email.ema"}
+    user2 = {"username": "marco", "password": "dogdog", "first_name": "name", "last_name": "lastname", "email": "dog@email.ema"}
+
+    # Tests getting all communities.
+    # This function allows us to get every community
+    def test_allCommunities(self):
+
+        # There should be no communities returned
+        response = self.client.get('/api/all/community', format='json')
+        self.assertEqual(json.loads(response.content), [])
+
+        # There should only be one community returned
+        Community.objects.create(name = "fitness")
+        response = self.client.get('/api/all/community', format='json')
+        self.assertEqual(json.loads(response.content), [{'name': 'fitness', 'users': []}])
+
+        # There should be two communities returned
+        Community.objects.create(name = "sleep")
+        response = self.client.get('/api/all/community', format='json')
+        self.assertEqual(json.loads(response.content), [{'name': 'fitness', 'users': []}, {'name': 'sleep', 'users': []}])
+
+    # Tests creating a community
+    # This function allows us to create a community
+    def test_createCommunity(self):
+        url = '/api/create/community'
+
+        # This should successfully create a community
+        data = {'id': '0','name': 'fitness', 'users': [self.user1]}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(Community.objects.count(), 1)
+        self.assertEqual(Community.objects.get().name, 'fitness')
+
+        # This should fail if you pass in no data
+        response2 = self.client.post(url, {}, format='json')
+        self.assertEqual(response2.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # There should still only be one user
+        self.assertEqual(Community.objects.count(), 1)
+        self.assertEqual(Community.objects.get().name, 'fitness')
+
+    # This function should return an individual community
+    def test_communityDetailsGET(self):
+        url = '/api/community/'
+        data = {'id': '0','name': 'fitness', 'users': [self.user1]}
+        response = self.client.post('/api/create/community', data, format='json')
+
+        # We should get the details of the community
+        response = self.client.get(url + 'fitness', data, format='json')
+        self.assertEqual(json.loads(response.content), {'name': 'fitness', 'users': []})
+
+        # We should not get anything if a community doesn't exist
+        response = self.client.get(url + 'hi', data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_communityDetailsPUT(self):
+        url = '/api/community/'
+        data = {'id': '0','name': 'fitness', 'users': [self.user1]}
+        response = self.client.post('/api/create/community', data, format='json')
+
+        # We change the name of a community
+        data = {'id': '0','name': 'newFitness', 'users': [self.user1]}
+        response = self.client.put(url + 'fitness', data, format='json')
+
+        # There should still only be one community, and it should be named newFitness
+        self.assertEqual(Community.objects.count(), 1)
+        self.assertEqual(Community.objects.get().name, 'newFitness')
+
+        # We should return not found if the community doesn't exist
+        response = self.client.put(url + 'hi', data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 class PostTestCase(TestCase):
 

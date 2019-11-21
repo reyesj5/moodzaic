@@ -172,9 +172,11 @@ class Profile(models.Model):
        else:
            return False
 
-    def setGoals(self, type, num):
+    def setGoals(self, goal_type, num):
+        if goal_type > 4 or goal_type < 0:
+            return False
         goal_list = self.goals.split(",")
-        goal_list[type] = str(num)
+        goal_list[goal_type] = str(num)
         self.goals = ",".join(str(x) for x in goal_list)
         return True
 

@@ -3,12 +3,12 @@ import axios from 'axios';
 const API_URL = 'http://localhost:8000/api/';
 
   function getUsers() {
-    return axios.get(`${API_URL}users/`).then(response => response.data).catch(error => console.log(error));
+    return axios.get(`${API_URL}all/users/`).then(response => response.data).catch(error => console.log(error));
   }
 
   export function createUser(u){
     console.log(u);
-    return axios.post(`${API_URL}users/`, u)
+    return axios.post(`${API_URL}create/users/`, u)
       .then(response => {
         console.log(response);
         console.log(response.data);
@@ -28,12 +28,12 @@ const API_URL = 'http://localhost:8000/api/';
 
 
   export function getAllCommunities() {
-      const url = `${API_URL}community/all`;
+      const url = `${API_URL}all/community`;
       return axios.get(url).then(response => response.data);
   }
 
   export function getCommunity(name) {
-      const url = `${API_URL}$community/{name}`;
+      const url = `${API_URL}$community/${name}`;
       return axios.get(url).then(response => response.data);
   }
   // export function deleteCommunity(community){
@@ -46,7 +46,7 @@ const API_URL = 'http://localhost:8000/api/';
   // }
 
   export function createCommunity(community){
-      return axios.post('${API_URL}community/create', {
+      return axios.post(`${API_URL}create/community/`, {
         name: community.name,
         users: community.users
       })
