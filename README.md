@@ -66,6 +66,7 @@ Run `python3 manage.py runserver`
 It will possibly fail, so run  `python3 manage.py runserver` again until it works
 
 ### Back-End/Integration Testing
+(Note, some of the integration tests result in errors. That is because some of the functions are not written, resulting in requests being returned and parsed incorrectly. When the functions are written, these tests will pass. Them resulting in errors does not disturb the other tests, and is intentional)
 
 Cd into `/moodzaic`
 
