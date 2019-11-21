@@ -1,4 +1,4 @@
-from users.models import User, Profile, Observation, Goal
+from users.models import User, Profile, Observation
 from users.serializers import UserSerializer, ProfileSerializer, ObservationSerializer
 from rest_framework import status
 from rest_framework.decorators import api_view

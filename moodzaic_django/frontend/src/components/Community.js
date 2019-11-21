@@ -13,7 +13,7 @@ class Community extends React.Component {
   state = {
     message: '',
     // now: '',
-    posts: [],
+    allPosts: [],
     myPosts: [],
     replyMode: false
   }
@@ -23,7 +23,7 @@ class Community extends React.Component {
         this.setState({ allPosts:  result.data, nextPageURL:  result.nextlink})
     });
     this.setState(prevState => ({
-      MyPosts: (this.state.Posts).filter((post) => {
+      myPosts: (this.state.allPosts).filter((post) => {
         return(
           post.community === this.props.myCommunity
         )
@@ -59,9 +59,9 @@ class Community extends React.Component {
     this.setState({ message: '' });
   }
 
-  setTime = (time) => {
-    this.setState({ now: time });
-  }
+  // setTime = (time) => {
+  //   this.setState({ now: time });
+  // }
 
   render() {
     const { message } = this.state
@@ -69,12 +69,12 @@ class Community extends React.Component {
     // const username = this.props.username;
     const posts = this.state.myPosts;
 
-    var today = new Date();
-    var date = (today.getMonth()+1)+'-'+today.getDate()+'/'+today.getFullYear();
-    var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-    var now = date+' '+time;
-
-    this.setTime(now);
+    // var today = new Date();
+    // var date = (today.getMonth()+1)+'-'+today.getDate()+'/'+today.getFullYear();
+    // var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    // var now = date+' '+time;
+    //
+    // this.setTime(now);
 
     const reply_box = () => {
       return(

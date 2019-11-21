@@ -1,6 +1,6 @@
-from community.models import Community
+from community.models import Community, Post
 from users.models import User
-from community.serializers import CommunitySerializer
+from community.serializers import CommunitySerializer, PostSerializer
 
 from rest_framework import generics
 from rest_framework.response import Response
@@ -57,3 +57,27 @@ def communityDetails(request, name):
             return Response(serializer.data)
         except Community.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+
+# @api_view(['POST'])
+# def makePost(request):
+#     if request.method == 'POST':
+#         serializer = PostSerializer(data=request.data)
+#         if serializer.is_valid():
+#             logger.error("PostSerializer is valid")
+#             serializer.save()
+#             return Response(serializer.data)
+#         return Response(serializer.data)
+
+# class PostListCreate(generics.ListCreateAPIView):
+#     queryset = Post.objects.all()
+#     serializer_class = PostSerializer
+#     logger.error("PostListCreate complete")
+
+# @api_view(['Get', 'POST', 'DELETE'])
+# def postDetails(request, pk):
+#     try:
+#         post = Post.objects.get(pk=pk)
+#         serializer = PostSerializer(post,context={'request': request})
+#         return Response(serializer.data)
+#     except Post.DoesNotExist:
+#         return Response(status=status.HTTP_404_NOT_FOUND)

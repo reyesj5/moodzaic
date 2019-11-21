@@ -34,13 +34,13 @@ class CommunityPage extends React.Component {
     // var  self  =  this;
     const communities = await getAllCommunities();
     this.setState({ CommunityList: communities});
-    // this.setState(prevState => ({
-    //   MyCommunityList: (this.state.CommunityList).filter((community) => {
-    //     return(
-    //       community.users.includes(this.props.user)
-    //     )
-    //   })
-    // }))
+    this.setState(prevState => ({
+      MyCommunityList: (this.state.CommunityList).filter((community) => {
+        return(
+          community.users.includes(this.props.user)
+        )
+      })
+    }))
   }
 
   componentDidUpdate() {
