@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from community.models import Community, Post
+from community.models import Community, Post, Comment
 from users.models import User
 
 # Create your tests here.
@@ -190,7 +190,7 @@ class CommentTestCase(TestCase):
         fitnessUser = User.objects.get(username = "emil")
         fitnessUser2 = User.objects.get(username = "jersey")
         Post.objects.create(post = "Hello world", community = fitnessCommunity, poster = fitnessUser)
-        Post.objects.create(post = "Bye world")
+        Post.objects.create(post = "Bye world", community = fitnessCommunity, poster = fitnessUser)
         p = Post.objects.get(post = "Hello world")
         Comment.objects.create(post = "Wow, hi!", community = fitnessCommunity, poster = fitnessUser2, originalPost = p)
 
