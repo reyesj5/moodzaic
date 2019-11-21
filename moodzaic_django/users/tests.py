@@ -7,7 +7,7 @@ from users.views import *
 
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APITestCase
+from rest_framework.test import APITestCase, APIClient
 from collections import OrderedDict
 
 
@@ -274,13 +274,29 @@ class MoodTestCase(TestCase):
 
 
 class ViewsUserTest(APITestCase):
-
     def setUp(self):
+        client = APIClient()
         self.user1 = {"username": "emil", "password": "snibby", "first_name": "name", "last_name": "lastname", "email": "email@email.ema"}
         self.user2 = {"username": "marco", "password": "dogdog", "first_name": "name", "last_name": "lastname", "email": "dog@email.ema"}
-        User.objects.create(**self.user1)
+        
+        actUser1 = User.objects.create(**self.user1)
         User.objects.create(**self.user2)
+        
+        self.profile1 = {"ProgressScore" : 2,
+        "age": 20, 
+        "gender": "man", 
+        "username": "emil", 
+        "user": actUser1 }
 
+        self.profile2 = {"ProgressScore" : 2,
+        "age": 20, 
+        "gender": "man", 
+        "username": "emil", 
+        "user": self.user1 }
+
+
+        Profile.objects.create(**self.profile1)
+    
     def test_all_users(self):
         response = self.client.get('/api/users/all', format="json")
         self.assertEqual(json.loads(response.content), [self.user1, self.user2])
@@ -293,3 +309,29 @@ class ViewsUserTest(APITestCase):
         response = self.client.get('/api/users/marco', format="json")
         user = json.loads(response.content)
         self.assertEqual(json.loads(response.content), self.user2)
+    
+    def test_getProfile(self):
+        response = self.client.get('/api/profile/emil', format="json")
+        profile = json.loads(response.content)
+        self.assertEqual(profile, self.profile1)
+    
+    def test_createProfile(self):
+        url = '/api/create/profile'
+        data = self.profile2
+        response = self.client.post(url, data, format='json')
+        # self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Profile.objects.count(), 1)
+        self.assertEqual(Profile.objects.get().username, 'emil')
+        
+    def test_updateProfile(self):
+        url = '/api/create/profile'
+        data = self.profile2
+        response = self.client.post(url, data, format='json')
+        
+        data['age'] = 50
+        response = self.client.put('api/profile/emil', data, format='json')
+
+        # self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Profile.objects.count(), 1)
+        self.assertEqual(Profile.objects.get().age, 50)
+        self.assertEqual(Profile.objects.get().name, 'emil')
