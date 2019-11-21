@@ -12,23 +12,27 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# Return all communities
 @api_view(['GET'])
 def allCommunities(request):
     communities = Community.objects.all()
     serializer = CommunitySerializer(communities, many=True)
     return Response(serializer.data)
 
+# Create a new community
 @api_view(['POST'])
 def createCommunity(request):
     if request.method == 'POST':
         serializer = CommunitySerializer(data=request.data)
         serializer.is_valid()
-        logger.error(serializer.errors)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-        return Response(serializer.data)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
+# Get a single community, or update a single community
+# Pass its name to ensure this
 @api_view(['GET', 'PUT'])
 def communityDetails(request, name):
     """
@@ -41,7 +45,7 @@ def communityDetails(request, name):
             return Response(serializer.data)
         except Community.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-    
+
     elif request.method == 'PUT':
         community = Community.objects.get(name=name)
 
@@ -55,4 +59,3 @@ def communityDetails(request, name):
             return Response(serializer.data)
         print(serializer.errors)
         return Response(serializer.data)
-            
