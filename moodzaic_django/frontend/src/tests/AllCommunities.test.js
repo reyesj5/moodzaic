@@ -9,7 +9,7 @@ describe('AllCommunities component', () => {
   //beforeEach stuff
   it('renders without crashing', () => {
     const div = document.createElement('div');
-    ReactDOM.render(<AllCommunities />, div);
+    ReactDOM.render(<AllCommunities allCommunities={[]}/>, div);
     ReactDOM.unmountComponentAtNode(div);
   });
 });
