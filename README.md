@@ -80,13 +80,13 @@ Run `python3 manage.py migrate`
 
 Run ‘python3 manage.py test’
 
-## Front-End Testing
+### Front-End Testing
 
 Cd into ‘/moodzaic/user-interface/moodzaic’
 
 With yarn installed, run "$yarn start" to launch the React App (at http://localhost:3000/) in a browser, and "$yarn test" to run the included test suites.
 
-## Navigation
+### Navigation
 
 With both the Django and React servers activated:
 
