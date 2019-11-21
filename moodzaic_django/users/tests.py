@@ -272,8 +272,99 @@ class MoodTestCase(TestCase):
         testMood.setMood(-66)
         self.assertEqual(testMood.mood, 2)
 
-
+# "View" tests check whether things GET, POST, PUT requests are handled properly in the backend
 class ViewsUserTest(APITestCase):
+    def setUp(self):
+        client = APIClient()
+        self.user1 = {"username": "emil", "password": "snibby", "first_name": "name", "last_name": "lastname", "email": "email@email.ema"}
+        self.user2 = {"username": "marco", "password": "dogdog", "first_name": "name", "last_name": "lastname", "email": "dog@email.ema"}
+        
+    # testing the GET request for all users
+    def test_allUsers(self):
+        url = '/api/all/users/'
+        # No users exist
+        response = self.client.get(url, format="json")
+        self.assertEqual(json.loads(response.content), [])
+
+        # Only user1 is a user
+        User.objects.create(**self.user1)
+        response = self.client.get(url, format="json")
+        self.assertEqual(json.loads(response.content), [self.user1])
+
+        # Both user1 and user2 are users
+        User.objects.create(**self.user2)
+        response = self.client.get(url, format="json")
+        self.assertEqual(json.loads(response.content), [self.user1, self.user2])
+
+
+    #testing the ability to GET an individual user
+    def test_getUser(self):
+        User.objects.create(**self.user1)
+        User.objects.create(**self.user2)
+
+        response = self.client.get('/api/users/emil', format="json")
+        user = json.loads(response.content)
+        self.assertEqual(json.loads(response.content), self.user1)
+
+        response = self.client.get('/api/users/marco', format="json")
+        user = json.loads(response.content)
+        self.assertEqual(json.loads(response.content), self.user2)
+
+        response = self.client.get('/api/users/potato', format="json")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_updateUser(self):
+        User.objects.create(**self.user1)
+        User.objects.create(**self.user2)
+        
+        # should succeed since the change is valid
+        user1Changed = {"username": "emil", "password": "snibby", "first_name": "name", "last_name": "lastname", "email": "dog@dog.dog"}
+        response = self.client.put('/api/update/emil', user1Changed,  format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # number of objects is the same as before
+        self.assertEqual(User.objects.count(), 2)
+        # the email has been changed
+        self.assertEqual(User.objects.first().email, "dog@dog.dog")
+
+        # should fail since change is invalid
+        user1ChangedBadEmail = {"username": "emil", "password": "snibby", "first_name": "name", "last_name": "lastname", "email": "dog"}
+        response = self.client.put('/api/update/marco', user1ChangedBadEmail,  format="json")
+        
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(User.objects.count(), 2)
+        self.assertNotEqual(User.objects.first().email, "dog")
+
+        # should fail since username already exists
+        user1ChangedToExistingUser = {"username": "marco", "password": "snibby", "first_name": "name", "last_name": "lastname", "email": "dog"}
+        response = self.client.put('/api/update/emil', user1ChangedToExistingUser,  format="json")
+        
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(User.objects.count(), 2)
+        self.assertNotEqual(User.objects.first().username, "marco")
+        self.assertEqual(User.objects.last().username, "marco")
+
+    def test_createUser(self):
+        # successful user1 creation
+        response = self.client.post('/api/create/user', self.user1, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # checking that the user was created successfully
+        self.assertEqual(User.objects.count(), 1)
+        self.assertEqual(User.objects.last().username, "emil")
+
+        # successful user2 creation
+        response = self.client.post('/api/create/user', self.user2, format="json")
+        self.assertEqual(respose.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(User.objects.count(), 2)
+        self.assertEqual(User.objects.last().username, "marco")
+
+        # failed user creation, repeated user
+        response = self.client.post('/api/create/user', self.user2, format="json")
+        self.assertEqual(respose.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(User.objects.count(), 2)
+        
+
+class ViewsProfileTest(APITestCase):
     def setUp(self):
         client = APIClient()
         self.user1 = {"username": "emil", "password": "snibby", "first_name": "name", "last_name": "lastname", "email": "email@email.ema"}
@@ -294,24 +385,12 @@ class ViewsUserTest(APITestCase):
         "username": "emil", 
         "user": self.user1 }
 
-
         Profile.objects.create(**self.profile1)
     
-    def test_all_users(self):
-        response = self.client.get('/api/all/users/', format="json")
-        self.assertEqual(json.loads(response.content), [self.user1, self.user2])
-
-    def test_get_user(self):
-
-        response = self.client.get('/api/users/emil', format="json")
-        user = json.loads(response.content)
-        self.assertEqual(json.loads(response.content), self.user1)
-        response = self.client.get('/api/users/marco', format="json")
-        user = json.loads(response.content)
-        self.assertEqual(json.loads(response.content), self.user2)
-    
+   
     def test_getProfile(self):
-        response = self.client.get('/api/profile/emil', format="json")
+        response = self.client.get('/api/profiles/emil', format="json")
+        print("content", response.content)
         profile = json.loads(response.content)
         self.assertEqual(profile, self.profile1)
     
@@ -329,7 +408,7 @@ class ViewsUserTest(APITestCase):
         response = self.client.post(url, data, format='json')
         
         data['age'] = 50
-        response = self.client.put('api/profile/emil', data, format='json')
+        response = self.client.put('api/profiles/emil', data, format='json')
 
         # self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Profile.objects.count(), 1)
