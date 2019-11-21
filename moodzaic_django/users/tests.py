@@ -273,6 +273,7 @@ class MoodTestCase(TestCase):
         self.assertEqual(testMood.mood, 2)
 
 # "View" tests check whether things GET, POST, PUT requests are handled properly in the backend
+
 class ViewsUserTest(APITestCase):
     def setUp(self):
         client = APIClient()
@@ -390,15 +391,19 @@ class ViewsProfileTest(APITestCase):
    
     def test_getProfile(self):
         response = self.client.get('/api/profiles/emil', format="json")
-        print("content", response.content)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         profile = json.loads(response.content)
         self.assertEqual(profile, self.profile1)
+
+        response = self.client.get('/api/profiles/dog', format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     
     def test_createProfile(self):
         url = '/api/create/profile'
         data = self.profile2
         response = self.client.post(url, data, format='json')
-        # self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Profile.objects.count(), 1)
         self.assertEqual(Profile.objects.get().username, 'emil')
         
@@ -409,8 +414,66 @@ class ViewsProfileTest(APITestCase):
         
         data['age'] = 50
         response = self.client.put('api/profiles/emil', data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Profile.objects.count(), 1)
         self.assertEqual(Profile.objects.get().age, 50)
         self.assertEqual(Profile.objects.get().name, 'emil')
+
+class ViewsObservationsTest(APITestCase):
+    def setUp(self):
+
+        client = APIClient()
+        
+        self.mood1 = {'name':"sad", 'mood': '2'}
+        
+        self.user1 = {"username": "emil", "password": "snibby", "first_name": "name", "last_name": "lastname", "email": "email@email.ema"}
+        userObject = User.objects.create(**self.user1)
+        
+        self.profile1 = {"ProgressScore" : 2,
+        "age": 20, 
+        "gender": "man", 
+        "username": "emil", 
+        "user": userObject }
+
+        self.profile2 = {"ProgressScore" : 2,
+        "age": 20, 
+        "gender": "man", 
+        "username": "emil", 
+        "user": self.user1 }
+
+        profileObject = Profile.objects.create(**self.profile1)
+
+        self.observation1 = {'sleep': '7',
+            'exercise':'3',
+            'meals':'2',
+            'mood': self.mood1,
+            'user': self.profile2}
+        self.observation2 = {'sleep': '9',
+            'exercise':'4',
+            'meals':'3',
+            'mood': self.mood1,
+            'user': self.profile2}
+
+    def test_getAllUserObservation(self):
+        url = '/api/users/emil/observations'
+        response = self.client.get(url, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(json.loads(response.content), self.observation1)
+    
+    def test_postObervation(self):
+        url = '/api/users/emil/observations'
+        data = self.observation2
+        response = self.client.post(url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        data = self.observation1
+        response = self.client.post(url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+        response = self.client.get(url, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(json.loads(response.content), [self.observation1, self.observation2])
+
