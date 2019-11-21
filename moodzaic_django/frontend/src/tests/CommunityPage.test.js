@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import CommunityPage from '../components/CommunityPage';
 // import {configure, shallow} from 'enzyme';
 // import Adapter from 'enzyme-adapter-react-16';
-import { BrowserRouter as Router, Link } from "react-router-dom";
+import { BrowserRouter as Router} from "react-router-dom";
 
 describe('CommunityPage component', () => {
   //beforeEach stuff
