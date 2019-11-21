@@ -177,7 +177,25 @@ class ViewsCommunityTests(APITestCase):
         response = self.client.get(url + 'hi', data, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    # def test_communityDetailsPUT(self):
+    def test_communityDetailsPUT(self):
+        url = '/api/community/'
+        data = {'id': '0','name': 'fitness', 'users': [self.user1]}
+        response = self.client.post('/api/create/community', data, format='json')
+
+        # We change the name of a community
+        data = {'id': '0','name': 'newFitness', 'users': [self.user1]}
+        response = self.client.put(url + 'fitness', data, format='json')
+
+        # There should still only be one community, and it should be named newFitness
+        self.assertEqual(Community.objects.count(), 1)
+        self.assertEqual(Community.objects.get().name, 'newFitness')
+
+        # We should return not found if the community doesn't exist
+        response = self.client.put(url + 'hi', data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+
 
 
 

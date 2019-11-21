@@ -47,15 +47,13 @@ def communityDetails(request, name):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
     elif request.method == 'PUT':
-        community = Community.objects.get(name=name)
-
-        serializer = CommunitySerializer(community, data=request.data)
-        print(request.data)
-        serializer.is_valid()
-        logger.error(serializer.errors)
-        if serializer.is_valid():
-            serializer.save()
-            print(serializer.data)
+        try:
+            community = Community.objects.get(name=name)
+            serializer = CommunitySerializer(community, data=request.data)
+            serializer.is_valid()
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
             return Response(serializer.data)
-        print(serializer.errors)
-        return Response(serializer.data)
+        except Community.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
