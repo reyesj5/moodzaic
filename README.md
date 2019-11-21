@@ -66,13 +66,12 @@ Run `python3 manage.py runserver`
 It will possibly fail, so run  `python3 manage.py runserver` again until it works
 
 ### Back-End/Integration Testing
-(Note, some of the integration tests result in errors. That is because some of the functions are not written, resulting in requests being returned and parsed incorrectly. When the functions are written, these tests will pass. Them resulting in errors does not disturb the other tests, and is intentional)
 
 Cd into `/moodzaic`
 
 Run `source env/bin/activate`
 
-Cd into `/moodzaic/moodaic_django`
+Cd into `/moodzaic/moodzaic_django`
 
 Run `python3 manage.py makemigrations`
 
@@ -82,7 +81,7 @@ Run ‘python3 manage.py test’
 
 ## Front-End Testing
 
-Cd into ‘/moodzaic/user-interface/moodzaic’
+Cd into ‘/moodzaic/moodzaic_django/frontend’
 
 With yarn installed, run "$yarn start" to launch the React App (at http://localhost:3000/) in a browser, and "$yarn test" to run the included test suites.
 
@@ -90,7 +89,9 @@ With yarn installed, run "$yarn start" to launch the React App (at http://localh
 
 With both the Django and React servers activated:
 
-Go to http://localhost:8000/ to see the login screen. This is the Django server’s page, which forwards content from the React app. This will make it appear like with have two versions of the app, but having http://localhost:3000/ allows the Django app to get the most current changes to the front end as soon as they are made, as opposed to compiling the React app into static files.
+Go to http://localhost:8000/ to see the login screen. This is the Django server’s page, which forwards content from the React app. NOTE: This will make it appear like there are two versions of the app, but having http://localhost:3000/ running is equivalent to Django reading from a set of static (html/css/javascript) files, except allowing for frontend changes to take effect immediately!
+
+(The navigation process will be updated in iteration 2. Stay tuned!)
 
 Go to http://localhost:8000/api/users/ to add a user, then click Post to submit
 
