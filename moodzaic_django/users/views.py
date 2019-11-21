@@ -91,40 +91,20 @@ def allUserObservations(request, username):
     """
     List all code snippets, or create a new snippet.
     """
-    try:
-        observations = Observation.objects.filter(user__username=username)
-    except Profile.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    # try:
+    #     observations = Observation.objects.filter(user__username=username)
+    # except Profile.DoesNotExist:
+    #     return Response(status=status.HTTP_404_NOT_FOUND)
 
-    if request.method == 'GET':
-        serializer = ObservationSerializer(observations, many=True)
-        return Response(serializer.data)
+    # if request.method == 'GET':
+    #     serializer = ObservationSerializer(observations, many=True)
+    #     return Response(serializer.data)
 
-    elif request.method == 'POST':
-        serializer = ObservationSerializer(data=request.data.observation)
+    # elif request.method == 'POST':
+    #     serializer = ObservationSerializer(data=request.data.observation)
 
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(['GET'])
-def getUserGoals(request, username):
-    """
-    List all code snippets, or create a new snippet.
-    """
-    return Response(status=status.HTTP_404_NOT_FOUND)
-
-@api_view(['PUT'])
-def setUserGoals(request, username):
-    """
-    List all code snippets, or create a new snippet.
-    """
-    return Response(status=status.HTTP_404_NOT_FOUND)
-
-@api_view(['POST'])
-def UserGoals(request):
-    """
-    List all code snippets, or create a new snippet.
-    """
-    return Response(status=status.HTTP_404_NOT_FOUND)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response(status=status.HTTP_400_BAD_REQUEST)

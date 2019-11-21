@@ -130,13 +130,14 @@ class ViewsPostTests(APITestCase):
 
     def test_getPost(self):
         response = self.client.get('api/posts/23', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(json.loads(response.content).post, self.post1['post'])
 
     def test_createPost(self):
         url = '/api/create/posts'
         data = self.post1
         response = self.client.post(url, data, format='json')
-        # self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Post.objects.count(), 1)
         self.assertEqual(Post.objects.get().post, 'Hey everyone, lmaooo XD!!')
     
@@ -154,6 +155,7 @@ class ViewsPostTests(APITestCase):
     def test_getOriginPost(self):
         url = 'api/comments/12'
         response = self.client.post(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(json.loads(response.content).post, self.post1.post)
     
 class ViewsCommunityTests(APITestCase):
