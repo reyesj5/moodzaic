@@ -73,7 +73,7 @@ class MoodPage extends React.Component {
           <Header as='h1'>How are you feeling?</Header>
           <p>Some ~important~ questions for you about your mood today.</p>
           {QuestionList.map((Question, index) => {
-            return (<Form>
+            return (<Form key={index}>
               <Form.Field>
                 <label>{Question}</label>
                 <input />
@@ -89,11 +89,13 @@ class MoodPage extends React.Component {
               </Form.Field>
             </Form>
             <br />
+          <Router>
           <Link to="/Profile">
             <Button color='teal' fluid size='large'>
               Submit
             </Button>
           </Link>
+          </Router>
         </Container>
         <Footer />
       </div>

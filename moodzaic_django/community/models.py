@@ -62,18 +62,14 @@ class Post(models.Model):
     def getPoster(self):
         return self.poster
 
-    #TODO TIME?
 
-## (For Iteration 2)
-## Ahh! A data-class!
-## IDK what to do about this because you can't have recursive objects.
 class Comment(Post):
     originalPost = models.ForeignKey(Post, related_name='+', on_delete=models.CASCADE)
+
+    def getOriginalPost(self):
+        return self.originalPost
 
     def setOriginalPost(self, originalPost):
         self.originalPost = originalPost
         self.save()
         return
-
-    def getOriginalPost(self):
-        return self.originalPost
