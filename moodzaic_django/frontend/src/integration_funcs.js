@@ -28,7 +28,7 @@ const API_URL = 'http://localhost:8000/api/';
 
 
   export function getAllCommunities() {
-      const url = `${API_URL}all/community/`;
+      const url = `${API_URL}all/community`;
       return axios.get(url).then(response => response.data);
   }
 
