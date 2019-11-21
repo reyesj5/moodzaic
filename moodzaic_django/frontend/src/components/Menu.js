@@ -9,10 +9,8 @@ import {
 } from 'semantic-ui-react'
 
 import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link
+  Link,
+
 } from "react-router-dom";
 
 
@@ -51,7 +49,7 @@ class MyMenu extends React.Component {
             <Menu.Item as={Link} to="/Profile">My Moodzaic</Menu.Item>
             <Menu.Item as={Link} to="/Communities">My Communities</Menu.Item>
             <Menu.Item>
-              <Button basic color="red" onClick={this.signOut}>
+              <Button as={Link} to="/Login" basic color="red">
                 Sign Out
               </Button>
             </Menu.Item>

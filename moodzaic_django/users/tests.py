@@ -1,6 +1,7 @@
 from django.test import TestCase
 from users.models import User, Profile, Goal, Mood, Observation
 from datetime import datetime, date
+from community.models import Community, Post
 #from status.models import Status
 
 
@@ -113,9 +114,13 @@ class GoalTestCase(TestCase):
 # Every user has a profile being tested here
 class ProfileTestCase(TestCase):
     def setUp(self):
-        User.objects.create(username = "emil", password = "snibby")
+        u1 = User.objects.create(username = "emil", password = "snibby")
+        u2 = User.objects.create(username = "harry", password = "lobber")
         Profile.objects.create(ProgressScore = 10, user = User.objects.get(username = "emil"))
+        Profile.objects.create(ProgressScore = 11, user = User.objects.get(username = "harry"))
         Goal.objects.create(goal = "Drink water", frequency = "5", time = datetime.now())
+        c1 = Community.objects.create(name="FitBois")
+        c1.addUserToCommunity(u1)
     def test_setProgressScore(self):
         testProfile = Profile.objects.get(ProgressScore = 10)
         self.assertEqual(10, testProfile.getProgressScore())
@@ -125,23 +130,16 @@ class ProfileTestCase(TestCase):
         testProfile = Profile.objects.get(ProgressScore = 10)
         testProfile.setProgressScore(-5)
         self.assertEqual(-5, testProfile.getProgressScore())
-    def test_makeGoalPost(self):
-        testProfile = Profile.objects.get(ProgressScore= 10)
-        testGoal = Goal.objects.get(goal = "Drink water")
-        self.assertTrue(testProfile.makeGoalPost(testGoal, "Hi"))
-    def test_makeGoalPost_NullPost(self):
-        testProfile = Profile.objects.get(ProgressScore= 10)
-        testGoal = Goal.objects.get(goal = "Drink water")
-        self.assertFalse(testProfile.makeGoalPost(testGoal, ""))
-    def test_makeGoalPost_invalidGoal(self):
-        testProfile = Profile.objects.get(ProgressScore= 10)
-        self.assertFalse(testProfile.makeGoalPost("hello", "Hi"))
+
     def test_makePost(self):
         testProfile = Profile.objects.get(ProgressScore= 10)
-        self.assertTrue(testProfile.makePost("Hi, this is a post"))
+        self.assertTrue(testProfile.makePost("Hi, this is a post", "FitBois"))
     def test_makePost_NullPost(self):
         testProfile = Profile.objects.get(ProgressScore= 10)
-        self.assertFalse(testProfile.makePost(""))
+        self.assertFalse(testProfile.makePost("", "FitBois"))
+    def test_makePost_UserNotInSet(self):
+        testProfile = Profile.objects.get(ProgressScore= 11)
+        self.assertFalse(testProfile.makePost("Yup", "FitBois"))
     def test_getUser(self):
         testProfile = Profile.objects.get(ProgressScore= 10)
         testUser =User.objects.get(username = "emil")
