@@ -35,15 +35,34 @@ class App extends Component {
   }
 
 
-  toggleLogIn = (u) => {
+  LogIn = (u) => {
       this.setState(prevState => ({
-        LoggedIn: !prevState.LoggedIn,
-        user: u
-      }))
+        LoggedIn: true,
+        user: {
+          username: u.username,
+          password: u.password,
+          email: u.email,
+          first_name: u.first_name,
+          last_name: u.last_name
+        }
+      }));
+    console.log('login called', this.state);
+  }
+
+  LogOut = (u) => {
+      this.setState(prevState => ({
+        LoggedIn: false,
+        user: {
+          username: '',
+          password: '',
+          email: '',
+          first_name: '',
+          last_name: ''
+        }}))
   }
 
   render() {
-    console.log('what???')
+    console.log('apps state:',this.state);
     return (
       <div>
         <Router>
@@ -55,7 +74,7 @@ class App extends Component {
               <MoodPage />
             </Route>
             <Route path="/Login">
-              <LoginForm callback = {this.toggleLogIn} />
+              <LoginForm callback = {this.LogIn} />
             </Route>
             <Route path="/Welcome">
               <SetupPage />
@@ -69,7 +88,7 @@ class App extends Component {
             <Route path="/">
               {this.state.LoggedIn ?
                 <Redirect to="/Profile" /> :
-                <LoginForm callback = {this.toggleLogIn} />
+                <LoginForm callback = {this.LogIn} />
               }
             </Route>
           </Switch>
