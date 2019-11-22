@@ -7,6 +7,7 @@ import CommunityPage from './CommunityPage.js'
 import SignUpForm from './SignUp.js'
 import SetupPage from './AccountSetup.js'
 // import MyMenu from './Menu.js'
+import {getProfile} from '../integration_funcs';
 
 import {
   BrowserRouter as Router,
@@ -24,7 +25,13 @@ class App extends Component {
           password: '',
           email: '',
           first_name: '',
-          last_name: ''
+          last_name: '',
+        },
+        profile: {
+          username: '',
+          age: 0,
+          gender: '',
+          user: {}
         },
         MyCommunityList: [],
         MyObservationList: [],
@@ -36,16 +43,27 @@ class App extends Component {
 
 
   LogIn = (u) => {
-      this.setState(prevState => ({
-        LoggedIn: true,
-        user: {
-          username: u.username,
-          password: u.password,
-          email: u.email,
-          first_name: u.first_name,
-          last_name: u.last_name
-        }
-      }));
+      getProfile(u.username).then(p => {
+        console.log({p})
+        if (p) {
+          this.setState(prevState => ({
+            LoggedIn: true,
+            user: {
+              username: u.username,
+              password: u.password,
+              email: u.email,
+              first_name: u.first_name,
+              last_name: u.last_name,
+            },
+            profile: {
+              username: p.username,
+              age: p.age,
+              gender: p.gender,
+              user: p.user
+            }
+          }))
+      };
+      })
     console.log('login called', this.state);
   }
 
@@ -80,7 +98,7 @@ class App extends Component {
               <SetupPage />
             </Route>
             <Route path="/Profile">
-              <ProfilePage User={this.state.user}/>
+              <ProfilePage User={this.state.user} Profile={this.state.profile}/>
             </Route>
             <Route path="/Communities">
               <CommunityPage user={this.state.user}/>
