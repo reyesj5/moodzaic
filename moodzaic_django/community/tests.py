@@ -155,11 +155,13 @@ class ViewsCommunityTests(APITestCase):
         self.assertEqual(Community.objects.count(), 1)
         self.assertEqual(Community.objects.get().name, 'fitness')
 
+        self.assertEqual(Community.objects.get().users.count(), 1)
+
         # This should fail if you pass in no data
         response2 = self.client.post(url, {}, format='json')
         self.assertEqual(response2.status_code, status.HTTP_400_BAD_REQUEST)
 
-        # There should still only be one user
+        # There should still only be one community
         self.assertEqual(Community.objects.count(), 1)
         self.assertEqual(Community.objects.get().name, 'fitness')
 
@@ -189,6 +191,7 @@ class ViewsCommunityTests(APITestCase):
         # There should still only be one community, and it should be named newFitness
         self.assertEqual(Community.objects.count(), 1)
         self.assertEqual(Community.objects.get().name, 'newFitness')
+        self.assertEqual(Community.objects.get().users.count(), 2)
 
         # We should return not found if the community doesn't exist
         response = self.client.put(url + 'hi', data, format='json')
