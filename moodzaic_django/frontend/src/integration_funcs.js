@@ -25,6 +25,10 @@ const API_URL = 'http://localhost:8000/api/';
 
   }
 
+  export function updateUser(u){
+    return axios.put(`${API_URL}users/${u.username}`, u);
+  }
+
 
 
   export function getAllCommunities() {
@@ -122,11 +126,15 @@ const API_URL = 'http://localhost:8000/api/';
   // }
   // create not implemented yet
   export function createProfile(username){
-      console.log(username);
+      // console.log(username);
       const url = `${API_URL}profiles/`;
       return axios.post(url,username);
   }
-  export function updateProfile(username){
-      const url = `${API_URL}profiles/${username}`;
-      return axios.put(url,username);
+  // export function updateProfile(username){
+  //     const url = `${API_URL}profiles/${username}`;
+  //     return axios.put(url,username);
+  // }
+  export function updateProfile(profile){
+      const url = `${API_URL}profiles/${profile.username}`;
+      return axios.put(url,profile);
   }

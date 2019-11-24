@@ -11,7 +11,7 @@ import {
 
 const Footer = () => (
   <div>
-    <Segment inverted vertical style={{ margin: '7em 0em 0em', padding: '4em 0em' }}>
+    <Segment inverted vertical style={{ margin: '5em 0em 0em', padding: '5em 0em' }}>
       <Container textAlign='center'>
         <Grid divided inverted stackable>
           <Grid.Column width={3}>
@@ -49,5 +49,8 @@ const Footer = () => (
     </Segment>
   </div>
 )
+
+//margin: '7em 0em 0em', padding: '4em 0em', position:'absolute', bottom:'0'
+//style={{position: 'fixed', left: '0', bottom: '0', width: '100%'}}>
 
 export default Footer

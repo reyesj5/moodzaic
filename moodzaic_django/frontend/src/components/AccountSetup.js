@@ -96,26 +96,25 @@ class SetupPage extends React.Component {
     step: 1,
     QuestionList: getInitialQuestions(),
     AnswerList: [],
-
-    totalSteps: 1 + getInitialQuestions().length/5, //5 questions per page
+    // totalSteps: 1 + getInitialQuestions().length/5, //5 questions per page
     first: '',
     last: '',
     age: 0,
     gender: '',
     email: ''
   }
-  nextStep = () => {
-        const { step } = this.state
-        this.setState({
-            step : step + 1
-        })
-    }
-  prevStep = () => {
-      const { step } = this.state
-      this.setState({
-          step : step - 1
-      })
-  }
+  // nextStep = () => {
+  //       const { step } = this.state
+  //       this.setState({
+  //           step : step + 1
+  //       })
+  //   }
+  // prevStep = () => {
+  //     const { step } = this.state
+  //     this.setState({
+  //         step : step - 1
+  //     })
+  // }
   handleFirstChange = (e) => this.setState({ first: e.target.value });
   handleLastChange = (e) => this.setState({ last: e.target.value });
   handleAgeChange = (e) => this.setState({ age: e.target.value });
