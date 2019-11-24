@@ -25,7 +25,6 @@ def createCommunity(request):
     if request.method == 'POST':
         serializer = CommunitySerializer(data=request.data)
         serializer.is_valid()
-        print(request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -51,6 +50,7 @@ def communityDetails(request, name):
         try:
             community = Community.objects.get(name=name)
             serializer = CommunitySerializer(community, data=request.data)
+            serializer.update(community, request.data)
             serializer.is_valid()
             if serializer.is_valid():
                 serializer.save()
