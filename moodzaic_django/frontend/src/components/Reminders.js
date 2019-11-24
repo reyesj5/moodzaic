@@ -10,7 +10,7 @@ import {
 class Reminders extends React.Component {
   state = {
     myReminders: [],
-    renderNumber: 3,
+    renderNumber: 3
   }
 
   componentDidMount() {

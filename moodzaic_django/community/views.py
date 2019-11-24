@@ -34,10 +34,6 @@ def createCommunity(request):
     if request.method == 'POST':
         serializer = CommunitySerializer(data=request.data)
         serializer.is_valid()
-<<<<<<< HEAD
-        print(serializer.errors)
-=======
->>>>>>> marco/integration
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)

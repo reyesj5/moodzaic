@@ -2,6 +2,7 @@ import React from 'react'
 import {
   Container,
   Button,
+  Message
 } from 'semantic-ui-react'
 
 // import { addCommunity, isMyCommunity } from '../integration_funcs.js'
@@ -16,13 +17,14 @@ import {updateCommunity} from '../integration_funcs'
 
 class AllCommunities extends React.Component {
   state = {
-    makeMode: false
-    // profile: {}
+    makeMode: false,
+    renderNumber: 3
   }
 
   componentDidUpdate() {
     console.log(this.state, this.props);
   }
+
 
   handleAddClick(community) {
     // var username = this.state.Username;
@@ -47,11 +49,17 @@ class AllCommunities extends React.Component {
 
   render() {
     const communities = this.props.allCommunities.map((com, i) => {
-      return <Button
-                color='purple' fluid size='large'
-                key = {i} onClick = {this.handleAddClick({name: com.name, users: com.users.push(this.props.user)})}>
-                {com.name}: {this.props.myCommunities.includes(com) ? 'added!' : 'add?'}
-              </ Button>;
+      return <Message
+          as={Button}
+          onClick = {this.handleAddClick({name: com.name, users: com.users.push(this.props.user)})}
+          color='purple'
+          fluid size='large'
+          key = {i}>
+        <Message.Header>{com.name}</Message.Header>
+        <p>
+        {this.props.myCommunities.includes(com) ? 'added!' : 'add?'}
+        </p>
+      </Message>
     })
 
     const makeCommunityButton =
