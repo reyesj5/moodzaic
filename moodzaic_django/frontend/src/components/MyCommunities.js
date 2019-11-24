@@ -2,6 +2,7 @@ import React from 'react'
 import {
   Container,
   Button,
+  Message
 } from 'semantic-ui-react'
 
 
@@ -31,17 +32,20 @@ class CommunitiesPage extends React.Component {
   render() {
     const myCommunities = this.props.myCommunities;
     const communities = myCommunities.map((com, i) => {
-      return <Button
-                color='teal' fluid size='large'
-                key = {i}
-                onClick = {this.openCommunity(com)}>
-                {com}
-              </ Button>;
+      return <Message
+          as={Button}
+          onClick = {this.openCommunity(com)}
+          color='teal'
+          fluid size='small'
+          key = {i}>
+        <Message.Header>{com.name}</Message.Header>
+      </Message>
     })
+
 
     return (
       <div>
-        <Container text style={{ marginTop: '7em' }}>
+        <Container text align='center' style={{ marginTop: '7em' }}>
           {myCommunities.length === 0 ?
             <div>
             <p> You're not in any communities yet :( </p>
