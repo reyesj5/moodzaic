@@ -27,6 +27,10 @@ const API_URL = 'http://localhost:8000/api/';
     .catch(error => console.log(error))
   }
 
+  export function updateUser(u){
+    return axios.put(`${API_URL}users/${u.username}`, u);
+  }
+
 
 
   export function getAllCommunities() {
@@ -35,7 +39,7 @@ const API_URL = 'http://localhost:8000/api/';
   }
 
   export function getCommunity(name) {
-      const url = `${API_URL}$community/${name}`;
+      const url = `${API_URL}community/${name}`;
       return axios.get(url).then(response => response.data);
   }
   // export function deleteCommunity(community){
@@ -48,7 +52,7 @@ const API_URL = 'http://localhost:8000/api/';
   // }
 
   export function createCommunity(community){
-      return axios.post(`${API_URL}create/community/`, {
+      return axios.post(`${API_URL}create/community`, {
         name: community.name,
         users: community.users
       })
@@ -87,6 +91,28 @@ const API_URL = 'http://localhost:8000/api/';
   //     return axios.put(url, post);
   // }
 
+
+  // export function getProfiles() {
+  //     const url = `${API_URL}profiles`;
+  //     return axios.get(url).then(response => response.data);
+  // }
+  // export function getProfile(username) {
+  //     const url = `${API_URL}${username}profiles/`;
+  //     return axios.get(url).then(response => response.data);
+  // }
+  // export function deleteProfile(username){
+  //     const url = `${API_URL}profiles/${username}`; //should be username instead of pk, since that is the identifier?
+  //     return axios.delete(url);
+  // }
+  // export function createProfile(username){
+  //     console.log(username);
+  //     const url = `${API_URL}profiles/`;
+  //     return axios.post(url,username);
+  // }
+  // export function updateProfile(username){
+  //     const url = `${API_URL}profiles/${username}`;
+  //     return axios.put(url,username);
+  // }
 
   export function getProfiles() {
       const url = `${API_URL}profiles/`;
