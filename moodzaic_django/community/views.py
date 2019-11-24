@@ -12,33 +12,49 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# Return all communities
+@api_view(['GET'])
+def allCommunities(request):
+    communities = Community.objects.all()
+    serializer = CommunitySerializer(communities, many=True)
+    return Response(serializer.data)
 
-# class CommunityListCreate(generics.ListCreateAPIView):
-#     queryset = Community.objects.all()
-#     serializer_class = CommunitySerializer
-
+# Create a new community
 @api_view(['POST'])
 def createCommunity(request):
     if request.method == 'POST':
         serializer = CommunitySerializer(data=request.data)
+        serializer.is_valid()
+        print(request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-        return Response(serializer.data)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
-class CommunityListCreate(generics.ListCreateAPIView):
-    queryset = Community.objects.all()
-    serializer_class = CommunitySerializer
-    logger.error("this happened")
-
-@api_view(['GET'])
+# Get a single community, or update a single community
+# Pass its name to ensure this
+@api_view(['GET', 'PUT'])
 def communityDetails(request, name):
     """
     Retrieve, update or get a community by name.
     """
-    try:
-        community = Community.objects.get(name=name)
-        serializer = CommunitySerializer(community,context={'request': request})
-        return Response(serializer.data)
-    except Community.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    if request.method == 'GET':
+        try:
+            community = Community.objects.get(name=name)
+            serializer = CommunitySerializer(community,context={'request': request})
+            return Response(serializer.data)
+        except Community.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+    elif request.method == 'PUT':
+        try:
+            community = Community.objects.get(name=name)
+            serializer = CommunitySerializer(community, data=request.data)
+            serializer.is_valid()
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.data)
+        except Community.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
