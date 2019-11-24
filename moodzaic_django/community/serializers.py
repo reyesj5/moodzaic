@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from community.models import Community
+from community.models import Community, Post
 from users.models import User
 from users.serializers import UserSerializer
 
@@ -40,3 +40,53 @@ class CommunitySerializer(serializers.ModelSerializer):
         community.save()
 
         return community
+
+
+class PostSerializer(serializers.ModelSerializer):
+    poster = UserSerializer()
+    community = CommunitySerializer()
+    class Meta:
+        model = Post
+        fields = ['post', 'community', 'poster']
+
+    def create(self, validated_data):
+        print('MIBBY')
+        userData = validated_data.pop('poster')
+        user = User.objects.get_or_create(username=userData['username'],
+                                                       email=userData['email'],
+                                                       first_name=userData['first_name'],
+                                                       last_name=userData['last_name'],
+                                                       password=userData['password'])
+        print(user)
+        postData = validated_data.pop('post')
+
+        communityData = validated_data.pop('community')
+        print('swibby')
+        community = Community.objects.get_or_create(name=communityData['name'])
+        print(community)
+
+        post = Post.objects.create(**validated_data)
+        post.poster = user
+        post.post = postData
+        post.community = community
+        return post
+
+    def update(self, community, validated_data):
+        userData = validated_data.pop('poster')
+        user = User.objects.get_or_create(username=userData['username'],
+                                                       email=userData['email'],
+                                                       first_name=userData['first_name'],
+                                                       last_name=userData['last_name'],
+                                                       password=userData['password'])
+
+        postData = validated_data.pop('post')
+
+        communityData = validated_data.pop('community')
+        community = Community.objects.get_or_create(name=communityData['name'],
+                                                        users=communityData['users'])
+
+        post = Post.objects.create(**validated_data)
+        post.poster.set(user)
+        post.post.set(postData)
+        post.community.set(community)
+        return post
