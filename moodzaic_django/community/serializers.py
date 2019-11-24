@@ -50,25 +50,20 @@ class PostSerializer(serializers.ModelSerializer):
         fields = ['post', 'community', 'poster']
 
     def create(self, validated_data):
-        print('MIBBY')
         userData = validated_data.pop('poster')
         user = User.objects.get_or_create(username=userData['username'],
                                                        email=userData['email'],
                                                        first_name=userData['first_name'],
                                                        last_name=userData['last_name'],
-                                                       password=userData['password'])
-        print(user)
-        postData = validated_data.pop('post')
+                                                       password=userData['password'])[0]
+        validated_data['poster'] = user
 
         communityData = validated_data.pop('community')
-        print('swibby')
-        community = Community.objects.get_or_create(name=communityData['name'])
-        print(community)
+        community = Community.objects.get_or_create(name=communityData['name'])[0]
+        validated_data['community'] = community
+
 
         post = Post.objects.create(**validated_data)
-        post.poster = user
-        post.post = postData
-        post.community = community
         return post
 
     def update(self, community, validated_data):
@@ -83,7 +78,7 @@ class PostSerializer(serializers.ModelSerializer):
 
         communityData = validated_data.pop('community')
         community = Community.objects.get_or_create(name=communityData['name'],
-                                                        users=communityData['users'])
+                                                        id=communityData['id'])
 
         post = Post.objects.create(**validated_data)
         post.poster.set(user)

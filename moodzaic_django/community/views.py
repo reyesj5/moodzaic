@@ -69,13 +69,10 @@ def communityDetails(request, name):
 
 @api_view(['POST'])
 def createPost(request):
-    print("snoo")
     if request.method == 'POST':
-        print('smorgy')
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
-            logger.error("PostSerializer is valid")
-            serializer.save()
+            comment = serializer.save()
             return Response(serializer.data)
         logger.error(serializer.errors)
         return Response(serializer.data)
