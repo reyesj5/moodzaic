@@ -6,13 +6,13 @@ import {
   Button,
   Dropdown
 } from 'semantic-ui-react'
-import MyMenu from './Menu.js';
-import Footer from './Footer.js';
+// import MyMenu from './Menu.js';
+// import Footer from './Footer.js';
 
 import {
   BrowserRouter as Router,
-  Switch,
-  Route,
+  // Switch,
+  // Route,
   Link
 } from "react-router-dom";
 
@@ -63,32 +63,33 @@ class MoodPage extends React.Component {
     QuestionList: getDailyQuestions(),
     MoodList: getMoods()
   }
+
+
+
   render() {
     const {QuestionList} = this.state;
     const {MoodList} = this.state;
     return(
       <div>
-        <MyMenu />
         <Container text style={{ marginTop: '7em' }}>
           <Header as='h1'>How are you feeling?</Header>
           <p>Some ~important~ questions for you about your mood today.</p>
-          {QuestionList.map((Question, index) => {
-            return (<Form key={index}>
-              <Form.Field>
-                <label>{Question}</label>
-                <input />
-              </Form.Field>
-            </Form>)})}
-            <Form>
-              <Form.Field>
+          <Form>
+            {QuestionList.map((Question, index) => {
+              return (
+                <Form.Field key={index}>
+                  <label>{Question}</label>
+                  <input />
+                </Form.Field>)})}
+            <Form.Field>
                 <label>Mood</label>
                 <Dropdown placeholder='Select' fluid search selection
                   options={MoodList.map((Mood, index) =>
                     {return({value: Mood, text: Mood})})
                   } />
-              </Form.Field>
-            </Form>
-            <br />
+            </Form.Field>
+          </Form>
+          <br />
           <Router>
           <Link to="/Profile">
             <Button color='teal' fluid size='large'>
@@ -97,7 +98,6 @@ class MoodPage extends React.Component {
           </Link>
           </Router>
         </Container>
-        <Footer />
       </div>
     )
   }

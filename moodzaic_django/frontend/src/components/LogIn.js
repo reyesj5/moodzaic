@@ -16,23 +16,20 @@ class LoginForm extends React.Component {
   }
 
 
-  logIn = (u) => {
-    const user = getUserByUsername(u.username);
-    if (user) {
-      this.props.callback(user);
-    }
+
+  handleChange = (e, { name, value }) => {
+    this.setState({ [name]: value });
+    // console.log(this.state);
   }
-
-  handleChange = (e, { name, value }) => this.setState({ [name]: value })
-
 
   handleSubmit = () => {
     // let username = event.target[0].value;
     // let password = event.target[1].value;
     getUserByUsername(this.state.username).then(user => {
-      console.log(user);
+      console.log(user, user.i);
       if (user && (this.state.password === user.password)) {
-        this.logIn(user);
+        // console.log('it worked! we logging in')
+        this.props.callback(user);
       }
     });
 
