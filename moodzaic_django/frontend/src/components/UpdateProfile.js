@@ -137,17 +137,17 @@ class UpdateProfile extends React.Component {
               </Form.Field>
               </div>
               <div className="two fields">
-                <Form.Field type='password' name='password' onChange={this.handlePasswordChange}>
+                <Form.Field name='password' onChange={this.handlePasswordChange}>
                   <label>New Password</label>
-                  <input />
+                  <input type='password'/>
                 </Form.Field>
                 {this.state.confirming ?
-                  <Form.Field type='password' name='password check' onChange={this.handleConfirmpChange}>
+                  <Form.Field name='password check' onChange={this.handleConfirmpChange}>
                     <label>Confirm New Password</label>
-                    <input />
+                    <input type='password'/>
                   </Form.Field>
                 :
-                <Form.Field type='password' error name='password check' onChange={this.handleConfirmpChange}>
+                <Form.Field error type='password' name='password check' onChange={this.handleConfirmpChange}>
                   <label>Confirm New Password</label>
                   <input />
                 </Form.Field>
