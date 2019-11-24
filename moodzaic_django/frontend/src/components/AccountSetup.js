@@ -4,8 +4,7 @@ import {
   Container,
   Header,
   Form,
-  Dropdown,
-
+  // Dropdown,
   Grid,
   Button,
   // Rating
@@ -25,67 +24,6 @@ import {
 } from "react-router-dom";
 
 
-const getInitialQuestions = () => {
-  //TODO integrate: get setup questions from backend
-  // We might want to attach types to questions based on response needed.
-  // E.g. L5 for 5-option likert, S for string, {option 1, option 2, option 3} for dropdown
-  const questions = [
-    "I feel depressed",
-    "I wake up often during the night",
-    "I have no motivation",
-    "I find it difficult to think clearly",
-    "I feel anxious",
-    "I like smoking a cigarette",
-    "I feel worried",
-    "I am irritable",
-    "My morale is low",
-    "I have NO patience",
-    "I find it hard to concentrate",
-    "I am eating more than usual",
-    "I get angry easily",
-    "I feel nervous",
-    "I feel restless",
-    "I have put on weight recently",
-    "I find it hard to focus on the task at hand",
-    "I have difficulty sleeping",
-    "I feel down",
-    "I have trouble falling asleep at night",
-    "I have insomnia (sleep problems, awakening at night)",
-    "Restless (impatient)",
-    "Food is not particularly appealing to me",
-    "I am getting restful sleep",
-    "I have been tense or anxious",
-    "My level of concentration is excellent",
-    "I have felt impatient",
-    "I have felt upbeat and optimistic",
-    "I have found myself worrying about my problems",
-    "I have felt calm lately",
-    "I have felt sad or depressed",
-    "I have been irritable, easily angered",
-    "I want to nibble on snacks or sweets",
-    "I have been bothered by negative moods such as anger, frustration, and irritability",
-    "I have been eating a lot",
-    "I am satisfied with my sleep",
-    "I have felt frustrated",
-    "I have felt hopeless or discouraged",
-    "I have felt hungry",
-    "It is hard to pay attention to things",
-    "I have felt happy and content",
-    "My sleep has been troubled",
-    "It has been difficult to think clearly",
-    "I think about food a lot"
-  ]
-  return questions;
-}
-
-const GenderOptions = [
-  { key: 'F', text: 'Female', value: 'F' },
-  { key: 'M', text: 'Male', value: 'M' },
-  { key: 'Other', text: 'Other', value: 'O' },
-  { key: 'NA', text: 'Prefer Not To Answer', value: 'NA' }
-]
-
-
 
 class SetupPage extends React.Component {
 
@@ -93,9 +31,9 @@ class SetupPage extends React.Component {
   //to be displayed after inputting username and password in signup
 
   state = {
-    step: 1,
-    QuestionList: getInitialQuestions(),
-    AnswerList: [],
+    // step: 1,
+    // QuestionList: getInitialQuestions(),
+    // AnswerList: [],
     // totalSteps: 1 + getInitialQuestions().length/5, //5 questions per page
     first: '',
     last: '',
@@ -167,11 +105,11 @@ class SetupPage extends React.Component {
                 <div className="three fields">
                 <Form.Field name='age' onChange={this.handleAgeChange}>
                   <label>Age</label>
-                  <input placeholder='Age'/>
+                  <input />
                 </Form.Field>
                 <Form.Field name='gender' onChange={this.handleGenderChange}>
                   <label>Gender</label>
-                  <Dropdown placeholder='Select' fluid selection options={GenderOptions}/>
+                  <input />
                 </Form.Field>
                 <Form.Field name='email' onChange={this.handleEmailChange}>
                   <label>Email</label>
@@ -236,4 +174,64 @@ class SetupPage extends React.Component {
 
 */
 
+
+// const getInitialQuestions = () => {
+//   //TODO integrate: get setup questions from backend
+//   // We might want to attach types to questions based on response needed.
+//   // E.g. L5 for 5-option likert, S for string, {option 1, option 2, option 3} for dropdown
+//   const questions = [
+//     "I feel depressed",
+//     "I wake up often during the night",
+//     "I have no motivation",
+//     "I find it difficult to think clearly",
+//     "I feel anxious",
+//     "I like smoking a cigarette",
+//     "I feel worried",
+//     "I am irritable",
+//     "My morale is low",
+//     "I have NO patience",
+//     "I find it hard to concentrate",
+//     "I am eating more than usual",
+//     "I get angry easily",
+//     "I feel nervous",
+//     "I feel restless",
+//     "I have put on weight recently",
+//     "I find it hard to focus on the task at hand",
+//     "I have difficulty sleeping",
+//     "I feel down",
+//     "I have trouble falling asleep at night",
+//     "I have insomnia (sleep problems, awakening at night)",
+//     "Restless (impatient)",
+//     "Food is not particularly appealing to me",
+//     "I am getting restful sleep",
+//     "I have been tense or anxious",
+//     "My level of concentration is excellent",
+//     "I have felt impatient",
+//     "I have felt upbeat and optimistic",
+//     "I have found myself worrying about my problems",
+//     "I have felt calm lately",
+//     "I have felt sad or depressed",
+//     "I have been irritable, easily angered",
+//     "I want to nibble on snacks or sweets",
+//     "I have been bothered by negative moods such as anger, frustration, and irritability",
+//     "I have been eating a lot",
+//     "I am satisfied with my sleep",
+//     "I have felt frustrated",
+//     "I have felt hopeless or discouraged",
+//     "I have felt hungry",
+//     "It is hard to pay attention to things",
+//     "I have felt happy and content",
+//     "My sleep has been troubled",
+//     "It has been difficult to think clearly",
+//     "I think about food a lot"
+//   ]
+//   return questions;
+// }
+//
+// const GenderOptions = [
+//   { key: 'F', text: 'Female', value: 'F' },
+//   { key: 'M', text: 'Male', value: 'M' },
+//   { key: 'Other', text: 'Other', value: 'O' },
+//   { key: 'NA', text: 'Prefer Not To Answer', value: 'NA' }
+// ]
 export default SetupPage;

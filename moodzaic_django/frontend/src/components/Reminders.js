@@ -14,10 +14,11 @@ class Reminders extends React.Component {
   }
 
   componentDidMount() {
-    this.setState({myReminders: this.props.profile.reminderList})
-    // fetch('')
-    //   .then(response => response.json())
-    //   .then(data => this.setState({ myReminders : data }));
+    if (this.props.profile.reminderList) {
+      this.setState({myReminders: this.props.profile.reminderList})
+    } else {
+      console.log("No reminder list field in user " + this.props.profile.username)
+    }
   }
 
   showMore() {

@@ -3,7 +3,7 @@ import axios from 'axios';
 const API_URL = 'http://localhost:8000/api/';
 
   function getUsers() {
-    return axios.get(`${API_URL}users/`).then(response => response.data).catch(error => console.log(error));
+    return axios.get(`${API_URL}users/all`).then(response => response.data).catch(error => console.log(error));
   }
 
   export function createUser(u){
@@ -32,7 +32,7 @@ const API_URL = 'http://localhost:8000/api/';
 
 
   export function getAllCommunities() {
-      const url = `${API_URL}community/all`;
+      const url = `${API_URL}all/community`;
       return axios.get(url).then(response => response.data);
   }
 
@@ -50,7 +50,7 @@ const API_URL = 'http://localhost:8000/api/';
   // }
 
   export function createCommunity(community){
-      return axios.post(`${API_URL}community/create`, {
+      return axios.post(`${API_URL}create/community`, {
         name: community.name,
         users: community.users
       })

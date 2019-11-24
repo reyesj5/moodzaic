@@ -63,6 +63,9 @@ class MoodPage extends React.Component {
     QuestionList: getDailyQuestions(),
     MoodList: getMoods()
   }
+
+
+
   render() {
     const {QuestionList} = this.state;
     const {MoodList} = this.state;
@@ -71,21 +74,20 @@ class MoodPage extends React.Component {
         <Container text style={{ marginTop: '7em' }}>
           <Header as='h1'>How are you feeling?</Header>
           <p>Some ~important~ questions for you about your mood today.</p>
+          <Form>
           {QuestionList.map((Question, index) => {
-            return (<Form key={index}>
-              <Form.Field>
+            return (
+              <Form.Field key={index}>
                 <label>{Question}</label>
                 <input />
-              </Form.Field>
-            </Form>)})}
-            <Form>
-              <Form.Field>
-                <label>Mood</label>
-                <Dropdown placeholder='Select' fluid search selection
-                  options={MoodList.map((Mood, index) =>
-                    {return({value: Mood, text: Mood})})
-                  } />
-              </Form.Field>
+              </Form.Field>)})}
+            <Form.Field>
+              <label>Mood</label>
+              <Dropdown placeholder='Select' fluid search selection
+                options={MoodList.map((Mood, index) =>
+                  {return({value: Mood, text: Mood})})
+                } />
+            </Form.Field>
             </Form>
             <br />
           <Router>

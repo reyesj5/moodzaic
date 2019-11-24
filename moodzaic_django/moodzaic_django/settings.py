@@ -58,6 +58,10 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'moodzaic_django.urls'
 
+REST_FRAMEWORK = {
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json'
+}
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -138,8 +142,17 @@ WEBPACK_LOADER = {
         'BUNDLE_DIR_NAME': '/bundles/',
         'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.dev.json'),
     }
-}   
+}
 
 # STATICFILES_DIRS = (
-#     os.path.join(BASE_DIR, 'assets/'), 
+#     os.path.join(BASE_DIR, 'assets/'),
 # )
+
+REST_FRAMEWORK = {
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
+    'TEST_REQUEST_RENDERER_CLASSES': [
+        'rest_framework.renderers.MultiPartRenderer',
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.TemplateHTMLRenderer'
+    ]
+}
