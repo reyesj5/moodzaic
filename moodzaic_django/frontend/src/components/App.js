@@ -112,7 +112,7 @@ class App extends Component {
                 <div>
                   <MyMenu callback={this.LogOut}/>
                   <MoodPage />
-                  <Footer />
+                  <Footer/>
                 </div> :
                 <Redirect to="/" />
               }
@@ -125,7 +125,7 @@ class App extends Component {
                 <div>
                   <MyMenu callback={this.LogOut}/>
                   <ProfilePage User={this.state.user} Profile={this.state.profile}/>
-                  <Footer />
+                  <Footer/>
                 </div> :
                 <Redirect to="/" />
               }
@@ -135,7 +135,7 @@ class App extends Component {
                 <div>
                   <MyMenu callback={this.LogOut}/>
                   <CommunityPage user={this.state.user}/>
-                  <Footer />
+                  <Footer/>
                 </div> :
                 <Redirect to="/" />
               }
