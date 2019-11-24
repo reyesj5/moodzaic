@@ -3,7 +3,7 @@ from users.models import User
 
 # Create your models here.
 class Community(models.Model):
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=30, unique=True)
     users = models.ManyToManyField(User)
 
     def setName(self, name):

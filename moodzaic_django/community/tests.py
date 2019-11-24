@@ -140,24 +140,24 @@ class ViewsPostTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Post.objects.count(), 1)
         self.assertEqual(Post.objects.get().post, 'Hey everyone, lmaooo XD!!')
-    
+
     def test_setPost(self):
         url = '/api/create/posts'
         data = self.post1
         response = self.client.post(url, data, format='json')
-        
+
         data['post'] = 'alas, i am rip'
         response = self.client.put('api/posts/23', data, format='json')
 
         self.assertEqual(Post.objects.count(), 1)
         self.assertEqual(Post.objects.get().post, 'alas, i am rip')
-    
+
     def test_getOriginPost(self):
         url = 'api/comments/12'
         response = self.client.post(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(json.loads(response.content).post, self.post1.post)
-    
+
 class ViewsCommunityTests(APITestCase):
 
     client = APIClient()
@@ -200,19 +200,25 @@ class ViewsCommunityTests(APITestCase):
         data = {'id': '0','name': 'fitness', 'users': [self.user1]}
         data2 = {'id': '1','name': 'newFitness', 'users': [self.user1]}
         data3 = {'id': '2', 'name': 'cooking', 'users': [self.user1]}
+        data4 = {'id': '3','name': 'fitness', 'users': []}
 
         response = self.client.post(url, data, format='json')
-        response = self.client.post(url, data2, format='json')
-        response = self.client.post(url, data2, format='json')
+        response2 = self.client.post(url, data2, format='json')
+        response3 = self.client.post(url, data3, format='json')
 
         self.assertEqual(Community.objects.count(), 3)
         # self.assertEqual(Community.objects.get().name, 'fitness')
 
         self.assertEqual(User.objects.count(), 1)
 
+        # This should fail if you try and create a community with the same name
+        response4 = self.client.post(url, data4, format='json')
+        self.assertEqual(response4.status_code, status.HTTP_400_BAD_REQUEST)
+
         # This should fail if you pass in no data
-        response2 = self.client.post(url, {}, format='json')
-        self.assertEqual(response2.status_code, status.HTTP_400_BAD_REQUEST)
+        response5 = self.client.post(url, {}, format='json')
+        self.assertEqual(response5.status_code, status.HTTP_400_BAD_REQUEST)
+
 
         # There should still only be three communities
         self.assertEqual(Community.objects.count(), 3)
