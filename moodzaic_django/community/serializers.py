@@ -8,6 +8,11 @@ class CommunitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Community
         fields = ['name', 'users']
+        extra_kwargs = {
+            'users': {
+                'validators': [],
+            }
+        }
 
     def create(self, validated_data):
         usersData = validated_data.pop('users')
@@ -23,4 +28,3 @@ class CommunitySerializer(serializers.ModelSerializer):
     #     for user in usersData:
     #         User.objects.create(**user)
     #     return community
-

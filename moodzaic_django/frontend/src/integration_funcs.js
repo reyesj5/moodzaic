@@ -50,10 +50,7 @@ const API_URL = 'http://localhost:8000/api/';
   // }
 
   export function createCommunity(community){
-      return axios.post(`${API_URL}create/community`, {
-        name: community.name,
-        users: community.users
-      })
+      return axios.post(`${API_URL}create/community`, community)
         .then(response => {
           console.log(response);
           console.log(response.data);

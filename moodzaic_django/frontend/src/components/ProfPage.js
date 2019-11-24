@@ -45,10 +45,10 @@ class ProfilePage extends React.Component {
             <Container text style={{ marginTop: '7em', marginLeft: '10em' }}>
               <Header as='h1'>
                 {user.username}'s Profile
-                <Button icon onClick={this.toggleEditMode}>
-                  <Icon name="edit outline"/>
-                </Button>
               </Header>
+              <Button icon onClick={this.toggleEditMode}>
+                <Icon name="edit outline"/>
+              </Button>
                 <p>My name? <strong>{user.first_name} {user.last_name}</strong></p>
                 <p>My age? <strong>{profile.age}</strong></p>
                 {profile.gender === '' ? '' : <p>My Gender? <strong>{profile.gender}</strong></p>}

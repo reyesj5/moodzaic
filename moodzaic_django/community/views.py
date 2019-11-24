@@ -25,7 +25,7 @@ def createCommunity(request):
     if request.method == 'POST':
         serializer = CommunitySerializer(data=request.data)
         serializer.is_valid()
-        print(request.data)
+        print(serializer.errors)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
