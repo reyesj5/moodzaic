@@ -22,7 +22,7 @@ class LoginForm extends React.Component {
     if (u) {
       CommunityService.createCommunity(this.state.name);
       //here we need to somehow check that the person is legit lol
-      this.props.callback();
+      this.props.callback(u);
     }
   }
 
