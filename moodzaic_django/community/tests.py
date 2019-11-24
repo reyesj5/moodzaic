@@ -193,11 +193,13 @@ class ViewsCommunityTests(APITestCase):
         self.assertEqual(Community.objects.count(), 1)
         self.assertEqual(Community.objects.get().name, 'fitness')
 
+        self.assertEqual(Community.objects.get().users.count(), 1)
+
         # This should fail if you pass in no data
         response2 = self.client.post(url, {}, format='json')
         self.assertEqual(response2.status_code, status.HTTP_400_BAD_REQUEST)
 
-        # There should still only be one user
+        # There should still only be one community
         self.assertEqual(Community.objects.count(), 1)
         self.assertEqual(Community.objects.get().name, 'fitness')
 
@@ -209,7 +211,7 @@ class ViewsCommunityTests(APITestCase):
 
         # We should get the details of the community
         response = self.client.get(url + 'fitness', data, format='json')
-        self.assertEqual(json.loads(response.content), {'name': 'fitness', 'users': []})
+        self.assertEqual(json.loads(response.content), {'name': 'fitness', 'users': [self.user1]})
 
         # We should not get anything if a community doesn't exist
         response = self.client.get(url + 'hi', data, format='json')
@@ -217,16 +219,28 @@ class ViewsCommunityTests(APITestCase):
 
     def test_communityDetailsPUT(self):
         url = '/api/community/'
-        data = {'id': '0','name': 'fitness', 'users': [self.user1]}
+        data = {'id': '0','name': 'fitness', 'users': []}
         response = self.client.post('/api/create/community', data, format='json')
 
         # We change the name of a community
-        data = {'id': '0','name': 'newFitness', 'users': [self.user1]}
+        data = {'id': '0','name': 'newFitness', 'users': []}
         response = self.client.put(url + 'fitness', data, format='json')
 
         # There should still only be one community, and it should be named newFitness
         self.assertEqual(Community.objects.count(), 1)
         self.assertEqual(Community.objects.get().name, 'newFitness')
+        self.assertEqual(Community.objects.get().users.count(), 0)
+
+        # We add a user to the community
+        data = {'id': '0','name': 'newFitness', 'users': [self.user1]}
+        response = self.client.put(url + 'newFitness', data, format='json')
+
+        # It should be named newFitness, and should now have a user
+        self.assertEqual(Community.objects.count(), 1)
+        self.assertEqual(Community.objects.get().name, 'newFitness')
+        self.assertEqual(Community.objects.get().users.count(), 1)
+
+
 
         # We should return not found if the community doesn't exist
         response = self.client.put(url + 'hi', data, format='json')

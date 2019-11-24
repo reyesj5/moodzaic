@@ -1,6 +1,6 @@
 from community.models import Community, Post
 from users.models import User
-from community.serializers import CommunitySerializer, PostSerializer
+from community.serializers import CommunitySerializer
 
 from rest_framework import generics
 from rest_framework.response import Response
@@ -9,6 +9,7 @@ from rest_framework import status
 
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 import logging
+
 
 logger = logging.getLogger(__name__)
 
@@ -50,6 +51,7 @@ def communityDetails(request, name):
         try:
             community = Community.objects.get(name=name)
             serializer = CommunitySerializer(community, data=request.data)
+            serializer.update(community, request.data)
             serializer.is_valid()
             if serializer.is_valid():
                 serializer.save()
