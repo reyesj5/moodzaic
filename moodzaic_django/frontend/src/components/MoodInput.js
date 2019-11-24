@@ -15,6 +15,7 @@ import {
   // Route,
   Link
 } from "react-router-dom";
+import {createObservation} from "../integration_funcs"
 
 
 const getDailyQuestions = () => {
@@ -64,23 +65,33 @@ class MoodPage extends React.Component {
     MoodList: getMoods(),
   }
   handleChange = (name, e) => {
-    console.log(name, e.target.value)
-    // this.setState({ [name]: value });
-    // console.log(this.state);
+    this.setState(
+      { [name]: e.target.value },
+      () => console.log(this.state)
+    )
   }
-  handleClick() {
+  handleMood = (e, {value}) => {
+    console.log(value)
+    this.setState(
+      { mood: value },
+      () => console.log(this.state)
+    )
+  }
+  handleClick = () => {
     var observation = {
       sleep: this.state.sleep,
       exercise: this.state.exercise,
       meals: this.state.meals,
       work: this.state.work,
-      mood: ""
+      mood: this.state.mood
     }
+    createObservation(this.props.profile.username, observation)
   }
 
   render() {
     const {QuestionObj} = this.state;
     const {MoodList} = this.state;
+                      //(e)=>this.handleMood(e)
     return(
       <div>
         <Container text style={{ marginTop: '7em' }}>
@@ -95,7 +106,8 @@ class MoodPage extends React.Component {
                 </Form.Field>)})}
             <Form.Field>
                 <label>Mood</label>
-                <Dropdown placeholder='Select' fluid search selection
+                <Dropdown onChange={this.handleMood.bind(this)}
+                placeholder='Select' fluid search selection
                   options={MoodList.map((Mood, index) =>
                     {return({value: Mood, text: Mood})})
                   } />
