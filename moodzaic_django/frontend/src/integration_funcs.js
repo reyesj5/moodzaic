@@ -3,12 +3,12 @@ import axios from 'axios';
 const API_URL = 'http://localhost:8000/api/';
 
   function getUsers() {
-    return axios.get(`${API_URL}users/`).then(response => response.data).catch(error => console.log(error));
+    return axios.get(`${API_URL}users`).then(response => response.data).catch(error => console.log(error));
   }
 
   export function createUser(u){
     console.log(u);
-    return axios.post(`${API_URL}users/`, u)
+    return axios.post(`${API_URL}users`, u)
       .then(response => {
         console.log(response);
         console.log(response.data);
@@ -19,7 +19,7 @@ const API_URL = 'http://localhost:8000/api/';
   export function getUserByUsername(u) {
     console.log(u)
     //get all of a user's info by putting in their username
-    return axios.get(`${API_URL}users/${u}/`).then(response => {
+    return axios.get(`${API_URL}users/${u}`).then(response => {
       console.log(response);
       console.log(response.data);
       return response.data;
@@ -71,7 +71,7 @@ const API_URL = 'http://localhost:8000/api/';
 
 
   export function getPosts() {
-      const url = `${API_URL}posts/`;
+      const url = `${API_URL}posts`;
       return axios.get(url).then(response => response.data);
   }
   export function getPost(id) {
@@ -83,7 +83,7 @@ const API_URL = 'http://localhost:8000/api/';
   //     return axios.delete(url);
   // }
   export function createPost(post){
-      const url = `${API_URL}posts/`;
+      const url = `${API_URL}posts`;
       return axios.post(url,post);
   }
   // export function updatePost(post){
@@ -115,11 +115,11 @@ const API_URL = 'http://localhost:8000/api/';
   // }
 
   export function getProfiles() {
-      const url = `${API_URL}profiles/`;
+      const url = `${API_URL}profiles`;
       return axios.get(url).then(response => response.data);
   }
   export function getProfile(username) {
-      const url = `${API_URL}profiles/${username}/`;
+      const url = `${API_URL}profiles/${username}`;
       return axios.get(url).then(response => response.data);
   }
   // export function deleteProfile(username){
@@ -129,10 +129,19 @@ const API_URL = 'http://localhost:8000/api/';
   // create not implemented yet
   export function createProfile(profile){
       console.log(profile);
-      const url = `${API_URL}profiles/`;
+      const url = `${API_URL}profiles`;
       return axios.post(url,profile);
   }
   export function updateProfile(username, profile){
-      const url = `${API_URL}profiles/${username}/`;
+      const url = `${API_URL}profiles/${username}`;
       return axios.put(url,profile);
+  }
+
+  export function createObservation(username, observation) {
+    const url = `${API_URL}observations/${username}`;
+    return axios.post(url, observation);
+  }
+
+  export function getUserObservations(username) {
+    return axios.get(`${API_URL}observations/${username}`).then(response => response.data).catch(error => console.log(error));
   }

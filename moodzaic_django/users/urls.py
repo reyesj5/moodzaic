@@ -3,7 +3,7 @@ from . import views
 from django.conf.urls import url
 from rest_framework.routers import DefaultRouter
 
-router = DefaultRouter()
+router = DefaultRouter(trailing_slash=False)
 router.register(r'users', views.UserViewSet)
 router.register(r'profiles', views.ProfileViewSet)
 router.register(r'observations/(?P<username>[\w]+)', views.ObservationViewSet, base_name='Observation')
