@@ -111,7 +111,7 @@ class App extends Component {
               {this.state.LoggedIn ?
                 <div>
                   <MyMenu callback={this.LogOut}/>
-                  <MoodPage />
+                  <MoodPage profile={this.state.profile}/>
                   <Footer/>
                 </div> :
                 <Redirect to="/" />

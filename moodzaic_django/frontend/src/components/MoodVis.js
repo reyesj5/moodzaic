@@ -8,6 +8,7 @@ import {
 } from 'semantic-ui-react'
 import MyMenu from './Menu.js';
 import Footer from './Footer.js';
+import {XYPlot, XAxis, YAxis, HorizontalGridLines, LineSeries} from 'react-vis';
 
 import {
   BrowserRouter as Router,

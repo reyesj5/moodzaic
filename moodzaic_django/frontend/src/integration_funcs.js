@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:8000/api/';
 
-  function getUsers() {
+  export function getUsers() {
     return axios.get(`${API_URL}users`).then(response => response.data).catch(error => console.log(error));
   }
 
@@ -52,10 +52,7 @@ const API_URL = 'http://localhost:8000/api/';
   // }
 
   export function createCommunity(community){
-      return axios.post(`${API_URL}create/community`, {
-        name: community.name,
-        users: community.users
-      })
+      return axios.post(`${API_URL}create/community`, community)
         .then(response => {
           console.log(response);
           console.log(response.data);

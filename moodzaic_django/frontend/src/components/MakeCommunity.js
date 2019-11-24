@@ -19,7 +19,8 @@ class MakeCommunity extends React.Component {
 
   handleChange = (e) => this.setState({ name: e.target.value });
 
-  handleSubmit = () => {
+  handleSubmit = (event) => {
+      event.preventDefault();
       console.log('new name:', this.state.name);
       console.log('user from props', this.props.user);
       createCommunity({name: this.state.name, users: [this.props.user]});
@@ -42,7 +43,7 @@ class MakeCommunity extends React.Component {
                   <label>Name of Community</label>
                   <input />
                 </Form.Field>
-                <Form.Button color='teal' onClick={this.handleSubmit}>
+                <Form.Button type='submit' color='teal' onClick={this.handleSubmit}>
                   Create Community
                 </Form.Button>
             </Form>

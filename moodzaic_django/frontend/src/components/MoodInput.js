@@ -15,15 +15,16 @@ import {
   // Route,
   Link
 } from "react-router-dom";
+import {createObservation} from "../integration_funcs"
 
 
 const getDailyQuestions = () => {
-  const questions = [
-    "Hours of sleep",
-    "Hours of exercise",
-    "Meals/day",
-    "Hours of work"
-  ]
+  const questions = {
+    sleep: "Hours of sleep",
+    exercise: "Hours of exercise",
+    meals: "Meals/day",
+    work: "Hours of work"
+  }
   return questions;
 }
 
@@ -60,30 +61,53 @@ const getMoods = () => {
 
 class MoodPage extends React.Component {
   state = {
-    QuestionList: getDailyQuestions(),
-    MoodList: getMoods()
+    QuestionObj: getDailyQuestions(),
+    MoodList: getMoods(),
+  }
+  handleChange = (name, e) => {
+    this.setState(
+      { [name]: e.target.value },
+      () => console.log(this.state)
+    )
+  }
+  handleMood = (e, {value}) => {
+    console.log(value)
+    this.setState(
+      { mood: value },
+      () => console.log(this.state)
+    )
+  }
+  handleClick = () => {
+    var observation = {
+      sleep: this.state.sleep,
+      exercise: this.state.exercise,
+      meals: this.state.meals,
+      work: this.state.work,
+      mood: this.state.mood
+    }
+    createObservation(this.props.profile.username, observation)
   }
 
-
-
   render() {
-    const {QuestionList} = this.state;
+    const {QuestionObj} = this.state;
     const {MoodList} = this.state;
+                      //(e)=>this.handleMood(e)
     return(
       <div>
         <Container text style={{ marginTop: '7em' }}>
           <Header as='h1'>How are you feeling?</Header>
           <p>Some ~important~ questions for you about your mood today.</p>
           <Form>
-            {QuestionList.map((Question, index) => {
+            {Object.entries(QuestionObj).map((Question, index) => {
               return (
-                <Form.Field key={index}>
-                  <label>{Question}</label>
-                  <input />
+                <Form.Field key={index} onChange={(e)=>this.handleChange(Question[0], e)}>
+                  <label>{Question[1]}</label>
+                  <input type="number"/>
                 </Form.Field>)})}
             <Form.Field>
                 <label>Mood</label>
-                <Dropdown placeholder='Select' fluid search selection
+                <Dropdown onChange={this.handleMood.bind(this)}
+                placeholder='Select' fluid search selection
                   options={MoodList.map((Mood, index) =>
                     {return({value: Mood, text: Mood})})
                   } />
@@ -92,7 +116,7 @@ class MoodPage extends React.Component {
           <br />
           <Router>
           <Link to="/Profile">
-            <Button color='teal' fluid size='large'>
+            <Button onClick={this.handleClick} color='teal' fluid size='large'>
               Submit
             </Button>
           </Link>
