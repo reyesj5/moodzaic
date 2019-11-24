@@ -8,7 +8,7 @@ import {
 
   Grid,
   Button,
-  Rating
+  // Rating
 } from 'semantic-ui-react'
 import {createUser, createProfile} from '../integration_funcs.js';
 // import ProfileService from '../ProfileService.js';
@@ -121,7 +121,7 @@ class SetupPage extends React.Component {
   handleAgeChange = (e) => this.setState({ age: e.target.value });
   handleGenderChange = (e) => this.setState({ gender: e.target.value });
   handleEmailChange = (e) => this.setState({ email: e.target.value });
-  
+
 
 
   handleSubmit = () => {
@@ -136,7 +136,6 @@ class SetupPage extends React.Component {
       username: this.props.user.username,
       age: this.state.age,
       gender: this.state.gender.value,
-      
       reminder_list: []
     })
   }
@@ -144,7 +143,7 @@ class SetupPage extends React.Component {
   render() {
     // const {step} = this.state;
 
-    const {QuestionList} = this.state;
+    // const {QuestionList} = this.state;
     return(
       <div>
         <Grid textAlign='center' style={{ height: '100vh' }} verticalAlign='middle'>
@@ -180,22 +179,19 @@ class SetupPage extends React.Component {
                   <input />
                 </Form.Field>
                 </div>
+                <div>
+                <Form.Field name='goals'>
+                  <label>What are your mood-related goals?</label>
+                  {/* note: this will probably be a predetermined checklist of some sort*/}
+                  <input />
+                </Form.Field>
+                </div>
               </Form>
-
-              {/*creating 'rating' inputs for each of the initial questions*/}
-
-              {QuestionList.map((Question, index) => {
-                return (<Form key={index}>
-                  <Form.Field>
-                    <label>{Question}</label>
-                    <Rating icon="heart" defaultRating={0} maxRating={5} size="huge" />
-                  </Form.Field>
-                </Form>)})}
-                <Link to="/Profile">
-                  <Button color='teal' fluid size='large' onClick={this.handleSubmit}>
-                    Create Account
-                  </Button>
-                </Link>
+              <Link to="/Profile">
+                <Button color='teal' fluid size='large' onClick={this.handleSubmit}>
+                  Create Account
+                </Button>
+              </Link>
             </Container>
           </Grid.Column>
         </Grid>
@@ -227,6 +223,18 @@ class SetupPage extends React.Component {
     Continue
   </Button>
 </Link>
+*/
+
+/*
+
+{QuestionList.map((Question, index) => {
+  return (<Form key={index}>
+    <Form.Field>
+      <label>{Question}</label>
+      <Rating icon="heart" defaultRating={0} maxRating={5} size="huge" />
+    </Form.Field>
+  </Form>)})}
+
 */
 
 export default SetupPage;

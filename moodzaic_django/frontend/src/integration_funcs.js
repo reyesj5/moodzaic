@@ -33,7 +33,7 @@ const API_URL = 'http://localhost:8000/api/';
   }
 
   export function getCommunity(name) {
-      const url = `${API_URL}$community/{name}`;
+      const url = `${API_URL}community/${name}`;
       return axios.get(url).then(response => response.data);
   }
   // export function deleteCommunity(community){
@@ -46,7 +46,7 @@ const API_URL = 'http://localhost:8000/api/';
   // }
 
   export function createCommunity(community){
-      return axios.post('${API_URL}community/create', {
+      return axios.post(`${API_URL}community/create`, {
         name: community.name,
         users: community.users
       })
@@ -109,7 +109,7 @@ const API_URL = 'http://localhost:8000/api/';
   // }
 
   export function getProfiles() {
-      const url = `${API_URL}all/profiles`;
+      const url = `${API_URL}profiles/all`;
       return axios.get(url).then(response => response.data);
   }
   export function getProfile(username) {
@@ -123,7 +123,7 @@ const API_URL = 'http://localhost:8000/api/';
   // create not implemented yet
   export function createProfile(username){
       console.log(username);
-      const url = `${API_URL}create/profiles/`;
+      const url = `${API_URL}profiles/`;
       return axios.post(url,username);
   }
   export function updateProfile(username){

@@ -44,7 +44,22 @@ class App extends Component {
   }
 
 
-  LogIn = (u) => {
+  // LogIn = (u) => {
+  //   this.setState(prevState => ({
+  //     LoggedIn: true,
+  //     user: {
+  //       username: u.username,
+  //       password: u.password,
+  //       email: u.email,
+  //       first_name: u.first_name,
+  //       last_name: u.last_name,
+  //     }
+  //     }))
+  //     getProfile(u.username).then(p => {
+  //     console.log('profile', p)
+  //   })
+  // }
+    LogIn = (u) => {
       getProfile(u.username).then(p => {
         console.log({p})
         if (p) {
@@ -77,8 +92,7 @@ class App extends Component {
           password: '',
           email: '',
           first_name: '',
-          last_name: '',
-          pk: ''
+          last_name: ''
         }}))
   }
 

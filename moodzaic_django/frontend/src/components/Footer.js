@@ -25,15 +25,14 @@ const Footer = () => (
           <Grid.Column width={3}>
             <Header inverted as='h4' content='Group Members' />
             <List link inverted>
-              <List.Item >Molly Fortnow</List.Item>
-              <List.Item >Daniel Steinberg</List.Item>
-              <List.Item as='a' target="_blank" href="https://www.jerseyfonseca.com/">Jersey Fonseca</List.Item>
-              <List.Item >Emil Sohlberg</List.Item>
               <List.Item >Marco Anaya</List.Item>
+              <List.Item as='a' target="_blank" href="https://www.jerseyfonseca.com/">Jersey Fonseca</List.Item>
+              <List.Item >Molly Fortnow</List.Item>
               <List.Item >Zipporah Klain</List.Item>
-              <List.Item >Hunter</List.Item>
-              <List.Item >Chema ? I'll alphabatize this later</List.Item>
-              <List.Item >note to group: can link your name to whatever you want (linkedin, portfolio, whatever)</List.Item>
+              <List.Item >Chema Reyes</List.Item>
+              <List.Item >Emil Sohlberg</List.Item>
+              <List.Item >Daniel Steinberg</List.Item>
+              <List.Item >Hunter Thompson</List.Item>
             </List>
           </Grid.Column>
           <Grid.Column width={7}>

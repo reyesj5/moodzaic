@@ -27,7 +27,7 @@ class ProfilePage extends React.Component {
               <Header as='h1'>{user.username}'s Profile</Header>
                 <p>My name? <strong>{user.first_name} {user.last_name}</strong></p>
                 <p>My age? <strong>{profile.age}</strong></p>
-                <p>My Gender? <strong>{profile.gender}</strong></p>
+                {profile.gender === '' ? '' : <p>My Gender? <strong>{profile.gender}</strong></p>}
                 <p>
                 Once you imput your mood, I can display your mood history here!
                 </p>
