@@ -18,12 +18,12 @@ import {
 
 
 const getDailyQuestions = () => {
-  const questions = [
-    "Hours of sleep",
-    "Hours of exercise",
-    "Meals/day",
-    "Hours of work"
-  ]
+  const questions = {
+    sleep: "Hours of sleep",
+    exercise: "Hours of exercise",
+    meals: "Meals/day",
+    work: "Hours of work"
+  }
   return questions;
 }
 
@@ -60,14 +60,26 @@ const getMoods = () => {
 
 class MoodPage extends React.Component {
   state = {
-    QuestionList: getDailyQuestions(),
-    MoodList: getMoods()
+    QuestionObj: getDailyQuestions(),
+    MoodList: getMoods(),
+  }
+  handleChange = (name, e) => {
+    console.log(name, e.target.value)
+    // this.setState({ [name]: value });
+    // console.log(this.state);
+  }
+  handleClick() {
+    var observation = {
+      sleep: this.state.sleep,
+      exercise: this.state.exercise,
+      meals: this.state.meals,
+      work: this.state.work,
+      mood: ""
+    }
   }
 
-
-
   render() {
-    const {QuestionList} = this.state;
+    const {QuestionObj} = this.state;
     const {MoodList} = this.state;
     return(
       <div>
@@ -75,11 +87,11 @@ class MoodPage extends React.Component {
           <Header as='h1'>How are you feeling?</Header>
           <p>Some ~important~ questions for you about your mood today.</p>
           <Form>
-            {QuestionList.map((Question, index) => {
+            {Object.entries(QuestionObj).map((Question, index) => {
               return (
-                <Form.Field key={index}>
-                  <label>{Question}</label>
-                  <input />
+                <Form.Field key={index} onChange={(e)=>this.handleChange(Question[0], e)}>
+                  <label>{Question[1]}</label>
+                  <input type="number"/>
                 </Form.Field>)})}
             <Form.Field>
                 <label>Mood</label>
@@ -92,7 +104,7 @@ class MoodPage extends React.Component {
           <br />
           <Router>
           <Link to="/Profile">
-            <Button color='teal' fluid size='large'>
+            <Button onClick={this.handleClick} color='teal' fluid size='large'>
               Submit
             </Button>
           </Link>
