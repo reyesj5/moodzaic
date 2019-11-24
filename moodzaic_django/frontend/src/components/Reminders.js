@@ -10,13 +10,14 @@ import {
 class Reminders extends React.Component {
   state = {
     myReminders: [],
-    renderNumber: 3
+    renderNumber: 3,
   }
 
   componentDidMount() {
-    fetch('')
-      .then(response => response.json())
-      .then(data => this.setState({ myReminders : data }));
+    this.setState({myReminders: this.props.profile.reminderList})
+    // fetch('')
+    //   .then(response => response.json())
+    //   .then(data => this.setState({ myReminders : data }));
   }
 
   showMore() {

@@ -34,7 +34,7 @@ class ProfilePage extends React.Component {
               </Container>
             </Grid.Column>
             <Grid.Column width = {5}>
-              <Reminders/>
+              <Reminders profile={profile}/>
             </Grid.Column>
           </Grid>
       </div>
