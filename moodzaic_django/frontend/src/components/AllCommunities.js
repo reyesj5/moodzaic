@@ -20,12 +20,9 @@ class AllCommunities extends React.Component {
     // profile: {}
   }
 
-  // componentDidMount() {
-  //   // var  self  =  this;
-  //   ProfileService.getProfile(this.props.user.username).then(function (result) {
-  //       this.setState({ profile:  result.data, nextPageURL:  result.nextlink})
-  //   });
-  // }
+  componentDidUpdate() {
+    console.log(this.state, this.props);
+  }
 
   handleAddClick(community) {
     // var username = this.state.Username;
@@ -42,28 +39,48 @@ class AllCommunities extends React.Component {
     }))
   }
 
+  MakeModeOn = () => {
+    this.setState(prevState => ({
+      makeMode: true
+    }))
+  }
+
   render() {
     const communities = this.props.allCommunities.map((com, i) => {
       return <Button
                 color='purple' fluid size='large'
-                key = {i} onClick = {this.handleAddClick({name: com.name, users: com.users.push(this.props.user)})}>
+                key = {i} onClick = {this.handleAddClick({name: com.name, users: com.users.push(this.props.user.username)})}>
                 {com.name}: {this.props.myCommunities.includes(com) ? 'added!' : 'add?'}
               </ Button>;
     })
 
-    const makeCommunityButton = () => {
-      return <Button
-                color='teal' fluid size='large'
-                onClick = {this.toggleMakeMode}>
-                {'Create a new community!'}
-              </ Button>;
-      }
+    const makeCommunityButton =
+      <Button
+        color='orange' fluid size='large'
+        onClick = {this.MakeModeOn}>
+        {'Create a new community!'}
+      </ Button>;
 
+    // let myPage;
+    //
+    // if(this.state.makeMode === false) {
+    //   myPage = <MakeCommunity callback={this.toggleMakeMode()} user={this.props.user}/>
+    // }
+    //
+    // else {
+    //   myPage =
+    //   <Container text style={{ marginTop: '7em' }}>
+    //   {communities}
+    //   <p> don't see any you like? </p>
+    //   {makeCommunityButton}
+    //   </Container>
+    // }
 
     return (
       <div>
-        {this.state.makeMode ?
-          <MakeCommunity callback={this.toggleMakeMode()}/> :
+        {(this.state.makeMode === true) ?
+          <MakeCommunity callback={this.toggleMakeMode} user={this.props.user}/>
+          :
           <Container text style={{ marginTop: '7em' }}>
           {communities}
           <p> don't see any you like? </p>

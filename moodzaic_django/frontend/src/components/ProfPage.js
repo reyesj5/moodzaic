@@ -4,8 +4,8 @@ import {
   Grid,
   Header,
 } from 'semantic-ui-react'
-import MyMenu from './Menu.js';
-import Footer from './Footer.js';
+// import MyMenu from './Menu.js';
+// import Footer from './Footer.js';
 import Reminders from './Reminders.js';
 import {getProfile} from '../integration_funcs.js'
 
@@ -20,7 +20,6 @@ class ProfilePage extends React.Component {
 
     return(
       <div>
-        <MyMenu />
         <Grid columns={2}>
           <Grid.Column width = {10}>
             <Container text style={{ marginTop: '7em', marginLeft: '10em' }}>
@@ -37,7 +36,6 @@ class ProfilePage extends React.Component {
               <Reminders/>
             </Grid.Column>
           </Grid>
-        <Footer />
       </div>
     )
 

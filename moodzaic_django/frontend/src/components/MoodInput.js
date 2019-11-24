@@ -6,13 +6,13 @@ import {
   Button,
   Dropdown
 } from 'semantic-ui-react'
-import MyMenu from './Menu.js';
-import Footer from './Footer.js';
+// import MyMenu from './Menu.js';
+// import Footer from './Footer.js';
 
 import {
   BrowserRouter as Router,
-  Switch,
-  Route,
+  // Switch,
+  // Route,
   Link
 } from "react-router-dom";
 
@@ -68,7 +68,6 @@ class MoodPage extends React.Component {
     const {MoodList} = this.state;
     return(
       <div>
-        <MyMenu />
         <Container text style={{ marginTop: '7em' }}>
           <Header as='h1'>How are you feeling?</Header>
           <p>Some ~important~ questions for you about your mood today.</p>
@@ -97,7 +96,6 @@ class MoodPage extends React.Component {
           </Link>
           </Router>
         </Container>
-        <Footer />
       </div>
     )
   }

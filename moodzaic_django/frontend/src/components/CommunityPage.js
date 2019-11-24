@@ -3,8 +3,6 @@ import {
   Container,
   Button,
 } from 'semantic-ui-react'
-import MyMenu from './Menu.js';
-import Footer from './Footer.js';
 import Community from './Community.js'
 import CommunitiesPage from './MyCommunities.js'
 import AllCommunities from './AllCommunities.js'
@@ -34,13 +32,13 @@ class CommunityPage extends React.Component {
     // var  self  =  this;
     const communities = await getAllCommunities();
     this.setState({ CommunityList: communities});
+    // console.log('users pk:', this.props.user.pk);
     this.setState(prevState => ({
       MyCommunityList: (this.state.CommunityList).filter((community) => {
-        return(
-          community.users.includes(this.props.user)
-        )
+        return community.users.includes(this.props.user.username);
       })
     }))
+    console.log('communitypage props', this.props);
   }
 
   componentDidUpdate() {
@@ -95,16 +93,10 @@ class CommunityPage extends React.Component {
 
     return (
       <div>
-        <MyMenu />
         <Container text style={{ marginTop: '7em' }}>
-          <p> should call my communities
-          unless:
-          user chooses to see all communities, then calls AllCommunities
-          or a community is selected, then call community and open that community</p>
           {myPage}
           {myButton}
         </Container>
-        <Footer />
       </div>
     )
   }

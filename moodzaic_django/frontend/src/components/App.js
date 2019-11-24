@@ -6,6 +6,8 @@ import MoodPage from './MoodInput.js'
 import CommunityPage from './CommunityPage.js'
 import SignUpForm from './SignUp.js'
 import SetupPage from './AccountSetup.js'
+import MyMenu from './Menu.js';
+import Footer from './Footer.js';
 // import MyMenu from './Menu.js'
 
 import {
@@ -24,7 +26,8 @@ class App extends Component {
           password: '',
           email: '',
           first_name: '',
-          last_name: ''
+          last_name: '',
+          pk: ''
         },
         MyCommunityList: [],
         MyObservationList: [],
@@ -43,13 +46,14 @@ class App extends Component {
           password: u.password,
           email: u.email,
           first_name: u.first_name,
-          last_name: u.last_name
+          last_name: u.last_name,
+          pk: u.pk
         }
       }));
     console.log('login called', this.state);
   }
 
-  LogOut = (u) => {
+  LogOut = () => {
       this.setState(prevState => ({
         LoggedIn: false,
         user: {
@@ -57,33 +61,54 @@ class App extends Component {
           password: '',
           email: '',
           first_name: '',
-          last_name: ''
+          last_name: '',
+          pk: ''
         }}))
   }
 
   render() {
     console.log('apps state:',this.state);
+
+
     return (
       <div>
         <Router>
           <Switch>
             <Route path="/signup">
-              <SignUpForm />
+            <SignUpForm />
             </Route>
             <Route path="/MyMood">
-              <MoodPage />
-            </Route>
-            <Route path="/Login">
-              <LoginForm callback = {this.LogIn} />
+              {this.state.LoggedIn ?
+                <div>
+                  <MyMenu callback={this.LogOut}/>
+                  <MoodPage />
+                  <Footer />
+                </div> :
+                <Redirect to="/" />
+              }
             </Route>
             <Route path="/Welcome">
               <SetupPage />
             </Route>
             <Route path="/Profile">
-              <ProfilePage User={this.state.user}/>
+              {this.state.LoggedIn ?
+                <div>
+                  <MyMenu callback={this.LogOut}/>
+                  <ProfilePage User={this.state.user}/>
+                  <Footer />
+                </div> :
+                <Redirect to="/" />
+              }
             </Route>
             <Route path="/Communities">
-              <CommunityPage user={this.state.user}/>
+              {this.state.LoggedIn ?
+                <div>
+                  <MyMenu callback={this.LogOut}/>
+                  <CommunityPage user={this.state.user}/>
+                  <Footer />
+                </div> :
+                <Redirect to="/" />
+              }
             </Route>
             <Route path="/">
               {this.state.LoggedIn ?

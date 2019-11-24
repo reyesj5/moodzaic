@@ -26,7 +26,7 @@ class LoginForm extends React.Component {
     // let username = event.target[0].value;
     // let password = event.target[1].value;
     getUserByUsername(this.state.username).then(user => {
-      console.log(user);
+      console.log(user, user.i);
       if (user && (this.state.password === user.password)) {
         // console.log('it worked! we logging in')
         this.props.callback(user);
