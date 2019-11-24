@@ -3,6 +3,8 @@ from datetime import date
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
+from django.core.validators import int_list_validator
+import json
 
 #from community.models import Community
 
@@ -51,7 +53,7 @@ class User(models.Model):
         self.save()
         return True
 '''
-
+'''
 class Goal(models.Model):
     goal = models.CharField(max_length=30)
     frequency = models.IntegerField(default=1)
@@ -84,9 +86,11 @@ class Goal(models.Model):
             print(e)
             return False
 
+'''
+
 class Mood(models.Model):
      name = models.CharField(max_length=20, default="")
-     mood = models.IntegerField(default=-1)
+     mood = models.IntegerField(default=0)
      #date = models.DateField('date observed', auto_now_add=True, blank=True)
      #make list of moods that will be kept track of
 
@@ -105,7 +109,7 @@ class Mood(models.Model):
      def setMood(self, mood):
         if not (isinstance(mood, type(2))):
             return False
-        if mood >= 0:
+        if mood >= 0 and mood <= 4:
             self.mood = mood
             self.save()
             return True
@@ -113,11 +117,17 @@ class Mood(models.Model):
             return False
 
 class Profile(models.Model):
-    ProgressScore = models.IntegerField(default=0)
+    MoodScore = models.IntegerField(default=0)
     age = models.IntegerField(default=18)
     gender = models.CharField(max_length=9, default='')
     #reminderList = models.ListCharField(base_field=CharField, size=None)
     username = models.CharField(max_length=150, default='')
+    json_data = open('users/notifications.json')
+    reminder_list = json.load(json_data)
+    goals=models.TextField(
+        validators=[int_list_validator],
+        default="-1,-1,-1,-1,-1"
+    )
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
@@ -125,12 +135,20 @@ class Profile(models.Model):
         related_name='profile'
     )
 
-    def getProgressScore(self):
-        return self.ProgressScore
+    def MoodToday(self):
+        return True
 
-    def setProgressScore(self, ProgressScore):
-        self.ProgressScore = ProgressScore
+    def MoodScoreCalc(self):
+        return self.MoodScore
+
+    def setMoodScore(self, MoodScore):
+        self.MoodScore = MoodScore
         self.save()
+        return True
+
+    def getMoodReminders(self, mood_str):
+        #mood_int can be either the predicted mood or actual mood to get reminder
+        return
 
     def setAge(self, age):
         if not (isinstance(age, type(2))):
@@ -154,18 +172,17 @@ class Profile(models.Model):
        else:
            return False
 
+    def setGoals(self, goal_type, num):
+        if goal_type > 4 or goal_type < 0:
+            return False
+        goal_list = self.goals.split(",")
+        goal_list[goal_type] = str(num)
+        self.goals = ",".join(str(x) for x in goal_list)
+        return True
 
-    def ProgressScoreCalc(self, goals, observations):
-        #TODO
-        #goals: list of goals
-        #observations: list of observations
+    def makeComment(self, comment, postid, community):
         return
 
-    def makeGoalPost(self, goal, post):
-        ## TODO:
-        #goal: goal
-        #post: str
-        return
 
     def makePost(self, post, community):
         ## TODO
@@ -191,11 +208,12 @@ class Profile(models.Model):
 
 class Observation(models.Model):
     date = models.DateField('date observed', auto_now_add=True, blank=True)
-    sleep = models.FloatField(default=-1)
-    exercise = models.FloatField(default = -1)
-    meals = models.IntegerField(default=-1)
-    work = models.FloatField(default=-1)
+    sleep = models.FloatField(default=0)
+    exercise = models.FloatField(default = 0)
+    meals = models.IntegerField(default=0)
+    work = models.FloatField(default=0)
     user = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True)
+    predictedMood = models.IntegerField(default = 0)
     mood = models.OneToOneField(
         Mood,
         on_delete=models.CASCADE,

@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 
 from community.views import *
-from community.models import Community, Post
+from community.models import Community, Post, Comment
 from users.models import User
 
 import json
@@ -120,6 +120,44 @@ class CommunityTestCase(TestCase):
 # All tests in this class are testing our API handling functions.
 # We test if GET, PUT, & POST requests successfully complete what they need to do.
 # Testing these allow us to ensure that functions called from the frontend will work as intended
+class ViewsPostTests(APITestCase):
+    def setUp(self):
+        client = APIClient()
+        self.user1 =  {"username": "emil", "password": "snibby", "first_name": "name", "last_name": "lastname", "email": "email@email.ema"}
+        self.community1 = {'id': '0','name': 'fitness', 'users': [self.user1]}
+        self.post1 = {'id': '23', 'post': 'Hey everyone, lmaooo XD!!', 'community': self.community1, 'poster': self.user1}
+        self.comment1 = {'id': '12', 'originalPost': self.post1 }
+
+    def test_getPost(self):
+        response = self.client.get('api/posts/23', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(json.loads(response.content).post, self.post1['post'])
+
+    def test_createPost(self):
+        url = '/api/create/posts'
+        data = self.post1
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Post.objects.count(), 1)
+        self.assertEqual(Post.objects.get().post, 'Hey everyone, lmaooo XD!!')
+    
+    def test_setPost(self):
+        url = '/api/create/posts'
+        data = self.post1
+        response = self.client.post(url, data, format='json')
+        
+        data['post'] = 'alas, i am rip'
+        response = self.client.put('api/posts/23', data, format='json')
+
+        self.assertEqual(Post.objects.count(), 1)
+        self.assertEqual(Post.objects.get().post, 'alas, i am rip')
+    
+    def test_getOriginPost(self):
+        url = 'api/comments/12'
+        response = self.client.post(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(json.loads(response.content).post, self.post1.post)
+    
 class ViewsCommunityTests(APITestCase):
 
     client = APIClient()
@@ -222,11 +260,6 @@ class ViewsCommunityTests(APITestCase):
         response = self.client.put(url + 'hi', data, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-
-
-
-
-
 class PostTestCase(TestCase):
 
     def setUp(self):
@@ -292,3 +325,33 @@ class PostTestCase(TestCase):
         ##test changing the User that posted a Post
         firstPost.setPoster(fitnessUser2)
         self.assertEqual(fitnessUser2, firstPost.getPoster())
+
+class CommentTestCase(TestCase):
+
+    def setUp(self):
+        Community.objects.create(name = "fitness")
+        Community.objects.create(name = "sleep")
+        User.objects.create(username = "emil")
+        User.objects.create(username = "jersey")
+        fitnessCommunity = Community.objects.get(name = "fitness")
+        fitnessUser = User.objects.get(username = "emil")
+        fitnessUser2 = User.objects.get(username = "jersey")
+        Post.objects.create(post = "Hello world", community = fitnessCommunity, poster = fitnessUser)
+        Post.objects.create(post = "Bye world", community = fitnessCommunity, poster = fitnessUser)
+        p = Post.objects.get(post = "Hello world")
+        Comment.objects.create(post = "Wow, hi!", community = fitnessCommunity, poster = fitnessUser2, originalPost = p)
+
+    def test_getOriginalPost(self):
+        firstComment = Comment.objects.get(post = "Wow, hi!")
+        firstPost = Post.objects.get(post = "Hello world")
+
+        self.assertEqual(firstPost, firstComment.getOriginalPost())
+
+    def test_setOriginalPost(self):
+        firstComment = Comment.objects.get(post = "Wow, hi!")
+        firstPost = Post.objects.get(post = "Hello world")
+        secondPost = Post.objects.get(post = "Wow, hi!")
+
+        self.assertEqual(firstPost, firstComment.getOriginalPost())
+        firstComment.setOriginalPost(secondPost)
+        self.assertEqual(secondPost, firstComment.getOriginalPost())

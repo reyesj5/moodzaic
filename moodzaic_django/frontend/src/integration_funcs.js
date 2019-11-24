@@ -3,12 +3,12 @@ import axios from 'axios';
 const API_URL = 'http://localhost:8000/api/';
 
   function getUsers() {
-    return axios.get(`${API_URL}users/`).then(response => response.data).catch(error => console.log(error));
+    return axios.get(`${API_URL}users`).then(response => response.data).catch(error => console.log(error));
   }
 
   export function createUser(u){
     console.log(u);
-    return axios.post(`${API_URL}users/`, u)
+    return axios.post(`${API_URL}users`, u)
       .then(response => {
         console.log(response);
         console.log(response.data);
@@ -17,23 +17,29 @@ const API_URL = 'http://localhost:8000/api/';
   }
 
   export function getUserByUsername(u) {
+    console.log(u)
     //get all of a user's info by putting in their username
-    return getUsers().then(data => {
-        console.log(data)
-        return data.find(user => user.username === u);
-    });
+    return axios.get(`${API_URL}users/${u}`).then(response => {
+      console.log(response);
+      console.log(response.data);
+      return response.data;
+    })
+    .catch(error => console.log(error))
+  }
 
+  export function updateUser(u){
+    return axios.put(`${API_URL}users/${u.username}`, u);
   }
 
 
 
   export function getAllCommunities() {
-      const url = `${API_URL}community/all`;
+      const url = `${API_URL}all/community`;
       return axios.get(url).then(response => response.data);
   }
 
   export function getCommunity(name) {
-      const url = `${API_URL}$community/{name}`;
+      const url = `${API_URL}community/${name}`;
       return axios.get(url).then(response => response.data);
   }
   // export function deleteCommunity(community){
@@ -46,7 +52,7 @@ const API_URL = 'http://localhost:8000/api/';
   // }
 
   export function createCommunity(community){
-      return axios.post('${API_URL}community/create', {
+      return axios.post(`${API_URL}create/community`, {
         name: community.name,
         users: community.users
       })
@@ -65,7 +71,7 @@ const API_URL = 'http://localhost:8000/api/';
 
 
   export function getPosts() {
-      const url = `${API_URL}posts/`;
+      const url = `${API_URL}posts`;
       return axios.get(url).then(response => response.data);
   }
   export function getPost(id) {
@@ -77,7 +83,7 @@ const API_URL = 'http://localhost:8000/api/';
   //     return axios.delete(url);
   // }
   export function createPost(post){
-      const url = `${API_URL}posts/`;
+      const url = `${API_URL}posts`;
       return axios.post(url,post);
   }
   // export function updatePost(post){
@@ -86,24 +92,56 @@ const API_URL = 'http://localhost:8000/api/';
   // }
 
 
+  // export function getProfiles() {
+  //     const url = `${API_URL}profiles`;
+  //     return axios.get(url).then(response => response.data);
+  // }
+  // export function getProfile(username) {
+  //     const url = `${API_URL}${username}profiles/`;
+  //     return axios.get(url).then(response => response.data);
+  // }
+  // export function deleteProfile(username){
+  //     const url = `${API_URL}profiles/${username}`; //should be username instead of pk, since that is the identifier?
+  //     return axios.delete(url);
+  // }
+  // export function createProfile(username){
+  //     console.log(username);
+  //     const url = `${API_URL}profiles/`;
+  //     return axios.post(url,username);
+  // }
+  // export function updateProfile(username){
+  //     const url = `${API_URL}profiles/${username}`;
+  //     return axios.put(url,username);
+  // }
+
   export function getProfiles() {
       const url = `${API_URL}profiles`;
       return axios.get(url).then(response => response.data);
   }
   export function getProfile(username) {
-      const url = `${API_URL}${username}profiles/`;
+      const url = `${API_URL}profiles/${username}`;
       return axios.get(url).then(response => response.data);
   }
-  export function deleteProfile(username){
-      const url = `${API_URL}profiles/${username}`; //should be username instead of pk, since that is the identifier?
-      return axios.delete(url);
+  // export function deleteProfile(username){
+  //     const url = `${API_URL}profiles/${username}`; //should be username instead of pk, since that is the identifier?
+  //     return axios.delete(url);
+  // }
+  // create not implemented yet
+  export function createProfile(profile){
+      console.log(profile);
+      const url = `${API_URL}profiles`;
+      return axios.post(url,profile);
   }
-  export function createProfile(username){
-      console.log(username);
-      const url = `${API_URL}profiles/`;
-      return axios.post(url,username);
-  }
-  export function updateProfile(username){
+  export function updateProfile(username, profile){
       const url = `${API_URL}profiles/${username}`;
-      return axios.put(url,username);
+      return axios.put(url,profile);
+  }
+
+  export function createObservation(username, observation) {
+    const url = `${API_URL}observations/${username}`;
+    return axios.post(url, observation);
+  }
+
+  export function getUserObservations(username) {
+    return axios.get(`${API_URL}observations/${username}`).then(response => response.data).catch(error => console.log(error));
   }

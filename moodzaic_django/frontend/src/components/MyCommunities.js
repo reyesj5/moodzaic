@@ -42,9 +42,14 @@ class CommunitiesPage extends React.Component {
     return (
       <div>
         <Container text style={{ marginTop: '7em' }}>
-          <p> should show all the communities and allow you to select one to look at,
-          and then pass that info for the specific community page</p>
-          {communities}
+          {myCommunities.length === 0 ?
+            <div>
+            <p> You're not in any communities yet :( </p>
+            <p> take a look at all the communities and choose one to join! </p>
+            </div>
+            :
+            {communities}
+          }
         </Container>
       </div>
     )

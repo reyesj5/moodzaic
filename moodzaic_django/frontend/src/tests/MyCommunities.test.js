@@ -7,7 +7,7 @@ describe('MyCommunities', () => {
   //beforeEach stuff
   it('renders without crashing', () => {
     const div = document.createElement('div');
-    ReactDOM.render(<CommunitiesPage />, div);
+    ReactDOM.render(<CommunitiesPage myCommunities={[]} />, div);
     ReactDOM.unmountComponentAtNode(div);
   });
 });
