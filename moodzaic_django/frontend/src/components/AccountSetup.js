@@ -62,18 +62,17 @@ class SetupPage extends React.Component {
 
 
   handleSubmit = () => {
-    createUser({
-      username: this.props.user.username,
-      password: this.props.user.password,
-      first_name: this.state.first,
-      last_name: this.state.last,
-      email: this.state.email
-    })
     createProfile({
       username: this.props.user.username,
       age: this.state.age,
       gender: this.state.gender.value,
-      reminder_list: []
+      user: {
+        username: this.props.user.username,
+        password: this.props.user.password,
+        first_name: this.state.first,
+        last_name: this.state.last,
+        email: this.state.email
+      }
     })
   }
 
