@@ -8,7 +8,7 @@ import CommunitiesPage from './MyCommunities.js'
 import AllCommunities from './AllCommunities.js'
 // import { getMyCommunityList, getAllCommunities } from '../integration_funcs.js'
 // import CommunityService from '../CommunityService.js';
-import {getAllCommunities} from '../integration_funcs'
+import {getAllCommunities, getUserByUsername} from '../integration_funcs'
 
 
 
@@ -35,7 +35,9 @@ class CommunityPage extends React.Component {
     // console.log('users pk:', this.props.user.pk);
     this.setState(prevState => ({
       MyCommunityList: (this.state.CommunityList).filter((community) => {
-        return community.users.includes(this.props.user.username);
+        const yes = (community.users).includes(getUserByUsername(this.props.user.username));
+        console.log('should this community be mine?', yes);
+        return yes;
       })
     }))
     console.log('communitypage props', this.props);

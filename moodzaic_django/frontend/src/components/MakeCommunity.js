@@ -17,10 +17,12 @@ class MakeCommunity extends React.Component {
     name: ''
   }
 
-  handleChange = (e, { name, value }) => this.setState({ [name]: value })
+  handleChange = (e) => this.setState({ name: e.target.value });
 
   handleSubmit = () => {
-      createCommunity({name: this.state.name, users: [this.props.user.username]});
+      console.log('new name:', this.state.name);
+      console.log('user from props', this.props.user);
+      createCommunity({name: this.state.name, users: [this.props.user]});
       this.props.callback();
   }
 
@@ -31,7 +33,7 @@ class MakeCommunity extends React.Component {
       <Grid textAlign='center' style={{ height: '100vh' }}>
         <Grid.Column style={{ maxWidth: 1000 }}>
           <Container>
-            <Header as='h1' color='teal'>Creating A New Community</Header>
+            <Header as='h1'>Creating A New Community</Header>
             <p>Your community needs a name to get started.
             After your community is created, anyone can join and post!
             </p>
