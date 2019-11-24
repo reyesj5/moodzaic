@@ -75,21 +75,21 @@ class MoodPage extends React.Component {
           <Header as='h1'>How are you feeling?</Header>
           <p>Some ~important~ questions for you about your mood today.</p>
           <Form>
-          {QuestionList.map((Question, index) => {
-            return (
-              <Form.Field key={index}>
-                <label>{Question}</label>
-                <input />
-              </Form.Field>)})}
+            {QuestionList.map((Question, index) => {
+              return (
+                <Form.Field key={index}>
+                  <label>{Question}</label>
+                  <input />
+                </Form.Field>)})}
             <Form.Field>
-              <label>Mood</label>
-              <Dropdown placeholder='Select' fluid search selection
-                options={MoodList.map((Mood, index) =>
-                  {return({value: Mood, text: Mood})})
-                } />
+                <label>Mood</label>
+                <Dropdown placeholder='Select' fluid search selection
+                  options={MoodList.map((Mood, index) =>
+                    {return({value: Mood, text: Mood})})
+                  } />
             </Form.Field>
-            </Form>
-            <br />
+          </Form>
+          <br />
           <Router>
           <Link to="/Profile">
             <Button color='teal' fluid size='large'>
