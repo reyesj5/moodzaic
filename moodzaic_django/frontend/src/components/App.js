@@ -9,6 +9,7 @@ import SetupPage from './AccountSetup.js'
 import MyMenu from './Menu.js';
 import Footer from './Footer.js';
 // import MyMenu from './Menu.js'
+import {getProfile} from '../integration_funcs';
 
 import {
   BrowserRouter as Router,
@@ -27,7 +28,12 @@ class App extends Component {
           email: '',
           first_name: '',
           last_name: '',
-          pk: ''
+        },
+        profile: {
+          username: '',
+          age: 0,
+          gender: '',
+          user: {}
         },
         MyCommunityList: [],
         MyObservationList: [],
@@ -39,17 +45,27 @@ class App extends Component {
 
 
   LogIn = (u) => {
-      this.setState(prevState => ({
-        LoggedIn: true,
-        user: {
-          username: u.username,
-          password: u.password,
-          email: u.email,
-          first_name: u.first_name,
-          last_name: u.last_name,
-          pk: u.pk
-        }
-      }));
+      getProfile(u.username).then(p => {
+        console.log({p})
+        if (p) {
+          this.setState(prevState => ({
+            LoggedIn: true,
+            user: {
+              username: u.username,
+              password: u.password,
+              email: u.email,
+              first_name: u.first_name,
+              last_name: u.last_name,
+            },
+            profile: {
+              username: p.username,
+              age: p.age,
+              gender: p.gender,
+              user: p.user
+            }
+          }))
+      };
+      })
     console.log('login called', this.state);
   }
 
@@ -94,7 +110,7 @@ class App extends Component {
               {this.state.LoggedIn ?
                 <div>
                   <MyMenu callback={this.LogOut}/>
-                  <ProfilePage User={this.state.user}/>
+                  <ProfilePage User={this.state.user} Profile={this.state.profile}/>
                   <Footer />
                 </div> :
                 <Redirect to="/" />

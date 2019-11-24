@@ -16,7 +16,8 @@ class ProfilePage extends React.Component {
 
   render() {
     const user = this.props.User;
-    const profile = this.gettingProf;
+    //const profile = this.gettingProf;
+    var profile = this.props.Profile;
 
     return(
       <div>

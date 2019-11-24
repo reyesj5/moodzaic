@@ -86,21 +86,44 @@ const API_URL = 'http://localhost:8000/api/';
   // }
 
 
+  // export function getProfiles() {
+  //     const url = `${API_URL}profiles`;
+  //     return axios.get(url).then(response => response.data);
+  // }
+  // export function getProfile(username) {
+  //     const url = `${API_URL}${username}profiles/`;
+  //     return axios.get(url).then(response => response.data);
+  // }
+  // export function deleteProfile(username){
+  //     const url = `${API_URL}profiles/${username}`; //should be username instead of pk, since that is the identifier?
+  //     return axios.delete(url);
+  // }
+  // export function createProfile(username){
+  //     console.log(username);
+  //     const url = `${API_URL}profiles/`;
+  //     return axios.post(url,username);
+  // }
+  // export function updateProfile(username){
+  //     const url = `${API_URL}profiles/${username}`;
+  //     return axios.put(url,username);
+  // }
+
   export function getProfiles() {
-      const url = `${API_URL}profiles`;
+      const url = `${API_URL}all/profiles`;
       return axios.get(url).then(response => response.data);
   }
   export function getProfile(username) {
-      const url = `${API_URL}${username}profiles/`;
+      const url = `${API_URL}profiles/${username}`;
       return axios.get(url).then(response => response.data);
   }
-  export function deleteProfile(username){
-      const url = `${API_URL}profiles/${username}`; //should be username instead of pk, since that is the identifier?
-      return axios.delete(url);
-  }
+  // export function deleteProfile(username){
+  //     const url = `${API_URL}profiles/${username}`; //should be username instead of pk, since that is the identifier?
+  //     return axios.delete(url);
+  // }
+  // create not implemented yet
   export function createProfile(username){
       console.log(username);
-      const url = `${API_URL}profiles/`;
+      const url = `${API_URL}create/profiles/`;
       return axios.post(url,username);
   }
   export function updateProfile(username){
