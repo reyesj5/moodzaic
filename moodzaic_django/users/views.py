@@ -29,8 +29,9 @@ class ObservationViewSet(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         print(self.kwargs['username'])
+        #TODO: perform ML operation here
         serializer.user = Profile.objects.get(username=self.kwargs['username'])
-        serializer.save
+        serializer.save()
         
 
 
