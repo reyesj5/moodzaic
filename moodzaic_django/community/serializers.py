@@ -4,7 +4,7 @@ from users.models import User
 from users.serializers import UserSerializer
 
 class CommunitySerializer(serializers.ModelSerializer):
-    users = UserSerializer(many=True)
+    users = UserSerializer(many=True, required=False)
     class Meta:
         model = Community
         fields = ['name', 'users']

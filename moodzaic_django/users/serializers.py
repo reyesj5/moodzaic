@@ -2,10 +2,12 @@ from rest_framework import serializers
 from users.models import User, Profile, Observation
 
 class UserSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = User
         fields = ('username', 'password', 'first_name', 'last_name', 'email')
+        extra_kwargs = {
+            'username': {'validators': []},
+        }
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -14,6 +16,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ('username', 'age', 'gender', 'user')
+
 
 # class ObservationSerializer(serializers.ModelSerializer):
 #     user = serializers.RelatedField(many=True, read_only=True)

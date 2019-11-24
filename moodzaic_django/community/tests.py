@@ -144,26 +144,40 @@ class ViewsCommunityTests(APITestCase):
         response = self.client.get('/api/all/community', format='json')
         self.assertEqual(json.loads(response.content), [{'name': 'fitness', 'users': []}, {'name': 'sleep', 'users': []}])
 
+    # Gets the communities that a user belongs to.
+    def test_userCommunities(self):
+        data = {'id': '0','name': 'fitness', 'users': [self.user1]}
+        data2 = {'id': '1','name': 'cooking', 'users': [self.user1]}
+
+        response = self.client.post('/api/create/community', data, format='json')
+        response = self.client.post('/api/create/community', data2, format='json')
+
     # Tests creating a community
     # This function allows us to create a community
     def test_createCommunity(self):
         url = '/api/create/community'
 
         # This should successfully create a community
-        data = {'id': '0','name': 'fitness', 'users': [self.user1]}
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(Community.objects.count(), 1)
-        self.assertEqual(Community.objects.get().name, 'fitness')
 
-        self.assertEqual(Community.objects.get().users.count(), 1)
+        data = {'id': '0','name': 'fitness', 'users': [self.user1]}
+        data2 = {'id': '1','name': 'newFitness', 'users': [self.user1]}
+        data3 = {'id': '2', 'name': 'cooking', 'users': [self.user1]}
+
+        response = self.client.post(url, data, format='json')
+        response = self.client.post(url, data2, format='json')
+        response = self.client.post(url, data2, format='json')
+
+        self.assertEqual(Community.objects.count(), 3)
+        # self.assertEqual(Community.objects.get().name, 'fitness')
+
+        self.assertEqual(User.objects.count(), 1)
 
         # This should fail if you pass in no data
         response2 = self.client.post(url, {}, format='json')
         self.assertEqual(response2.status_code, status.HTTP_400_BAD_REQUEST)
 
-        # There should still only be one community
-        self.assertEqual(Community.objects.count(), 1)
-        self.assertEqual(Community.objects.get().name, 'fitness')
+        # There should still only be three communities
+        self.assertEqual(Community.objects.count(), 3)
 
     # This function should return an individual community
     def test_communityDetailsGET(self):

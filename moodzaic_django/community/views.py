@@ -19,6 +19,14 @@ def allCommunities(request):
     serializer = CommunitySerializer(communities, many=True)
     return Response(serializer.data)
 
+@api_view(['GET'])
+def usersCommunities(request, username):
+    user = User.objects.get(name=name)
+    communities = Community.objects.all()
+    communities.filter(users__in=[user], allowed=True)
+    serializer = CommunitySerializer(communities, many=True)
+    return Response(serializer.data)
+
 # Create a new community
 @api_view(['POST'])
 def createCommunity(request):
@@ -50,10 +58,9 @@ def communityDetails(request, name):
         try:
             community = Community.objects.get(name=name)
             serializer = CommunitySerializer(community, data=request.data)
-            serializer.update(community, request.data)
             serializer.is_valid()
             if serializer.is_valid():
-                serializer.save()
+                serializer.update(community, request.data)
                 return Response(serializer.data)
             return Response(serializer.data)
         except Community.DoesNotExist:
