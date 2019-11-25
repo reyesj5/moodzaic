@@ -108,17 +108,17 @@ class CommunityPage extends React.Component {
       myButton = ''
     }
 
-    // else if (community !== '') {
-    //   myPage = <Community myCommunity = {community} username = {user} />;
-    //   myButton =
-    //   <Button color='teal' fluid size='large' onClick = {this.OpenCommunity('')}>
-    //     See My Communities
-    //   </Button>;
-    // }
-
     else if (this.state.vision === false) {
       myPage = ''
       myButton = ''
+    }
+
+    else if (community !== '') {
+      myPage = <Community myCommunity = {community} user = {user} />;
+      myButton =
+      <Button color='teal' fluid size='large' onClick = {this.OpenCommunity('')}>
+        See My Communities
+      </Button>;
     }
 
     else if (addMode === false) {
