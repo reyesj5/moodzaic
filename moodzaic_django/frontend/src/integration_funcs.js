@@ -65,6 +65,11 @@ const API_URL = 'http://localhost:8000/api/';
       return axios.put(url,community);
   }
 
+  export function usersCommunities(username){
+      const url = `${API_URL}${username}/communities`;
+      return axios.get(url).then(response => response.data);
+  }
+
 
 
   export function getPosts() {
