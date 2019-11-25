@@ -81,6 +81,19 @@ def createPost(request):
         logger.error(serializer.errors)
         return Response(serializer.data)
 
+@api_view(['GET'])
+def postDetails(request, pk):
+    """
+    Retrieve a post by name.
+    """
+    if request.method == 'GET':
+        try:
+            post = Post.objects.get(pk = pk)
+            serializer = PostSerializer(post,context={'request': request})
+            return Response(serializer.data)
+        except Post.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
 # class PostListCreate(generics.ListCreateAPIView):
 #     queryset = Post.objects.all()
 #     serializer_class = PostSerializer

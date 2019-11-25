@@ -75,16 +75,13 @@ class PostSerializer(serializers.ModelSerializer):
                                                        email=userData['email'],
                                                        first_name=userData['first_name'],
                                                        last_name=userData['last_name'],
-                                                       password=userData['password'])
-
-        postData = validated_data.pop('post')
+                                                       password=userData['password'])[0]
+        validated_data['poster'] = user
 
         communityData = validated_data.pop('community')
-        community = Community.objects.get_or_create(name=communityData['name'],
-                                                        id=communityData['id'])
+        community = Community.objects.get_or_create(name=communityData['name'])[0]
+        validated_data['community'] = community
+
 
         post = Post.objects.create(**validated_data)
-        post.poster.set(user)
-        post.post.set(postData)
-        post.community.set(community)
         return post

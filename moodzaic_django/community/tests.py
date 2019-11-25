@@ -125,17 +125,25 @@ class ViewsPostTests(APITestCase):
         client = APIClient()
         self.user1 =  {"username": "emil", "password": "snibby", "first_name": "name", "last_name": "lastname", "email": "email@email.ema"}
         user1Made = User.objects.create(**self.user1)
-        self.community1 = {'id': '0','name': 'fitness'}
+        self.community1 = {'name': 'fitness'}
         community1Made = Community.objects.create(**self.community1)
         community1Made.users.set([user1Made])
+        self.compareCommunity1 = self.community1
+        self.compareCommunity1['users'] = [self.user1]
 
-        self.post1 = {'id': '23', 'post': 'Hey everyone, lmaooo XD!!', 'community': self.community1, 'poster': self.user1}
+        self.post1 = {'post': 'Hey everyone, lmaooo XD!!', 'community': self.community1, 'poster': self.user1}
         self.comment1 = {'id': '12', 'originalPost': self.post1 }
 
-    # def test_getPost(self):
-    #     response = self.client.get('api/posts/23', format='json')
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     self.assertEqual(json.loads(response.content).post, self.post1['post'])
+    def test_getPost(self):
+        url = '/api/create/post'
+        data = self.post1        
+        self.assertEqual(Post.objects.count(), 0)
+        response = self.client.post(url, data, format='json')
+        newPostId = Post.objects.get().id
+
+        response = self.client.get('/api/post/' + str(newPostId), format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(json.loads(response.content), self.post1)
 
     def test_createPost(self):
         url = '/api/create/post'
@@ -148,17 +156,6 @@ class ViewsPostTests(APITestCase):
         self.assertEqual(freshPost.community.name, 'fitness')
         self.assertEqual(freshPost.poster.username, 'emil')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-    
-    # def test_setPost(self):
-    #     url = 'api/create/posts'
-    #     data = self.post1
-    #     response = self.client.post(url, data, format='json')
-        
-    #     data['post'] = 'alas, i am rip'
-    #     response = self.client.put('api/posts/23', data, format='json')
-
-    #     self.assertEqual(Post.objects.count(), 1)
-    #     self.assertEqual(Post.objects.get().post, 'alas, i am rip')
     
     # def test_getOriginPost(self):
     #     url = 'api/comments/12'
