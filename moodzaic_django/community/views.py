@@ -1,6 +1,6 @@
 from community.models import Community, Post
 from users.models import User
-from community.serializers import CommunitySerializer, PostSerializer
+from community.serializers import CommunitySerializer, PostSerializer, CommentSerializer
 
 from rest_framework import generics
 from rest_framework.response import Response
@@ -76,7 +76,17 @@ def createPost(request):
     if request.method == 'POST':
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
-            comment = serializer.save()
+            serializer.save()
+            return Response(serializer.data)
+        logger.error(serializer.errors)
+        return Response(serializer.data)
+
+@api_view(['POST'])
+def createComment(request):
+    if request.method == 'POST':
+        serializer = CommentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
             return Response(serializer.data)
         logger.error(serializer.errors)
         return Response(serializer.data)
@@ -84,7 +94,7 @@ def createPost(request):
 @api_view(['GET'])
 def postDetails(request, pk):
     """
-    Retrieve a post by name.
+    Retrieve a post by pk.
     """
     if request.method == 'GET':
         try:

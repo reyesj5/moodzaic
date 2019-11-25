@@ -132,8 +132,9 @@ class ViewsPostTests(APITestCase):
         self.compareCommunity1['users'] = [self.user1]
 
         self.post1 = {'post': 'Hey everyone, lmaooo XD!!', 'community': self.community1, 'poster': self.user1}
-        self.comment1 = {'id': '12', 'originalPost': self.post1 }
-
+        self.postWithId = {'post': 'Hey everyone, lmaooo XD!!', 'community': self.community1, 'poster': self.user1, 'id': 1}
+        self.comment1 = {'post': 'OH SNAR', 'community': self.community1, 'poster': self.user1, 'originalPost': self.postWithId,
+                            'originalPostId': 1}
     def test_getPost(self):
         url = '/api/create/post'
         data = self.post1
@@ -143,7 +144,7 @@ class ViewsPostTests(APITestCase):
 
         response = self.client.get('/api/post/' + str(newPostId), format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(json.loads(response.content), self.post1)
+        self.assertEqual(json.loads(response.content), self.postWithId)
 
     def test_createPost(self):
         url = '/api/create/post'
@@ -276,12 +277,9 @@ class ViewsCommunityTests(APITestCase):
         self.assertEqual(Community.objects.get().name, 'newFitness')
         self.assertEqual(Community.objects.get().users.count(), 1)
 
-
-
         # We should return not found if the community doesn't exist
         response = self.client.put(url + 'hi', data, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
 
 class PostTestCase(TestCase):
 
