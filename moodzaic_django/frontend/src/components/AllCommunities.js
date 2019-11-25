@@ -9,7 +9,7 @@ import {
 // import CommunityService from '../CommunityService.js';
 // import UserService from '../UserService.js';
 import MakeCommunity from './MakeCommunity.js';
-import {updateCommunity} from '../integration_funcs'
+import {getAllCommunities, updateCommunity} from '../integration_funcs'
 
 
 
@@ -18,7 +18,16 @@ import {updateCommunity} from '../integration_funcs'
 class AllCommunities extends React.Component {
   state = {
     makeMode: false,
-    renderNumber: 3
+    renderNumber: 3,
+    loadingAll: false,
+    allCommunities: []
+  }
+
+  componentDidMount() {
+    this.setState({ loadingAll: true });
+    getAllCommunities()
+      .then(communities => this.setState({ allCommunities: communities }))
+      .then(mine => this.setState( {loadingAll: false} ))
   }
 
   componentDidUpdate() {
@@ -54,7 +63,7 @@ class AllCommunities extends React.Component {
   }
 
   render() {
-    const communities = this.props.allCommunities.slice(0, this.state.renderNumber).map((com, i) => {
+    const communities = this.state.allCommunities.slice(0, this.state.renderNumber).map((com, i) => {
       const included = this.props.myCommunities.includes(com) ;
       return (
         <Message
@@ -82,9 +91,9 @@ class AllCommunities extends React.Component {
         {(this.state.makeMode === true) ?
           <MakeCommunity callback={this.toggleMakeMode} user={this.props.user}/>
           :
-          <Container text align='center' style={{ marginTop: '7em', marginBottom: '1em' }}>
+          <Container text align='center' style={{ marginTop: '1em', marginBottom: '1em' }}>
           {communities}
-          {(this.state.renderNumber < this.props.allCommunities.length) ?
+          {(this.state.renderNumber < this.state.allCommunities.length) ?
             <Button onClick = {this.showMore}>Show More Communities</Button> :
             <p>That's all the communities!</p>}
           <p> Don't see any you like? </p>

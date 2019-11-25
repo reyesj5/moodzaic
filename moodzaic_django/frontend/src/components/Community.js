@@ -129,7 +129,7 @@ class Community extends React.Component {
       <div>
         <Comment.Group>
           <Header as='h3' dividing>
-            {community}
+            {community.name}
           </Header>
 
           {printPosts}

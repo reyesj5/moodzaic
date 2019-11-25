@@ -22,22 +22,10 @@ class CommunitiesPage extends React.Component {
     openCommunity: false
   }
 
-  openCommunity = (c) => {
-         this.props.communityCallback(c);
-    }
-
   render() {
+    console.log("im out here in mycommunities and these are the props", this.props)
     const myCommunities = this.props.myCommunities;
-    const communities = myCommunities.map((com, i) => {
-      return <Message
-          as={Button}
-          onClick = {this.openCommunity(com)}
-          color='teal'
-          fluid size='small'
-          key = {i}>
-        <Message.Header>{com.name}</Message.Header>
-      </Message>
-    })
+    // const communities =
 
 
     return (
@@ -49,7 +37,22 @@ class CommunitiesPage extends React.Component {
             <p> take a look at all the communities and choose one to join! </p>
             </div>
             :
-            {communities}
+            <div>
+            {myCommunities.map((com, i) => {
+              return (
+                <Message
+                    as={Button}
+                    onClick = {this.props.communityCallback(com.name)}
+                    color='teal'
+                    fluid size='small'
+                    key = {i}>
+                  <Message.Header>
+                    {com.name}
+                  </Message.Header>
+                </Message>
+              )
+            })}
+            </div>
           }
         </Container>
       </div>
