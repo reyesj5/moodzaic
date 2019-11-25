@@ -159,8 +159,6 @@ class ViewsPostTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
     
     def test_createComment(self):
-        #snoom7
-        #snoooomY
         url = '/api/create/post'
         data = self.post1        
         self.assertEqual(Post.objects.count(), 0)
@@ -174,11 +172,18 @@ class ViewsPostTests(APITestCase):
         self.assertEqual(Comment.objects.count(), 1)
 
 
-    # def test_getOriginPost(self):
-    #     url = 'api/comments/12'
-    #     response = self.client.post(url, format='json')
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     self.assertEqual(json.loads(response.content).post, self.post1.post)
+    def test_getOriginPost(self):
+        url = '/api/create/post'
+        data = self.post1        
+        self.assertEqual(Post.objects.count(), 0)
+        response = self.client.post(url, data, format='json')
+
+        url = '/api/create/comment'
+        data = self.comment1
+        response = self.client.post(url, data, format='json')
+        freshComment = Comment.objects.get()
+        serialized = PostSerializer(Post.objects.get(id=freshComment.originalPostId))
+        self.assertEqual(self.postWithId, serialized.data)
 
 class ViewsCommunityTests(APITestCase):
 
