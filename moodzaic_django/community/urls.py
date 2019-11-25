@@ -8,12 +8,13 @@ urlpatterns = [
     url(r'^api/community/(?P<name>[\w]+)$', views.communityDetails),
     path('api/create/community', views.createCommunity),
     path('api/create/post', views.createPost),
+    path('api/create/comment', views.createComment),
+    url(r'^api/post/comments/(?P<pk>[\w]+)$', views.postComments),
     url(r'^api/post/(?P<pk>[\w]+)$', views.postDetails),
 
     # path('api/delete/community', views.createCommunity),
 
     path('api/<username>/communities', views.usersCommunities),
-
 
     # path('api/post/', views.makePost),
     # path('api/post/all', views.PostListCreate.as_view()),

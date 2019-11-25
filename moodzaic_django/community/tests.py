@@ -132,8 +132,11 @@ class ViewsPostTests(APITestCase):
         self.compareCommunity1['users'] = [self.user1]
 
         self.post1 = {'post': 'Hey everyone, lmaooo XD!!', 'community': self.community1, 'poster': self.user1}
-        self.comment1 = {'id': '12', 'originalPost': self.post1 }
-
+        self.postWithId = {'post': 'Hey everyone, lmaooo XD!!', 'community': self.community1, 'poster': self.user1, 'id': 1}
+        self.comment1 = {'post': 'OH SNAR', 'community': self.community1, 'poster': self.user1, 'originalPost': self.postWithId,
+                            'originalPostId': 1}
+        self.comment2 = {'post': 'OH Snibby', 'community': self.community1, 'poster': self.user1, 'originalPost': self.postWithId,
+                            'originalPostId': 1}
     def test_getPost(self):
         url = '/api/create/post'
         data = self.post1
@@ -143,7 +146,7 @@ class ViewsPostTests(APITestCase):
 
         response = self.client.get('/api/post/' + str(newPostId), format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(json.loads(response.content), self.post1)
+        self.assertEqual(json.loads(response.content), self.postWithId)
 
     def test_createPost(self):
         url = '/api/create/post'
@@ -156,12 +159,52 @@ class ViewsPostTests(APITestCase):
         self.assertEqual(freshPost.community.name, 'fitness')
         self.assertEqual(freshPost.poster.username, 'emil')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+    
+    def test_createComment(self):
+        url = '/api/create/post'
+        data = self.post1        
+        self.assertEqual(Post.objects.count(), 0)
+        response = self.client.post(url, data, format='json')
 
-    # def test_getOriginPost(self):
-    #     url = 'api/comments/12'
-    #     response = self.client.post(url, format='json')
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     self.assertEqual(json.loads(response.content).post, self.post1.post)
+        url = '/api/create/comment'
+        data = self.comment1
+        response = self.client.post(url, data, format='json')
+
+        freshComment = Comment.objects.get()
+        self.assertEqual(Comment.objects.count(), 1)
+        self.assertEqual(freshComment.post, 'OH SNAR')
+
+    def test_getAllComments(self):
+        url = '/api/create/post'
+        data = self.post1
+        self.assertEqual(Post.objects.count(), 0)
+        response = self.client.post(url, data, format='json')
+        newPostId = Post.objects.get().id
+
+        url = '/api/create/comment'
+        data = self.comment1
+        response = self.client.post(url, data, format='json')
+
+        url = '/api/create/comment'
+        data = self.comment2
+        response = self.client.post(url, data, format='json')
+
+
+        response = self.client.get('/api/post/comments/' + str(newPostId), format='json')
+        self.assertEqual(json.loads(response.content), [self.comment1, self.comment2])
+
+    def test_getOriginPost(self):
+        url = '/api/create/post'
+        data = self.post1        
+        self.assertEqual(Post.objects.count(), 0)
+        response = self.client.post(url, data, format='json')
+
+        url = '/api/create/comment'
+        data = self.comment1
+        response = self.client.post(url, data, format='json')
+        freshComment = Comment.objects.get()
+        serialized = PostSerializer(Post.objects.get(id=freshComment.originalPostId))
+        self.assertEqual(self.postWithId, serialized.data)
 
 class ViewsCommunityTests(APITestCase):
 
@@ -301,12 +344,9 @@ class ViewsCommunityTests(APITestCase):
         self.assertEqual(Community.objects.get().name, 'newFitness')
         self.assertEqual(Community.objects.get().users.count(), 1)
 
-
-
         # We should return not found if the community doesn't exist
         response = self.client.put(url + 'hi', data, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
 
 class PostTestCase(TestCase):
 
