@@ -91,6 +91,11 @@ const API_URL = 'http://localhost:8000/api/';
       const url = `${API_URL}posts`;
       return axios.post(url,post);
   }
+
+  export function createComment(comment){
+    const url = `${API_URL}create/comment`;
+    return axios.post(url,comment);
+  }
   // export function updatePost(post){
   //     const url = `${API_URL}${post.id}`;
   //     return axios.put(url, post);
