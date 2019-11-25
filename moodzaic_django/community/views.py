@@ -1,6 +1,6 @@
 from community.models import Community, Post
 from users.models import User
-from community.serializers import CommunitySerializer
+from community.serializers import CommunitySerializer, PostSerializer, CommentSerializer
 
 from rest_framework import generics
 from rest_framework.response import Response
@@ -22,9 +22,9 @@ def allCommunities(request):
 
 @api_view(['GET'])
 def usersCommunities(request, username):
-    user = User.objects.get(name=name)
+    user = User.objects.get(username=username)
     communities = Community.objects.all()
-    communities.filter(users__in=[user], allowed=True)
+    communities = communities.filter(users__id__exact=user.id)
     serializer = CommunitySerializer(communities, many=True)
     return Response(serializer.data)
 
@@ -34,11 +34,15 @@ def createCommunity(request):
     if request.method == 'POST':
         serializer = CommunitySerializer(data=request.data)
         serializer.is_valid()
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        else:
+        try:
+            testCommunity = Community.objects.get(name=list(serializer.validated_data.values())[0])
             return Response(status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
 
 # Get a single community, or update a single community
 # Pass its name to ensure this
@@ -67,15 +71,38 @@ def communityDetails(request, name):
         except Community.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-# @api_view(['POST'])
-# def makePost(request):
-#     if request.method == 'POST':
-#         serializer = PostSerializer(data=request.data)
-#         if serializer.is_valid():
-#             logger.error("PostSerializer is valid")
-#             serializer.save()
-#             return Response(serializer.data)
-#         return Response(serializer.data)
+@api_view(['POST'])
+def createPost(request):
+    if request.method == 'POST':
+        serializer = PostSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        logger.error(serializer.errors)
+        return Response(serializer.data)
+
+@api_view(['POST'])
+def createComment(request):
+    if request.method == 'POST':
+        serializer = CommentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        logger.error(serializer.errors)
+        return Response(serializer.data)
+
+@api_view(['GET'])
+def postDetails(request, pk):
+    """
+    Retrieve a post by pk.
+    """
+    if request.method == 'GET':
+        try:
+            post = Post.objects.get(pk = pk)
+            serializer = PostSerializer(post,context={'request': request})
+            return Response(serializer.data)
+        except Post.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 # class PostListCreate(generics.ListCreateAPIView):
 #     queryset = Post.objects.all()
