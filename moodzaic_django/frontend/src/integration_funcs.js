@@ -88,7 +88,7 @@ const API_URL = 'http://localhost:8000/api/';
   //     return axios.delete(url);
   // }
   export function createPost(post){
-      const url = `${API_URL}posts`;
+      const url = `${API_URL}create/posts`;
       return axios.post(url,post);
   }
 
