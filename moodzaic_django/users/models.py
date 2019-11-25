@@ -5,6 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
 from django.core.validators import int_list_validator
 import json
+import os
 
 #from community.models import Community
 
@@ -87,7 +88,7 @@ class Goal(models.Model):
             return False
 
 '''
-
+'''
 class Mood(models.Model):
      name = models.CharField(max_length=20, default="")
      mood = models.IntegerField(default=0)
@@ -115,7 +116,7 @@ class Mood(models.Model):
             return True
         else:
             return False
-
+'''
 class Profile(models.Model):
     MoodScore = models.IntegerField(default=0)
     age = models.IntegerField(default=18)
@@ -126,7 +127,7 @@ class Profile(models.Model):
     reminder_list = json.load(json_data)
     goals=models.TextField(
         validators=[int_list_validator],
-        default="-1,-1,-1,-1,-1"
+        default= "-1,-1,-1,-1"
     )
     user = models.OneToOneField(
         User,
@@ -139,16 +140,34 @@ class Profile(models.Model):
         return True
 
     def MoodScoreCalc(self):
+        weight = self.user.weights_set.get(user = self.user)
+        mood = weight.predict()
+        self.MoodScore = mood
         return self.MoodScore
 
     def setMoodScore(self, MoodScore):
-        self.MoodScore = MoodScore
-        self.save()
-        return True
+        if (MoodScore >= 0 and MoodScore <=4):
+            self.MoodScore = MoodScore
+            self.save()
+            return True
+        else:
+            return False
 
-    def getMoodReminders(self, mood_str):
+    def getMoodReminders(self, MoodScore):
         #mood_int can be either the predicted mood or actual mood to get reminder
-        return
+        mood_dict = {0: "Sad", 1:"Fear", 2: "Hesitant", 3: "Calm", 4:"Happy" }
+        try:
+            mood_str = mood_dict[MoodScore]
+        except:
+            return False
+        path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'notifications.json')
+        try:
+            with open(path, 'r') as json_data:
+                data = json.load(json_data)
+                reminder = data[mood_str]
+        except:
+            return False
+        return reminder
 
     def setAge(self, age):
         if not (isinstance(age, type(2))):
@@ -175,14 +194,39 @@ class Profile(models.Model):
     def setGoals(self, goal_type, num):
         if goal_type > 4 or goal_type < 0:
             return False
+        if num < -1:
+            return False
+        if goal_type != 3:
+            if num > 24:
+                return False
         goal_list = self.goals.split(",")
         goal_list[goal_type] = str(num)
         self.goals = ",".join(str(x) for x in goal_list)
         return True
-
+    '''
     def makeComment(self, comment, postid, community):
-        return
-
+        #makes comment
+        if not (isinstance(comment, type('a'))):
+            return False
+        if not (isinstance(community, type('a'))):
+            return False
+        if not (isinstance(postid, type(4))):
+            return False
+        try:
+            community = self.user.community_set.get(name = community)
+        except ObjectDoesNotExist:
+            return False
+        try:
+            post = community.post_set.get(id = postid)
+        except ObjectDoesNotExist:
+            return False
+        if len(comment) <= 1000:
+            com = community.comment_set.create(post= comment, community = community, poster =self.user, originalPost=post)
+            com.save()
+            return True
+        else:
+            return False
+    '''
 
     def makePost(self, post, community):
         ## TODO
@@ -214,11 +258,7 @@ class Observation(models.Model):
     work = models.FloatField(default=0)
     user = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True)
     predictedMood = models.IntegerField(default = 0)
-    mood = models.OneToOneField(
-        Mood,
-        on_delete=models.CASCADE,
-        null=True
-    )
+    mood = models.IntegerField(default=-1)
 
     def setSleep(self, hours):
         if not (isinstance(hours, type(2.0))) and not (isinstance(hours, type(2))):
