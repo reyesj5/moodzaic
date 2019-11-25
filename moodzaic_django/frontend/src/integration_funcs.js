@@ -134,8 +134,8 @@ const API_URL = 'http://localhost:8000/api/';
       const url = `${API_URL}profiles`;
       return axios.post(url,profile);
   }
-  export function updateProfile(username, profile){
-      const url = `${API_URL}profiles/${username}`;
+  export function updateProfile(profile){
+      const url = `${API_URL}profiles/${profile.username}`;
       return axios.put(url,profile);
   }
 

@@ -147,9 +147,9 @@ class UpdateProfile extends React.Component {
                     <input type='password'/>
                   </Form.Field>
                 :
-                <Form.Field error type='password' name='password check' onChange={this.handleConfirmpChange}>
+                <Form.Field type='password' name='password check' onChange={this.handleConfirmpChange}>
                   <label>Confirm New Password</label>
-                  <input />
+                  <input error/>
                 </Form.Field>
               }
               </div>
