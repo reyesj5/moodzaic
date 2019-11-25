@@ -160,6 +160,7 @@ class ViewsPostTests(APITestCase):
     
     def test_createComment(self):
         #snoom7
+        #snoooomY
         url = '/api/create/post'
         data = self.post1        
         self.assertEqual(Post.objects.count(), 0)
