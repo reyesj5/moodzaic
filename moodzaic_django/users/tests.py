@@ -2,7 +2,7 @@ import json
 from django.test import TestCase
 from users.models import User, Profile, Mood, Observation
 from datetime import datetime, date
-from community.models import Community, Post
+from community.models import Community, Post, Comment
 from users.views import *
 
 from django.urls import reverse
@@ -131,6 +131,8 @@ class ProfileTestCase(TestCase):
         #Goal.objects.create(goal = "Drink water", frequency = "5", time = datetime.now())
         c1 = Community.objects.create(name="FitBois")
         c1.addUserToCommunity(u1)
+        p1 =Post.objects.create(post = "hey y'all", community= c1, poster = u1)
+        p1_id = p1.id
     def test_setMoodScore(self):
         testProfile = Profile.objects.get(MoodScore = 2)
         self.assertTrue(testProfile.setMoodScore(3))
@@ -169,13 +171,14 @@ class ProfileTestCase(TestCase):
 
     def test_makeComment(self):
         testProfile = Profile.objects.get(MoodScore = 2)
-        self.assertTrue(testProfile.makeComment("Hi, this is a post",2,  "FitBois"))
+        testPost = Post.objects.get(post = "hey y'all")
+        self.assertTrue(testProfile.makeComment("Hi, this is a post",testPost.id,  "FitBois"))
     def test_makeCommentNull(self):
         testProfile = Profile.objects.get(MoodScore = 2)
-        self.assertTrue(testProfile.makeComment("",2,  "FitBois"))
+        self.assertTrue(testProfile.makeComment("",testPost.id,  "FitBois"))
     def test_makeCommentUserNotInSet(self):
         testProfile = Profile.objects.get(MoodScore = 4)
-        self.assertTrue(testProfile.makeComment("Hi, this is a post",2,  "FitBois"))
+        self.assertTrue(testProfile.makeComment("Hi, this is a post",testPost.id,  "FitBois"))
     def test_getUser(self):
         testProfile = Profile.objects.get(MoodScore = 2)
         testUser =User.objects.get(username = "emil")
@@ -212,6 +215,13 @@ class ProfileTestCase(TestCase):
     def test_setUserGenderFailureType(self):
         testProfile = Profile.objects.get(MoodScore = 2)
         self.assertFalse(testProfile.setGender(4))
+    def test_getMoodReminder_str(self):
+        testProfile = Profile.objects.get(MoodScore = 2)
+        reminder = testProfile.getMoodReminders('Fear')
+        self.assertEqual(reminder[0], "Your fear isn\u2019t always a sign you\u2019re about to make the wrong move.")
+    def test_getMoodReminder_invalidstr(self):
+        testProfile = Profile.objects.get(MoodScore = 2)
+        self.assertFalse(testProfile.getMoodReminders('Tired'))
 
 # Observations are asked daily and stored in the database
 class ObservationTestCase(TestCase):
@@ -256,16 +266,13 @@ class ObservationTestCase(TestCase):
         self.assertEqual(testObservation.meals, 2)
     def test_setWork(self):
         testObservation = Observation.objects.get(sleep = 7)
-        testObservation.setWork(7)
-        self.assertEqual(testObservation.work, 7)
+        self.assertTrue(testObservation.setWork(7))
     def test_setWork_negative(self):
         testObservation = Observation.objects.get(sleep = 7)
-        testObservation.setWork(-7)
-        self.assertEqual(testObservation.work, -1)
+        self.assertFalse(testObservation.setWork(-7))
     def test_setWork_tooHigh(self):
         testObservation = Observation.objects.get(sleep = 7)
-        testObservation.setWork(25)
-        self.assertEqual(testObservation.work, -1)
+        self.assertFalse(testObservation.setWork(25))
     def test_setMood(self):
         testObservation = Observation.objects.get(sleep = 7)
         testObservation.setMood("happy", 3)
@@ -298,15 +305,13 @@ class MoodTestCase(TestCase):
         self.assertFalse(testMood.setName(""))
     def test_setMood(self):
         testMood = Mood.objects.get(mood = 2)
-        testMood.setMood(6)
-        self.assertEqual(testMood.mood, 6)
+        self.assertTrue(testMood.setMood(3))
+    def test_setMood_tooHigh(self):
+        testMood = Mood.objects.get(mood = 2)
+        self.assertFalse(testMood.setMood(6))
     def test_setMood_negative(self):
         testMood = Mood.objects.get(mood = 2)
-        testMood.setMood(-66)
-        self.assertEqual(testMood.mood, 2)
-    def test_setMood_negative1(self):
-        testMood = Mood.objects.get(mood = 2)
-        self.assertFalse(testMood.setMood(-66))
+        self.assertFalse(testMood.setMood(-6))
 
 # "View" tests check whether things GET, POST, PUT requests are handled properly in the backend
 
@@ -315,7 +320,7 @@ class ViewsUserTest(APITestCase):
         client = APIClient()
         self.user1 = {"username": "emil", "password": "snibby", "first_name": "name", "last_name": "lastname", "email": "email@email.ema"}
         self.user2 = {"username": "marco", "password": "dogdog", "first_name": "name", "last_name": "lastname", "email": "dog@email.ema"}
-        
+
     # testing the GET request for all users
     def test_allUsers(self):
         url = '/api/all/users/'
@@ -353,7 +358,7 @@ class ViewsUserTest(APITestCase):
     def test_updateUser(self):
         User.objects.create(**self.user1)
         User.objects.create(**self.user2)
-        
+
         # should succeed since the change is valid
         user1Changed = {"username": "emil", "password": "snibby", "first_name": "name", "last_name": "lastname", "email": "dog@dog.dog"}
         response = self.client.put('/api/update/emil', user1Changed,  format="json")
@@ -366,7 +371,7 @@ class ViewsUserTest(APITestCase):
         # should fail since change is invalid
         user1ChangedBadEmail = {"username": "emil", "password": "snibby", "first_name": "name", "last_name": "lastname", "email": "dog"}
         response = self.client.put('/api/update/marco', user1ChangedBadEmail,  format="json")
-        
+
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(User.objects.count(), 2)
         self.assertNotEqual(User.objects.first().email, "dog")
@@ -374,7 +379,7 @@ class ViewsUserTest(APITestCase):
         # should fail since username already exists
         user1ChangedToExistingUser = {"username": "marco", "password": "snibby", "first_name": "name", "last_name": "lastname", "email": "dog"}
         response = self.client.put('/api/update/emil', user1ChangedToExistingUser,  format="json")
-        
+
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(User.objects.count(), 2)
         self.assertNotEqual(User.objects.first().username, "marco")
@@ -399,32 +404,32 @@ class ViewsUserTest(APITestCase):
         response = self.client.post('/api/create/user', self.user2, format="json")
         self.assertEqual(respose.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(User.objects.count(), 2)
-        
+
 
 class ViewsProfileTest(APITestCase):
     def setUp(self):
         client = APIClient()
         self.user1 = {"username": "emil", "password": "snibby", "first_name": "name", "last_name": "lastname", "email": "email@email.ema"}
         self.user2 = {"username": "marco", "password": "dogdog", "first_name": "name", "last_name": "lastname", "email": "dog@email.ema"}
-        
+
         actUser1 = User.objects.create(**self.user1)
         User.objects.create(**self.user2)
-        
+
         self.profile1 = {"MoodScore" : 2,
-        "age": 20, 
-        "gender": "man", 
-        "username": "emil", 
+        "age": 20,
+        "gender": "man",
+        "username": "emil",
         "user": actUser1 }
 
         self.profile2 = {"MoodScore" : 2,
-        "age": 20, 
-        "gender": "man", 
-        "username": "emil", 
+        "age": 20,
+        "gender": "man",
+        "username": "emil",
         "user": self.user1 }
 
         Profile.objects.create(**self.profile1)
-    
-   
+
+
     def test_getProfile(self):
         response = self.client.get('/api/profiles/emil', format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -434,7 +439,7 @@ class ViewsProfileTest(APITestCase):
         response = self.client.get('/api/profiles/dog', format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    
+
     def test_createProfile(self):
         url = '/api/create/profile'
         data = self.profile2
@@ -442,12 +447,12 @@ class ViewsProfileTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Profile.objects.count(), 1)
         self.assertEqual(Profile.objects.get().username, 'emil')
-        
+
     def test_updateProfile(self):
         url = '/api/create/profile'
         data = self.profile2
         response = self.client.post(url, data, format='json')
-        
+
         data['age'] = 50
         response = self.client.put('api/profiles/emil', data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -461,22 +466,22 @@ class ViewsObservationsTest(APITestCase):
     def setUp(self):
 
         client = APIClient()
-        
+
         self.mood1 = {'name':"sad", 'mood': '2'}
-        
+
         self.user1 = {"username": "emil", "password": "snibby", "first_name": "name", "last_name": "lastname", "email": "email@email.ema"}
         userObject = User.objects.create(**self.user1)
-        
+
         self.profile1 = {"MoodScore" : 2,
-        "age": 20, 
-        "gender": "man", 
-        "username": "emil", 
+        "age": 20,
+        "gender": "man",
+        "username": "emil",
         "user": userObject }
 
         self.profile2 = {"MoodScore" : 2,
-        "age": 20, 
-        "gender": "man", 
-        "username": "emil", 
+        "age": 20,
+        "gender": "man",
+        "username": "emil",
         "user": self.user1 }
 
         profileObject = Profile.objects.create(**self.profile1)
@@ -497,7 +502,7 @@ class ViewsObservationsTest(APITestCase):
         response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(json.loads(response.content), self.observation1)
-    
+
     def test_postObervation(self):
         url = '/api/users/emil/observations'
         data = self.observation2
@@ -512,5 +517,3 @@ class ViewsObservationsTest(APITestCase):
         response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(json.loads(response.content), [self.observation1, self.observation2])
-
-    

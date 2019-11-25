@@ -5,6 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
 from django.core.validators import int_list_validator
 import json
+import os
 
 #from community.models import Community
 
@@ -139,16 +140,29 @@ class Profile(models.Model):
         return True
 
     def MoodScoreCalc(self):
+        weight = self.user.weights_set.get(user = user)
+        mood = weight.predict()
+        self.MoodScore = mood
         return self.MoodScore
 
     def setMoodScore(self, MoodScore):
-        self.MoodScore = MoodScore
-        self.save()
-        return True
+        if (MoodScore >= 0 and MoodScore <=4):
+            self.MoodScore = MoodScore
+            self.save()
+            return True
+        else:
+            return False
 
     def getMoodReminders(self, mood_str):
         #mood_int can be either the predicted mood or actual mood to get reminder
-        return
+        path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'notifications.json')
+        try:
+            with open(path, 'r') as json_data:
+                data = json.load(json_data)
+                reminder = data[mood_str]
+        except:
+            return False
+        return reminder
 
     def setAge(self, age):
         if not (isinstance(age, type(2))):
@@ -181,7 +195,26 @@ class Profile(models.Model):
         return True
 
     def makeComment(self, comment, postid, community):
-        return
+        if not (isinstance(comment, type('a'))):
+            return False
+        if not (isinstance(community, type('a'))):
+            return False
+        if not (isinstance(postid, type(4))):
+            return False
+        try:
+            community = self.user.community_set.get(name = community)
+        except ObjectDoesNotExist:
+            return False
+        try:
+            post = community.post_set.get(id = postid)
+        except ObjectDoesNotExist:
+            return False
+        if len(comment) <= 1000:
+            com = community.comment_set.create(post= comment, community = community, poster =self.user, originalPost=post)
+            com.save()
+            return True
+        else:
+            return False
 
 
     def makePost(self, post, community):
