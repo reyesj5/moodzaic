@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
 from django.core.validators import int_list_validator
+from community.models import Comment
 import json
 import os
 
@@ -140,7 +141,7 @@ class Profile(models.Model):
         return True
 
     def MoodScoreCalc(self):
-        weight = self.user.weights_set.get(user = user)
+        weight = self.user.weights_set.get(user = self.user)
         mood = weight.predict()
         self.MoodScore = mood
         return self.MoodScore
@@ -195,6 +196,7 @@ class Profile(models.Model):
         return True
 
     def makeComment(self, comment, postid, community):
+        #makes comment
         if not (isinstance(comment, type('a'))):
             return False
         if not (isinstance(community, type('a'))):
