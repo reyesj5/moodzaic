@@ -1,6 +1,6 @@
 import json
 from django.test import TestCase
-from users.models import User, Profile, Mood, Observation
+from users.models import User, Profile, Observation
 from datetime import datetime, date
 from community.models import Community, Post, Comment
 from users.views import *
@@ -168,7 +168,7 @@ class ProfileTestCase(TestCase):
     def test_makePost_UserNotInSet(self):
         testProfile = Profile.objects.get(MoodScore = 4)
         self.assertFalse(testProfile.makePost("Yup", "FitBois"))
-
+    '''
     def test_makeComment(self):
         testProfile = Profile.objects.get(MoodScore = 2)
         testPost = Post.objects.get(post = "hey y'all")
@@ -179,6 +179,7 @@ class ProfileTestCase(TestCase):
     def test_makeCommentUserNotInSet(self):
         testProfile = Profile.objects.get(MoodScore = 4)
         self.assertTrue(testProfile.makeComment("Hi, this is a post",testPost.id,  "FitBois"))
+    '''
     def test_getUser(self):
         testProfile = Profile.objects.get(MoodScore = 2)
         testUser =User.objects.get(username = "emil")
@@ -217,7 +218,7 @@ class ProfileTestCase(TestCase):
         self.assertFalse(testProfile.setGender(4))
     def test_getMoodReminder_str(self):
         testProfile = Profile.objects.get(MoodScore = 2)
-        reminder = testProfile.getMoodReminders('Fear')
+        reminder = testProfile.getMoodReminders(1)
         self.assertEqual(reminder[0], "Your fear isn\u2019t always a sign you\u2019re about to make the wrong move.")
     def test_getMoodReminder_invalidstr(self):
         testProfile = Profile.objects.get(MoodScore = 2)

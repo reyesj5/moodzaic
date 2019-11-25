@@ -4,7 +4,6 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
 from django.core.validators import int_list_validator
-from community.models import Comment
 import json
 import os
 
@@ -89,7 +88,7 @@ class Goal(models.Model):
             return False
 
 '''
-
+'''
 class Mood(models.Model):
      name = models.CharField(max_length=20, default="")
      mood = models.IntegerField(default=0)
@@ -117,7 +116,7 @@ class Mood(models.Model):
             return True
         else:
             return False
-
+'''
 class Profile(models.Model):
     MoodScore = models.IntegerField(default=0)
     age = models.IntegerField(default=18)
@@ -128,7 +127,7 @@ class Profile(models.Model):
     reminder_list = json.load(json_data)
     goals=models.TextField(
         validators=[int_list_validator],
-        default="-1,-1,-1,-1,-1"
+        default= "-1,-1,-1,-1"
     )
     user = models.OneToOneField(
         User,
@@ -154,8 +153,13 @@ class Profile(models.Model):
         else:
             return False
 
-    def getMoodReminders(self, mood_str):
+    def getMoodReminders(self, MoodScore):
         #mood_int can be either the predicted mood or actual mood to get reminder
+        mood_dict = {0: "Sad", 1:"Fear", 2: "Hesitant", 3: "Calm", 4:"Happy" }
+        try:
+            mood_str = mood_dict[MoodScore]
+        except:
+            return False
         path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'notifications.json')
         try:
             with open(path, 'r') as json_data:
@@ -190,11 +194,16 @@ class Profile(models.Model):
     def setGoals(self, goal_type, num):
         if goal_type > 4 or goal_type < 0:
             return False
+        if num < -1:
+            return False
+        if goal_type != 3:
+            if num > 24:
+                return False
         goal_list = self.goals.split(",")
         goal_list[goal_type] = str(num)
         self.goals = ",".join(str(x) for x in goal_list)
         return True
-
+    '''
     def makeComment(self, comment, postid, community):
         #makes comment
         if not (isinstance(comment, type('a'))):
@@ -217,7 +226,7 @@ class Profile(models.Model):
             return True
         else:
             return False
-
+    '''
 
     def makePost(self, post, community):
         ## TODO
@@ -249,11 +258,7 @@ class Observation(models.Model):
     work = models.FloatField(default=0)
     user = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True)
     predictedMood = models.IntegerField(default = 0)
-    mood = models.OneToOneField(
-        Mood,
-        on_delete=models.CASCADE,
-        null=True
-    )
+    mood = models.IntegerField(default=-1)
 
     def setSleep(self, hours):
         if not (isinstance(hours, type(2.0))) and not (isinstance(hours, type(2))):
