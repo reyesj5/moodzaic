@@ -159,6 +159,7 @@ class ViewsPostTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
     
     def test_createComment(self):
+        #snoom7
         url = '/api/create/post'
         data = self.post1        
         self.assertEqual(Post.objects.count(), 0)
