@@ -82,12 +82,12 @@ class AllCommunities extends React.Component {
         {(this.state.makeMode === true) ?
           <MakeCommunity callback={this.toggleMakeMode} user={this.props.user}/>
           :
-          <Container text align='center' style={{ marginTop: '7em' }}>
+          <Container text align='center' style={{ marginTop: '7em', marginBottom: '1em' }}>
           {communities}
-          {(this.state.renderNumber <= this.props.allCommunities.length) ?
+          {(this.state.renderNumber < this.props.allCommunities.length) ?
             <Button onClick = {this.showMore}>Show More Communities</Button> :
             <p>That's all the communities!</p>}
-          <p> don't see any you like? </p>
+          <p> Don't see any you like? </p>
           {makeCommunityButton}
           </Container>
         }

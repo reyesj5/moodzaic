@@ -35,7 +35,7 @@ class CommunityPage extends React.Component {
     // console.log('users pk:', this.props.user.pk);
     this.setState(prevState => ({
       MyCommunityList: (this.state.CommunityList).filter((community) => {
-        const yes = (community.users).includes(getUserByUsername(this.props.user.username));
+        const yes = (community.users).includes(this.props.user);
         console.log('should this community be mine?', yes);
         return yes;
       })

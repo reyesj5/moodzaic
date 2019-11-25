@@ -22,9 +22,6 @@ class CommunitiesPage extends React.Component {
     openCommunity: false
   }
 
-  // openCommunity(c) {
-  //   return <Community communityName = {c} />
-  // }
   openCommunity = (c) => {
          this.props.communityCallback(c);
     }
