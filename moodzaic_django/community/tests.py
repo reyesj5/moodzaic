@@ -140,29 +140,40 @@ class ViewsPostTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Post.objects.count(), 1)
         self.assertEqual(Post.objects.get().post, 'Hey everyone, lmaooo XD!!')
-    
+
     def test_setPost(self):
         url = '/api/create/posts'
         data = self.post1
         response = self.client.post(url, data, format='json')
-        
+
         data['post'] = 'alas, i am rip'
         response = self.client.put('api/posts/23', data, format='json')
 
         self.assertEqual(Post.objects.count(), 1)
         self.assertEqual(Post.objects.get().post, 'alas, i am rip')
-    
+
     def test_getOriginPost(self):
         url = 'api/comments/12'
         response = self.client.post(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(json.loads(response.content).post, self.post1.post)
-    
+
 class ViewsCommunityTests(APITestCase):
 
     client = APIClient()
     user1 =  {"username": "emil", "password": "snibby", "first_name": "name", "last_name": "lastname", "email": "email@email.ema"}
     user2 = {"username": "marco", "password": "dogdog", "first_name": "name", "last_name": "lastname", "email": "dog@email.ema"}
+
+    def test_usersCommunities(self):
+        fitnessCommunity = Community.objects.create(name = "fitness")
+        u1 = User.objects.create(username = "emil", password = "emil_pw")
+
+        response = self.client.get('/api/emil/communities', format='json')
+        self.assertEqual(json.loads(response.content), [])
+
+        fitnessCommunity.addUserToCommunity(u1)
+        response = self.client.get('/api/emil/communities', format='json')
+        self.assertEqual(json.loads(response.content), [{'name': 'fitness', 'users': [{'email': '','first_name': '','last_name': '','password': 'emil_pw','username': 'emil'}]}])
 
     # Tests getting all communities.
     # This function allows us to get every community
@@ -245,6 +256,7 @@ class ViewsCommunityTests(APITestCase):
         # We should return not found if the community doesn't exist
         response = self.client.put(url + 'hi', data, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
 
 class PostTestCase(TestCase):
 

@@ -20,6 +20,14 @@ def allCommunities(request):
     serializer = CommunitySerializer(communities, many=True)
     return Response(serializer.data)
 
+@api_view(['GET'])
+def usersCommunities(request, username):
+    user = User.objects.get(username=username)
+    communities = Community.objects.all()
+    communities = communities.filter(users__id__exact=user.id)
+    serializer = CommunitySerializer(communities, many=True)
+    return Response(serializer.data)
+
 # Create a new community
 @api_view(['POST'])
 def createCommunity(request):
@@ -59,6 +67,7 @@ def communityDetails(request, name):
             return Response(serializer.data)
         except Community.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+
 
 # @api_view(['POST'])
 # def makePost(request):
