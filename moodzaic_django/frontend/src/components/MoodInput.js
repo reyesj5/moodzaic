@@ -4,7 +4,8 @@ import {
   Header,
   Form,
   Button,
-  Dropdown
+  Dropdown,
+  Message
 } from 'semantic-ui-react'
 // import MyMenu from './Menu.js';
 // import Footer from './Footer.js';
@@ -64,12 +65,14 @@ class MoodPage extends React.Component {
     QuestionObj: getDailyQuestions(),
     MoodList: getMoods(),
   }
+
   handleChange = (name, e) => {
     this.setState(
       { [name]: e.target.value },
       () => console.log(this.state)
     )
   }
+
   handleMood = (e, {value}) => {
     console.log(value)
     this.setState(
@@ -77,6 +80,31 @@ class MoodPage extends React.Component {
       () => console.log(this.state)
     )
   }
+
+  validate = (observation) => {
+    const errors = [];
+    if (!observation.sleep || !(0 <= observation.sleep <= 24)) {
+      errors.push("Please enter a value between 0 and 24 for hours of sleep");
+    }
+    if (!observation.exercise || !(0 <= observation.exercise <= 24)) {
+      errors.push("Please enter a value between 0 and 24 for hours of exercise");
+    }
+    if (!observation.meals) {
+      errors.push("Please enter a value for number of meals");
+    }
+    if (!observation.work || !(0 <= observation.work <= 24)) {
+      errors.push("Please enter a value between 0 and 24 for hours of work");
+    }
+    if (!observation.mood) {
+      errors.push("Please enter a value for mood");
+    }
+    if ((observation.sleep + observation.work + observation.exercise) > 24) {
+      console.log("Greater than 24")
+      errors.push("Total hours of sleep, work, and exercise cannot be greater than 24");
+    }
+    return errors;
+  }
+
   handleClick = () => {
     var observation = {
       sleep: this.state.sleep,
@@ -85,18 +113,25 @@ class MoodPage extends React.Component {
       work: this.state.work,
       mood: this.state.mood
     }
+    const errors = this.validate(observation);
+    if (errors.length > 0) {
+      this.setState({ errors });
+      return;
+    }
     createObservation(this.props.profile.username, observation)
+      .then(console.log("Finished sending observation"))
   }
 
   render() {
     const {QuestionObj} = this.state;
     const {MoodList} = this.state;
-                      //(e)=>this.handleMood(e)
+    const { errors } = this.state;
     return(
       <div>
         <Container text style={{ marginTop: '7em' }}>
           <Header as='h1'>How are you feeling?</Header>
           <p>Some ~important~ questions for you about your mood today.</p>
+          <div>{errors ? <Message color="red">{errors[0]}</Message> : <p></p>}</div>
           <Form>
             {Object.entries(QuestionObj).map((Question, index) => {
               return (
