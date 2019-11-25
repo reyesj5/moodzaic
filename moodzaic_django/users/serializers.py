@@ -2,11 +2,11 @@ from rest_framework import serializers
 from users.models import User, Profile, Observation
 
 class UserSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = User
         fields = ('username', 'password', 'first_name', 'last_name', 'email')
         extra_kwargs = {
+            'username': {'validators': []},
             'url': {'lookup_field': 'username'}
         }
 
@@ -29,7 +29,7 @@ class ProfileSerializer(serializers.ModelSerializer):
                                     first_name=user_data['first_name'],
                                     last_name=user_data['last_name'],
                                     password=user_data['password'])
-            
+
         profile = Profile.objects.create(user=user, **validated_data)
         return profile
 
@@ -40,8 +40,6 @@ class ProfileSerializer(serializers.ModelSerializer):
         return data
 
 class ObservationSerializer(serializers.ModelSerializer):
-   
-
     class Meta:
         user = serializers.RelatedField(many=True, read_only=True)#, slug_field='username')
         model = Observation

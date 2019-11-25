@@ -3,7 +3,7 @@ from users.models import User
 
 # Create your models here.
 class Community(models.Model):
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=30, unique=True)
     users = models.ManyToManyField(User)
 
     def setName(self, name):
@@ -34,8 +34,8 @@ class Community(models.Model):
 
 class Post(models.Model):
     post = models.CharField(max_length=1000)
-    community = models.ForeignKey(Community, on_delete=models.CASCADE)
-    poster = models.ForeignKey(User, on_delete=models.CASCADE)
+    community = models.ForeignKey(Community, on_delete=models.CASCADE, null=True)
+    poster = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
     def setPost(self, post):
         if (len(post) > 0 and len(post) <= 1000):
