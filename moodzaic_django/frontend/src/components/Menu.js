@@ -49,7 +49,7 @@ class MyMenu extends React.Component {
             <Menu.Item as={Link} to="/Profile">My Moodzaic</Menu.Item>
             <Menu.Item as={Link} to="/Communities">My Communities</Menu.Item>
             <Menu.Item>
-              <Button as={Link} to="/Login" basic color="red">
+              <Button as={Link} to="/" onClick={this.props.callback} basic color="red">
                 Sign Out
               </Button>
             </Menu.Item>

@@ -6,7 +6,10 @@ import MoodPage from './MoodInput.js'
 import CommunityPage from './CommunityPage.js'
 import SignUpForm from './SignUp.js'
 import SetupPage from './AccountSetup.js'
+import MyMenu from './Menu.js';
+import Footer from './Footer.js';
 // import MyMenu from './Menu.js'
+import {getProfile} from '../integration_funcs';
 
 import {
   BrowserRouter as Router,
@@ -24,7 +27,13 @@ class App extends Component {
           password: '',
           email: '',
           first_name: '',
-          last_name: ''
+          last_name: '',
+        },
+        profile: {
+          username: '',
+          age: 0,
+          gender: '',
+          user: {}
         },
         MyCommunityList: [],
         MyObservationList: [],
@@ -35,41 +44,106 @@ class App extends Component {
   }
 
 
-  toggleLogIn = (u) => {
+  // LogIn = (u) => {
+  //   this.setState(prevState => ({
+  //     LoggedIn: true,
+  //     user: {
+  //       username: u.username,
+  //       password: u.password,
+  //       email: u.email,
+  //       first_name: u.first_name,
+  //       last_name: u.last_name,
+  //     }
+  //     }))
+  //     getProfile(u.username).then(p => {
+  //     console.log('profile', p)
+  //   })
+  // }
+    LogIn = (u) => {
+      getProfile(u.username).then(p => {
+        console.log({p})
+        if (p) {
+          this.setState(prevState => ({
+            LoggedIn: true,
+            user: {
+              username: u.username,
+              password: u.password,
+              email: u.email,
+              first_name: u.first_name,
+              last_name: u.last_name,
+            },
+            profile: {
+              username: p.username,
+              age: p.age,
+              gender: p.gender,
+              user: p.user
+            }
+          }))
+      };
+      })
+    console.log('login called', this.state);
+  }
+
+  LogOut = () => {
       this.setState(prevState => ({
-        LoggedIn: !prevState.LoggedIn,
-        user: u
-      }))
+        LoggedIn: false,
+        user: {
+          username: '',
+          password: '',
+          email: '',
+          first_name: '',
+          last_name: ''
+        }}))
   }
 
   render() {
-    console.log('what???')
+    console.log('apps state:',this.state);
+
+
     return (
       <div>
         <Router>
           <Switch>
             <Route path="/signup">
-              <SignUpForm />
+            <SignUpForm />
             </Route>
             <Route path="/MyMood">
-              <MoodPage />
-            </Route>
-            <Route path="/Login">
-              <LoginForm callback = {this.toggleLogIn} />
+              {this.state.LoggedIn ?
+                <div>
+                  <MyMenu callback={this.LogOut}/>
+                  <MoodPage />
+                  <Footer/>
+                </div> :
+                <Redirect to="/" />
+              }
             </Route>
             <Route path="/Welcome">
               <SetupPage />
             </Route>
             <Route path="/Profile">
-              <ProfilePage User={this.state.user}/>
+              {this.state.LoggedIn ?
+                <div>
+                  <MyMenu callback={this.LogOut}/>
+                  <ProfilePage User={this.state.user} Profile={this.state.profile}/>
+                  <Footer/>
+                </div> :
+                <Redirect to="/" />
+              }
             </Route>
             <Route path="/Communities">
-              <CommunityPage user={this.state.user}/>
+              {this.state.LoggedIn ?
+                <div>
+                  <MyMenu callback={this.LogOut}/>
+                  <CommunityPage user={this.state.user}/>
+                  <Footer/>
+                </div> :
+                <Redirect to="/" />
+              }
             </Route>
             <Route path="/">
               {this.state.LoggedIn ?
                 <Redirect to="/Profile" /> :
-                <LoginForm callback = {this.toggleLogIn} />
+                <LoginForm callback = {this.LogIn} />
               }
             </Route>
           </Switch>
