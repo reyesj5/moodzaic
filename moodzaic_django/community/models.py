@@ -65,6 +65,7 @@ class Post(models.Model):
 
 class Comment(Post):
     originalPost = models.ForeignKey(Post, related_name='+', on_delete=models.CASCADE)
+    poster = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def getOriginalPost(self):
         return self.originalPost
