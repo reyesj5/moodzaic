@@ -172,6 +172,7 @@ class ViewsPostTests(APITestCase):
 
         freshComment = Comment.objects.get()
         self.assertEqual(Comment.objects.count(), 1)
+        self.assertEqual(freshComment.post, 'OH SNAR')
 
     def test_getAllComments(self):
         url = '/api/create/post'
@@ -184,9 +185,9 @@ class ViewsPostTests(APITestCase):
         data = self.comment1
         response = self.client.post(url, data, format='json')
 
-        # url = '/api/create/comment'
-        # data = self.comment2
-        # response = self.client.post(url, data, format='json')
+        url = '/api/create/comment'
+        data = self.comment2
+        response = self.client.post(url, data, format='json')
 
 
         response = self.client.get('/api/post/comments/' + str(newPostId), format='json')

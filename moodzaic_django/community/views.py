@@ -111,11 +111,9 @@ def postComments(request, pk):
     """
     if request.method == 'GET':
         comments = Comment.objects.all()
-        #comments = comments.filter(originalPostId = pk)
-        serializer = CommentSerializer(data=comments, many=True)
-        if serializer.is_valid():
-            return Response(serializer.data)
-        logger.error(serializer.errors)
+        comments = comments.filter(originalPostId = pk)
+        serializer = CommentSerializer(comments, many=True)
+        return Response(serializer.data)
 
 # class PostListCreate(generics.ListCreateAPIView):
 #     queryset = Post.objects.all()
