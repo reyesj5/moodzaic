@@ -132,8 +132,9 @@ class ViewsPostTests(APITestCase):
         self.compareCommunity1['users'] = [self.user1]
 
         self.post1 = {'post': 'Hey everyone, lmaooo XD!!', 'community': self.community1, 'poster': self.user1}
-        self.comment1 = {'id': '12', 'originalPost': self.post1 }
-
+        self.postWithId = {'post': 'Hey everyone, lmaooo XD!!', 'community': self.community1, 'poster': self.user1, 'id': 1}
+        self.comment1 = {'post': 'OH SNAR', 'community': self.community1, 'poster': self.user1, 'originalPost': self.postWithId,
+                            'originalPostId': 1}
     def test_getPost(self):
         url = '/api/create/post'
         data = self.post1        
@@ -143,7 +144,7 @@ class ViewsPostTests(APITestCase):
 
         response = self.client.get('/api/post/' + str(newPostId), format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(json.loads(response.content), self.post1)
+        self.assertEqual(json.loads(response.content), self.postWithId)
 
     def test_createPost(self):
         url = '/api/create/post'
@@ -157,6 +158,20 @@ class ViewsPostTests(APITestCase):
         self.assertEqual(freshPost.poster.username, 'emil')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
     
+    def test_createComment(self):
+        url = '/api/create/post'
+        data = self.post1        
+        self.assertEqual(Post.objects.count(), 0)
+        response = self.client.post(url, data, format='json')
+
+        url = '/api/create/comment'
+        data = self.comment1
+        response = self.client.post(url, data, format='json')
+
+        freshComment = Comment.objects.get()
+        self.assertEqual(Comment.objects.count(), 1)
+
+
     # def test_getOriginPost(self):
     #     url = 'api/comments/12'
     #     response = self.client.post(url, format='json')
