@@ -124,45 +124,104 @@ class ViewsPostTests(APITestCase):
     def setUp(self):
         client = APIClient()
         self.user1 =  {"username": "emil", "password": "snibby", "first_name": "name", "last_name": "lastname", "email": "email@email.ema"}
-        self.community1 = {'id': '0','name': 'fitness', 'users': [self.user1]}
-        self.post1 = {'id': '23', 'post': 'Hey everyone, lmaooo XD!!', 'community': self.community1, 'poster': self.user1}
-        self.comment1 = {'id': '12', 'originalPost': self.post1 }
+        user1Made = User.objects.create(**self.user1)
+        self.community1 = {'name': 'fitness'}
+        community1Made = Community.objects.create(**self.community1)
+        community1Made.users.set([user1Made])
+        self.compareCommunity1 = self.community1
+        self.compareCommunity1['users'] = [self.user1]
 
+        self.post1 = {'post': 'Hey everyone, lmaooo XD!!', 'community': self.community1, 'poster': self.user1}
+        self.postWithId = {'post': 'Hey everyone, lmaooo XD!!', 'community': self.community1, 'poster': self.user1, 'id': 1}
+        self.comment1 = {'post': 'OH SNAR', 'community': self.community1, 'poster': self.user1, 'originalPost': self.postWithId,
+                            'originalPostId': 1}
+        self.comment2 = {'post': 'OH Snibby', 'community': self.community1, 'poster': self.user1, 'originalPost': self.postWithId,
+                            'originalPostId': 1}
     def test_getPost(self):
-        response = self.client.get('api/posts/23', format='json')
+        url = '/api/create/post'
+        data = self.post1
+        self.assertEqual(Post.objects.count(), 0)
+        response = self.client.post(url, data, format='json')
+        newPostId = Post.objects.get().id
+
+        response = self.client.get('/api/post/' + str(newPostId), format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(json.loads(response.content).post, self.post1['post'])
+        self.assertEqual(json.loads(response.content), self.postWithId)
 
     def test_createPost(self):
-        url = '/api/create/posts'
+        url = '/api/create/post'
         data = self.post1
+        self.assertEqual(Post.objects.count(), 0)
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Post.objects.count(), 1)
-        self.assertEqual(Post.objects.get().post, 'Hey everyone, lmaooo XD!!')
-    
-    def test_setPost(self):
-        url = '/api/create/posts'
-        data = self.post1
-        response = self.client.post(url, data, format='json')
-        
-        data['post'] = 'alas, i am rip'
-        response = self.client.put('api/posts/23', data, format='json')
-
-        self.assertEqual(Post.objects.count(), 1)
-        self.assertEqual(Post.objects.get().post, 'alas, i am rip')
-    
-    def test_getOriginPost(self):
-        url = 'api/comments/12'
-        response = self.client.post(url, format='json')
+        freshPost = Post.objects.get()
+        self.assertEqual(freshPost.post, 'Hey everyone, lmaooo XD!!')
+        self.assertEqual(freshPost.community.name, 'fitness')
+        self.assertEqual(freshPost.poster.username, 'emil')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(json.loads(response.content).post, self.post1.post)
     
+    def test_createComment(self):
+        url = '/api/create/post'
+        data = self.post1        
+        self.assertEqual(Post.objects.count(), 0)
+        response = self.client.post(url, data, format='json')
+
+        url = '/api/create/comment'
+        data = self.comment1
+        response = self.client.post(url, data, format='json')
+
+        freshComment = Comment.objects.get()
+        self.assertEqual(Comment.objects.count(), 1)
+        self.assertEqual(freshComment.post, 'OH SNAR')
+
+    def test_getAllComments(self):
+        url = '/api/create/post'
+        data = self.post1
+        self.assertEqual(Post.objects.count(), 0)
+        response = self.client.post(url, data, format='json')
+        newPostId = Post.objects.get().id
+
+        url = '/api/create/comment'
+        data = self.comment1
+        response = self.client.post(url, data, format='json')
+
+        url = '/api/create/comment'
+        data = self.comment2
+        response = self.client.post(url, data, format='json')
+
+
+        response = self.client.get('/api/post/comments/' + str(newPostId), format='json')
+        self.assertEqual(json.loads(response.content), [self.comment1, self.comment2])
+
+    def test_getOriginPost(self):
+        url = '/api/create/post'
+        data = self.post1        
+        self.assertEqual(Post.objects.count(), 0)
+        response = self.client.post(url, data, format='json')
+
+        url = '/api/create/comment'
+        data = self.comment1
+        response = self.client.post(url, data, format='json')
+        freshComment = Comment.objects.get()
+        serialized = PostSerializer(Post.objects.get(id=freshComment.originalPostId))
+        self.assertEqual(self.postWithId, serialized.data)
+
 class ViewsCommunityTests(APITestCase):
 
     client = APIClient()
     user1 =  {"username": "emil", "password": "snibby", "first_name": "name", "last_name": "lastname", "email": "email@email.ema"}
     user2 = {"username": "marco", "password": "dogdog", "first_name": "name", "last_name": "lastname", "email": "dog@email.ema"}
+
+    def test_usersCommunities(self):
+        fitnessCommunity = Community.objects.create(name = "fitness")
+        u1 = User.objects.create(username = "emil", password = "emil_pw")
+
+        response = self.client.get('/api/emil/communities', format='json')
+        self.assertEqual(json.loads(response.content), [])
+
+        fitnessCommunity.addUserToCommunity(u1)
+        response = self.client.get('/api/emil/communities', format='json')
+        self.assertEqual(json.loads(response.content), [{'name': 'fitness', 'users': [{'email': '','first_name': '','last_name': '','password': 'emil_pw','username': 'emil'}]}])
 
     # Tests getting all communities.
     # This function allows us to get every community
@@ -182,24 +241,46 @@ class ViewsCommunityTests(APITestCase):
         response = self.client.get('/api/all/community', format='json')
         self.assertEqual(json.loads(response.content), [{'name': 'fitness', 'users': []}, {'name': 'sleep', 'users': []}])
 
+    # Gets the communities that a user belongs to.
+    def test_userCommunities(self):
+        data = {'id': '0','name': 'fitness', 'users': [self.user1]}
+        data2 = {'id': '1','name': 'cooking', 'users': [self.user1]}
+
+        response = self.client.post('/api/create/community', data, format='json')
+        response = self.client.post('/api/create/community', data2, format='json')
+
     # Tests creating a community
     # This function allows us to create a community
     def test_createCommunity(self):
         url = '/api/create/community'
 
         # This should successfully create a community
+
         data = {'id': '0','name': 'fitness', 'users': [self.user1]}
+        data2 = {'id': '1','name': 'newFitness', 'users': [self.user1]}
+        data3 = {'id': '2', 'name': 'cooking', 'users': [self.user1]}
+        data4 = {'id': '3','name': 'fitness', 'users': []}
+
         response = self.client.post(url, data, format='json')
-        self.assertEqual(Community.objects.count(), 1)
-        self.assertEqual(Community.objects.get().name, 'fitness')
+        response2 = self.client.post(url, data2, format='json')
+        response3 = self.client.post(url, data3, format='json')
+
+        self.assertEqual(Community.objects.count(), 3)
+        #self.assertEqual(Community.objects.get().name, 'fitness')
+
+        self.assertEqual(User.objects.count(), 1)
+
+        # This should fail if you try and create a community with the same name
+        response4 = self.client.post(url, data4, format='json')
+        self.assertEqual(response4.status_code, status.HTTP_400_BAD_REQUEST)
 
         # This should fail if you pass in no data
-        response2 = self.client.post(url, {}, format='json')
-        self.assertEqual(response2.status_code, status.HTTP_400_BAD_REQUEST)
+        response5 = self.client.post(url, {}, format='json')
+        self.assertEqual(response5.status_code, status.HTTP_400_BAD_REQUEST)
 
-        # There should still only be one user
-        self.assertEqual(Community.objects.count(), 1)
-        self.assertEqual(Community.objects.get().name, 'fitness')
+
+        # There should still only be three communities
+        self.assertEqual(Community.objects.count(), 3)
 
     # This function should return an individual community
     def test_communityDetailsGET(self):
@@ -209,7 +290,7 @@ class ViewsCommunityTests(APITestCase):
 
         # We should get the details of the community
         response = self.client.get(url + 'fitness', data, format='json')
-        self.assertEqual(json.loads(response.content), {'name': 'fitness', 'users': []})
+        self.assertEqual(json.loads(response.content), {'name': 'fitness', 'users': [self.user1]})
 
         # We should not get anything if a community doesn't exist
         response = self.client.get(url + 'hi', data, format='json')
@@ -217,16 +298,26 @@ class ViewsCommunityTests(APITestCase):
 
     def test_communityDetailsPUT(self):
         url = '/api/community/'
-        data = {'id': '0','name': 'fitness', 'users': [self.user1]}
+        data = {'id': '0','name': 'fitness', 'users': []}
         response = self.client.post('/api/create/community', data, format='json')
 
         # We change the name of a community
-        data = {'id': '0','name': 'newFitness', 'users': [self.user1]}
+        data = {'id': '0','name': 'newFitness', 'users': []}
         response = self.client.put(url + 'fitness', data, format='json')
 
         # There should still only be one community, and it should be named newFitness
         self.assertEqual(Community.objects.count(), 1)
         self.assertEqual(Community.objects.get().name, 'newFitness')
+        self.assertEqual(Community.objects.get().users.count(), 0)
+
+        # We add a user to the community
+        data = {'id': '0','name': 'newFitness', 'users': [self.user1]}
+        response = self.client.put(url + 'newFitness', data, format='json')
+
+        # It should be named newFitness, and should now have a user
+        self.assertEqual(Community.objects.count(), 1)
+        self.assertEqual(Community.objects.get().name, 'newFitness')
+        self.assertEqual(Community.objects.get().users.count(), 1)
 
         # We should return not found if the community doesn't exist
         response = self.client.put(url + 'hi', data, format='json')

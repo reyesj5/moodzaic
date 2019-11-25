@@ -1,11 +1,37 @@
 from users.models import User, Profile, Observation
 from users.serializers import UserSerializer, ProfileSerializer, ObservationSerializer
-from rest_framework import status
+from rest_framework import status, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import generics
 
 
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    lookup_field = 'username'
+
+class ProfileViewSet(viewsets.ModelViewSet):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
+    lookup_field = 'username'
+
+    # def get_observations(self, obj)
+
+class ObservationViewSet(viewsets.ModelViewSet):
+    # queryset = Observation.objects.all()
+    serializer_class = ObservationSerializer
+
+    def get_queryset(self):
+        user = User.objects.get(username=self.kwargs['username'])
+        # username = self.request.user.username
+        return Observation.objects.filter(user__username=self.kwargs.get('username', None))
+    
+    def perform_create(self, serializer):
+        print(self.kwargs['username'])
+        serializer.user = Profile.objects.get(username=self.kwargs['username'])
+        serializer.save
+        
 
 
 @api_view(['GET'])
@@ -19,7 +45,7 @@ def allUsers(request):
     return Response(serializer.data)
 
 
-@api_view(['GET', 'DELETE'])
+@api_view(['GET', 'PUT', 'DELETE'])
 def userDetails(request, username):
     """
  Retrieve, update or delete a customer by id/pk.
@@ -37,12 +63,16 @@ def userDetails(request, username):
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-def updateUser(request, username):
-    """
-    Retrieve, update or delete a customer by id/pk.
-    """
-    return Response(status=status.HTTP_404_NOT_FOUND)
+    elif request.method == 'PUT':
+        serializer = UserSerializer(user, context={'request': request})
 
+# def updateUser(request, username):
+#     """
+#     Retrieve, update or delete a customer by id/pk.
+#     """
+#     return Response(status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['POST'])
 def createUser(request):
     """
     Retrieve, update or delete a customer by id/pk.
@@ -50,7 +80,7 @@ def createUser(request):
     return Response(status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['GET', 'POST'])
-def profile_list(request):
+def allProfiles(request):
     """
     List all code snippets, or create a new snippet.
     """
@@ -68,7 +98,7 @@ def profile_list(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET', 'DELETE'])
-def profile_detail(request, username):
+def profileDetails(request, username):
     """
  Retrieve, update or delete a customer by id/pk.
  """
