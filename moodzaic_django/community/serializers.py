@@ -3,6 +3,7 @@ from community.models import Community, Post
 from users.serializers import UserSerializer
 
 class CommunitySerializer(serializers.ModelSerializer):
+    users = UserSerializer(many=True, read_only=True)
     class Meta:
         model = Community
         users = UserSerializer(many=True)
