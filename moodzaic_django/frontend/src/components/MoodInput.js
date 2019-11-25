@@ -64,11 +64,12 @@ class MoodPage extends React.Component {
   state = {
     QuestionObj: getDailyQuestions(),
     MoodList: getMoods(),
+    errors: []
   }
 
   handleChange = (name, e) => {
     this.setState(
-      { [name]: e.target.value },
+      { [name]: parseInt(e.target.value) },
       () => console.log(this.state)
     )
   }
@@ -83,7 +84,7 @@ class MoodPage extends React.Component {
 
   validate = (observation) => {
     const errors = [];
-    if (!observation.sleep || !(0 <= observation.sleep <= 24)) {
+    if (!observation.sleep || !(0 <= parseInt(observation.sleep) <= 24)) {
       errors.push("Please enter a value between 0 and 24 for hours of sleep");
     }
     if (!observation.exercise || !(0 <= observation.exercise <= 24)) {
@@ -114,8 +115,8 @@ class MoodPage extends React.Component {
       mood: this.state.mood
     }
     const errors = this.validate(observation);
+    this.setState({ errors });
     if (errors.length > 0) {
-      this.setState({ errors });
       return;
     }
     createObservation(this.props.profile.username, observation)
@@ -131,7 +132,7 @@ class MoodPage extends React.Component {
         <Container text style={{ marginTop: '7em' }}>
           <Header as='h1'>How are you feeling?</Header>
           <p>Some ~important~ questions for you about your mood today.</p>
-          <div>{errors ? <Message color="red">{errors[0]}</Message> : <p></p>}</div>
+          <div>{errors.length > 0 ? <Message color="red">{errors[0]}</Message> : <p></p>}</div>
           <Form>
             {Object.entries(QuestionObj).map((Question, index) => {
               return (
