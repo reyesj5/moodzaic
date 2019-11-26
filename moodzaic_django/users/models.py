@@ -302,8 +302,11 @@ class Observation(models.Model):
         else:
             return False
 
-    def setMood(self, mood_str, mood_int):
-        if self.mood.setMood(mood_int) and self.mood.setName(mood_str):
+    def setMood(self, mood_int):
+        if not (isinstance(mood_int, type(2))):
+            return False
+        if mood_int >=0 and mood_int <=4:
+            self.mood = mood_int
             self.save()
             return True
         else:
