@@ -47,6 +47,7 @@ class AllCommunities extends React.Component {
     //   User: username,
     //   Community: community
     // }
+    community.users.push(this.props.user)
     updateCommunity(community);
   }
 
@@ -68,7 +69,7 @@ class AllCommunities extends React.Component {
       return (
         <Message
             as={Button}
-            onClick = {this.handleAddClick({name: com.name, users: com.users.push(this.props.user)})}
+            onClick = {this.handleAddClick.bind(this, com)}
             color={included ? 'teal' : 'grey'}
             fluid size='small'
             key = {i}>

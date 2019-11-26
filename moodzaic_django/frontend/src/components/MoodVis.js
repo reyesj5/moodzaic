@@ -11,12 +11,12 @@ import {
 } from 'semantic-ui-react'
 import MyMenu from './Menu.js';
 import Footer from './Footer.js';
-import {
-  XYPlot, XAxis, YAxis,
-  VerticalGridLines,
-  HorizontalGridLines,
-  LineSeries
-} from 'react-vis';
+// import {
+//   XYPlot, XAxis, YAxis,
+//   VerticalGridLines,
+//   HorizontalGridLines,
+//   LineSeries
+// } from 'react-vis';
 
 import {
   BrowserRouter as Router,
