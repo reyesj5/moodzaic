@@ -112,7 +112,19 @@ class MoodPage extends React.Component {
       exercise: this.state.exercise,
       meals: this.state.meals,
       work: this.state.work,
-      mood: this.state.mood
+      mood: this.state.mood,
+      data: [
+        {x: 0, y: 8},
+        {x: 1, y: 5},
+        {x: 2, y: 4},
+        {x: 3, y: 9},
+        {x: 4, y: 1},
+        {x: 5, y: 7},
+        {x: 6, y: 6},
+        {x: 7, y: 3},
+        {x: 8, y: 2},
+        {x: 9, y: 0}
+      ]
     }
     const errors = this.validate(observation);
     this.setState({ errors });
