@@ -6,7 +6,7 @@ import {
   Comment
 } from 'semantic-ui-react'
 // import PostService from '../PostService.js';
-import { getPosts, createPost } from '../integration_funcs.js'
+import { getPosts, createPost, createComment } from '../integration_funcs.js'
 
 
 class Community extends React.Component {
@@ -19,16 +19,17 @@ class Community extends React.Component {
   }
 
   componentDidMount() {
-    getPosts().then(function (result) {
-        this.setState({ allPosts:  result.data, nextPageURL:  result.nextlink})
-    });
-    this.setState(prevState => ({
-      myPosts: (this.state.allPosts).filter((post) => {
-        return(
-          post.community === this.props.myCommunity
-        )
-      })
-  }))}
+    getPosts()
+      .then(posts => this.setState({ allPosts:  posts }))
+      .then(
+        this.setState(prevState => ({
+          myPosts: (this.state.allPosts).filter((post) => {
+            return(
+              post.community === this.props.myCommunity
+            )
+          })
+        })))
+      }
 
   toggleReplyMode = () => {
     this.setState(prevState => ({
@@ -49,7 +50,7 @@ class Community extends React.Component {
   }
 
   handleReply = (op) => {
-    createPost({
+    createComment({
       postid: this.state.posts.length + 1,
       poster: this.props.user,
       community: this.props.myCommunity,
@@ -59,22 +60,11 @@ class Community extends React.Component {
     this.setState({ message: '' });
   }
 
-  // setTime = (time) => {
-  //   this.setState({ now: time });
-  // }
-
   render() {
     const { message } = this.state
     const community = this.props.myCommunity;
-    // const username = this.props.username;
+    // const username = this.props.user.username;
     const posts = this.state.myPosts;
-
-    // var today = new Date();
-    // var date = (today.getMonth()+1)+'-'+today.getDate()+'/'+today.getFullYear();
-    // var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-    // var now = date+' '+time;
-    //
-    // this.setTime(now);
 
     const reply_box = () => {
       return(
@@ -129,7 +119,7 @@ class Community extends React.Component {
       <div>
         <Comment.Group>
           <Header as='h3' dividing>
-            {community}
+            {community.name}
           </Header>
 
           {printPosts}

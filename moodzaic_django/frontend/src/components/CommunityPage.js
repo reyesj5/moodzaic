@@ -2,13 +2,14 @@ import React from 'react'
 import {
   Container,
   Button,
+  Loader
 } from 'semantic-ui-react'
 import Community from './Community.js'
 import CommunitiesPage from './MyCommunities.js'
 import AllCommunities from './AllCommunities.js'
 // import { getMyCommunityList, getAllCommunities } from '../integration_funcs.js'
 // import CommunityService from '../CommunityService.js';
-import {getAllCommunities, getUserByUsername} from '../integration_funcs'
+import {getAllCommunities, usersCommunities} from '../integration_funcs'
 
 
 
@@ -18,43 +19,74 @@ class CommunityPage extends React.Component {
         Community: '',
         AddMode: false,
         MyCommunityList: [],
-        CommunityList: []
-        // should these be props?
+        // CommunityList: [],
+        loadingAll: false,
+        loadingMine: false,
+        vision: false
   }
 
-  // componentDidMount() {
-  //   fetch('')
-  //     .then(response => response.json())
-  //     .then(data => this.setState({ MyCommunityList : data }));
-  // }
+  loadingTrue = () => {
+    this.setState(prevState => ({
+      loading: true
+    }))
+  }
+  loadingFalse = () => {
+    this.setState(prevState => ({
+      loading: false
+    }))
+  }
 
   async componentDidMount() {
-    // var  self  =  this;
-    const communities = await getAllCommunities();
-    this.setState({ CommunityList: communities});
-    // console.log('users pk:', this.props.user.pk);
-    this.setState(prevState => ({
-      MyCommunityList: (this.state.CommunityList).filter((community) => {
-        const yes = (community.users).includes(this.props.user);
-        console.log('should this community be mine?', yes);
-        return yes;
-      })
-    }))
+    // let loadAll = false;
+    // let loadMine = false;
+    this.setState({ loadingMine: true });
+
+    let mine = await usersCommunities(this.props.user.username);
+    this.setState({ MyCommunityList: mine });
+      // .then(mine => this.setState({ MyCommunityList: mine }))
+      // .then(mine => this.setState( {loadingMine: false} ))
+    this.setState( {loadingMine: false} );
+
+
     console.log('communitypage props', this.props);
+    console.log('communitypage state', this.state);
+
   }
 
-  componentDidUpdate() {
-    console.log(this.state);
-  }
+  // componentDidUpdate() {
+  //   // this.setState(prevState => ({
+  //   //   loading: true
+  //   // }))
+  //   console.log(this.state);
+  //   // this.setState(prevState => ({
+  //   //   loading: false
+  //   // }))
+  // }
 
 
-  toggleAddMode = () => {
+  AddModeOn = () => {
     this.setState(prevState => ({
-      AddMode: !prevState.AddMode
+      AddMode: true,
+      vision: true
     }))
   }
+
+  AddModeOff = () => {
+    this.setState(prevState => ({
+      AddMode: false,
+      vision: true
+    }))
+  }
+  // toggleAddMode = () => {
+  //   this.setState(prevState => ({
+  //     AddMode: !prevState.AddMode
+  //   }))
+  // }
+
+
 
   OpenCommunity = (acommunity) => {
+    console.log(acommunity)
     this.setState(prevState => ({
       Community: acommunity
     }))
@@ -64,12 +96,26 @@ class CommunityPage extends React.Component {
     const addMode = this.state.AddMode;
     const community = this.state.Community;
     const myCommunityList = this.state.MyCommunityList;
-    const communityList = this.state.CommunityList;
+    // const communityList = this.state.CommunityList;
     const user = this.props.user;
     let myPage, myButton;
+    console.log(this.state)
 
-    if (community !== '') {
-      myPage = <Community myCommunity = {community} username = {user} />;
+    if (this.state.loadingMine) {
+      myPage =
+      <div>
+      <p>Reaching out to others is a necessary part of caring for the self.</p>
+      </div>
+      myButton = ''
+    }
+
+    else if (this.state.vision === false) {
+      myPage = ''
+      myButton = ''
+    }
+
+    else if (community !== '') {
+      myPage = <Community myCommunity = {community} user = {user} />;
       myButton =
       <Button color='teal' fluid size='large' onClick = {this.OpenCommunity('')}>
         See My Communities
@@ -77,32 +123,36 @@ class CommunityPage extends React.Component {
     }
 
     else if (addMode === false) {
-      myPage = <CommunitiesPage communityCallback = {this.OpenCommunity} myCommunities = {myCommunityList}/>;
-      myButton =
-      <Button color='teal' fluid size='large' onClick = {this.toggleAddMode}>
-        See All Communities
-      </Button>;
+      myPage = <CommunitiesPage myCommunities = {myCommunityList}/>;
+
+      // <CommunitiesPage communityCallback = {this.Community} myCommunities = {myCommunityList}/>;
+      myButton = ''
     }
 
     else {
-      myPage = <AllCommunities allCommunities = {communityList} myCommunities = {myCommunityList} user={user}/>;
-      myButton =
-      <Button color='teal' fluid size='large' onClick = {this.toggleAddMode}>
-        See My Communities
-      </Button>;
+      myPage =
+      <AllCommunities myCommunities = {myCommunityList} user={user}/>;
+      myButton = ''
     }
 
 
     return (
       <div>
         <Container text style={{ marginTop: '7em' }}>
+        <Button color='teal' fluid size='large' onClick = {this.AddModeOff}>
+          See My Communities
+        </Button>
+        <Button color='teal' fluid size='large' onClick = {this.AddModeOn}>
+          See All Communities
+        </Button>
           {myPage}
-          {myButton}
         </Container>
       </div>
     )
   }
 }
+
+
 
 
 
