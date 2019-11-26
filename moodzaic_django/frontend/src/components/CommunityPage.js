@@ -86,6 +86,7 @@ class CommunityPage extends React.Component {
 
 
   OpenCommunity = (acommunity) => {
+    console.log(acommunity)
     this.setState(prevState => ({
       Community: acommunity
     }))
@@ -122,8 +123,9 @@ class CommunityPage extends React.Component {
     }
 
     else if (addMode === false) {
-      myPage =
-      <CommunitiesPage communityCallback = {this.OpenCommunity} myCommunities = {myCommunityList}/>;
+      myPage = <CommunitiesPage myCommunities = {myCommunityList}/>;
+
+      // <CommunitiesPage communityCallback = {this.Community} myCommunities = {myCommunityList}/>;
       myButton = ''
     }
 
