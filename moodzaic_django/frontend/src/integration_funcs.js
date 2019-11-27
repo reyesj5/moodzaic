@@ -74,9 +74,9 @@ const API_URL = 'http://localhost:8000/api/';
       return axios.get(url).then(response => response.data);
   }
 
-  export function createComment() {
-    return
-  }
+  // export function createComment() {
+  //   return
+  // }
 
 
 
