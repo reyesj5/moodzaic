@@ -135,6 +135,8 @@ class ViewsPostTests(APITestCase):
         self.postWithId = {'post': 'Hey everyone, lmaooo XD!!', 'community': self.community1, 'poster': self.user1, 'id': 1}
         self.comment1 = {'post': 'OH SNAR', 'community': self.community1, 'poster': self.user1, 'originalPost': self.postWithId,
                             'originalPostId': 1}
+        self.comment2 = {'post': 'OH Snibby', 'community': self.community1, 'poster': self.user1, 'originalPost': self.postWithId,
+                            'originalPostId': 1}
     def test_getPost(self):
         url = '/api/create/post'
         data = self.post1
@@ -159,8 +161,6 @@ class ViewsPostTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
     
     def test_createComment(self):
-        #snoom7
-        #snoooomY
         url = '/api/create/post'
         data = self.post1        
         self.assertEqual(Post.objects.count(), 0)
@@ -172,13 +172,39 @@ class ViewsPostTests(APITestCase):
 
         freshComment = Comment.objects.get()
         self.assertEqual(Comment.objects.count(), 1)
+        self.assertEqual(freshComment.post, 'OH SNAR')
+
+    def test_getAllComments(self):
+        url = '/api/create/post'
+        data = self.post1
+        self.assertEqual(Post.objects.count(), 0)
+        response = self.client.post(url, data, format='json')
+        newPostId = Post.objects.get().id
+
+        url = '/api/create/comment'
+        data = self.comment1
+        response = self.client.post(url, data, format='json')
+
+        url = '/api/create/comment'
+        data = self.comment2
+        response = self.client.post(url, data, format='json')
 
 
-    # def test_getOriginPost(self):
-    #     url = 'api/comments/12'
-    #     response = self.client.post(url, format='json')
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     self.assertEqual(json.loads(response.content).post, self.post1.post)
+        response = self.client.get('/api/post/comments/' + str(newPostId), format='json')
+        self.assertEqual(json.loads(response.content), [self.comment1, self.comment2])
+
+    def test_getOriginPost(self):
+        url = '/api/create/post'
+        data = self.post1        
+        self.assertEqual(Post.objects.count(), 0)
+        response = self.client.post(url, data, format='json')
+
+        url = '/api/create/comment'
+        data = self.comment1
+        response = self.client.post(url, data, format='json')
+        freshComment = Comment.objects.get()
+        serialized = PostSerializer(Post.objects.get(id=freshComment.originalPostId))
+        self.assertEqual(self.postWithId, serialized.data)
 
 class ViewsCommunityTests(APITestCase):
 
@@ -188,14 +214,39 @@ class ViewsCommunityTests(APITestCase):
 
     def test_usersCommunities(self):
         fitnessCommunity = Community.objects.create(name = "fitness")
-        u1 = User.objects.create(username = "emil", password = "emil_pw")
+        lazyCommunity = Community.objects.create(name = "lazy")
+        emil = User.objects.create(username = "emil", password = "emil_pw")
+        jersey = User.objects.create(username = 'jersey', password='jersey_pw')
 
         response = self.client.get('/api/emil/communities', format='json')
         self.assertEqual(json.loads(response.content), [])
 
-        fitnessCommunity.addUserToCommunity(u1)
+        fitnessCommunity.addUserToCommunity(emil)
         response = self.client.get('/api/emil/communities', format='json')
         self.assertEqual(json.loads(response.content), [{'name': 'fitness', 'users': [{'email': '','first_name': '','last_name': '','password': 'emil_pw','username': 'emil'}]}])
+
+        lazyCommunity.addUserToCommunity(emil)
+        lazyCommunity.addUserToCommunity(jersey)
+        response = self.client.get('/api/emil/communities', format='json')
+        self.assertEqual(json.loads(response.content), [{'name': 'fitness',
+    'users': [{'email': '',
+               'first_name': '',
+               'last_name': '',
+               'password': 'emil_pw',
+               'username': 'emil'}]},
+   {'name': 'lazy',
+    'users': [{'email': '',
+               'first_name': '',
+               'last_name': '',
+               'password': 'emil_pw',
+               'username': 'emil'},
+              {'email': '',
+               'first_name': '',
+               'last_name': '',
+               'password': 'jersey_pw',
+               'username': 'jersey'}]}]
+)
+
 
     # Tests getting all communities.
     # This function allows us to get every community

@@ -1,4 +1,4 @@
-from community.models import Community, Post
+from community.models import Community, Post, Comment
 from users.models import User
 from community.serializers import CommunitySerializer, PostSerializer, CommentSerializer
 
@@ -103,6 +103,17 @@ def postDetails(request, pk):
             return Response(serializer.data)
         except Post.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['GET'])
+def postComments(request, pk):
+    """
+    Retrieve all comments with originalPostId = pk.
+    """
+    if request.method == 'GET':
+        comments = Comment.objects.all()
+        comments = comments.filter(originalPostId = pk)
+        serializer = CommentSerializer(comments, many=True)
+        return Response(serializer.data)
 
 # class PostListCreate(generics.ListCreateAPIView):
 #     queryset = Post.objects.all()
