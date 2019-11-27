@@ -39,37 +39,6 @@ class UpdateProfile extends React.Component {
       confirming: true
     }))
 
-    // if(this.state.first === '') {
-    //   this.setState(prevState => ({
-    //     first: this.props.user.first_name
-    //   }))
-    // }
-    // if(this.state.last === '') {
-    //   this.setState(prevState => ({
-    //     last: this.props.user.last_name
-    //   }))
-    // }
-    // if(this.state.password === '') {
-    //   this.setState(prevState => ({
-    //     password: this.props.user.password
-    //   }))
-    // }
-    // if(this.state.age === '') {
-    //   this.setState(prevState => ({
-    //     age: this.props.profile.age
-    //   }))
-    // }
-    // if(this.state.gender === '') {
-    //   this.setState(prevState => ({
-    //     gender: this.props.profile.gender
-    //   }))
-    // }
-    // if(this.state.email === '') {
-    //   this.setState(prevState => ({
-    //     email: this.props.user.email
-    //   }))
-    // }
-    // console.log(this.props.profile.);
     let username = this.props.user.username;
     console.log(username);
     if(this.state.password === this.state.confirmp) {
