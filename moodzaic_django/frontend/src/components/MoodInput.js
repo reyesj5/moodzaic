@@ -84,19 +84,19 @@ class MoodPage extends React.Component {
 
   validate = (observation) => {
     const errors = [];
-    if (!observation.sleep || !(0 <= parseInt(observation.sleep) <= 24)) {
+    if (typeof(observation.sleep) === 'undefined' || !(0 <= observation.sleep <= 24)) {
       errors.push("Please enter a value between 0 and 24 for hours of sleep");
     }
-    if (!observation.exercise || !(0 <= observation.exercise <= 24)) {
+    if (typeof(observation.exercise) === 'undefined' || !(0 <= parseInt (observation.exercise) <= 24)) {
       errors.push("Please enter a value between 0 and 24 for hours of exercise");
     }
-    if (!observation.meals) {
+    if (typeof(observation.meals) === 'undefined') {
       errors.push("Please enter a value for number of meals");
     }
-    if (!observation.work || !(0 <= observation.work <= 24)) {
+    if (typeof(observation.work) === 'undefined' || !(0 <= observation.work <= 24)) {
       errors.push("Please enter a value between 0 and 24 for hours of work");
     }
-    if (!observation.mood) {
+    if (typeof(observation.mood) === 'undefined') {
       errors.push("Please enter a value for mood");
     }
     if ((observation.sleep + observation.work + observation.exercise) > 24) {
@@ -112,19 +112,7 @@ class MoodPage extends React.Component {
       exercise: this.state.exercise,
       meals: this.state.meals,
       work: this.state.work,
-      mood: this.state.mood,
-      data: [
-        {x: 0, y: 8},
-        {x: 1, y: 5},
-        {x: 2, y: 4},
-        {x: 3, y: 9},
-        {x: 4, y: 1},
-        {x: 5, y: 7},
-        {x: 6, y: 6},
-        {x: 7, y: 3},
-        {x: 8, y: 2},
-        {x: 9, y: 0}
-      ]
+      mood: this.state.mood
     }
     const errors = this.validate(observation);
     this.setState({ errors });
