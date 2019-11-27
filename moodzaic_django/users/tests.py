@@ -436,7 +436,7 @@ class ViewsProfileTest(APITestCase):
 
     
     def test_createProfile(self):
-        url = '/api/create/profile'
+        url = '/api/profiles'
         data = self.profile2
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -444,7 +444,7 @@ class ViewsProfileTest(APITestCase):
         self.assertEqual(Profile.objects.get().username, 'emil')
         
     def test_updateProfile(self):
-        url = '/api/create/profile'
+        url = '/api/profiles'
         data = self.profile2
         response = self.client.post(url, data, format='json')
         

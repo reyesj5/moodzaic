@@ -7,12 +7,12 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('username', 'password', 'first_name', 'last_name', 'email')
         extra_kwargs = {
             'username': {'validators': []},
-            'url': {'lookup_field': 'username'}
+            'url': {'lookup_field': 'username'},
         }
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-    user = UserSerializer(required=True)
+    user = UserSerializer(required=True, validators=[])
 
     class Meta:
         model = Profile
@@ -33,11 +33,25 @@ class ProfileSerializer(serializers.ModelSerializer):
         profile = Profile.objects.create(user=user, **validated_data)
         return profile
 
-    def validate(self, data):
-        p = Profile()
-        if not p.setAge(data['age']):
-            raise serializers.ValidationError("age error")
-        return data
+    # def update(self, instance, validated_data):
+    #     print(instance)
+    #     print(validated_data)
+    #     user_data = validated_data.pop("user")
+    #     instance.user.email = user_data.email
+    #     instance.user.first_name = user_data.first_name
+    #     instance.user.last_name = user_data.last_name
+    #     instance.user.password = user_data.password
+    #     instance.age = validated_data.age
+    #     instance.gender = validated_data.gender
+    #     instance.user.save()
+    #     instance.save()
+    #     return instance
+
+    # def validate(self, data):
+    #     p = Profile()
+    #     if not p.setAge(data['age']):
+    #         raise serializers.ValidationError("age error")
+    #     return data
 
 class ObservationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -48,3 +62,11 @@ class ObservationSerializer(serializers.ModelSerializer):
             'url': {'lookup_field': 'username'}
         }
 
+    def create(self, validated_data):
+        mood_data = validated_data.pop('mood')
+
+        mood = Mood.objects.create(name=mood_data)
+        user = Profile.objects.get(username=self.kwargs['username'])
+        observation = Observation.objects.create(mood=mood, user=user, **validated_data)
+        print(observation)
+        return observation

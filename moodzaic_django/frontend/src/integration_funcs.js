@@ -27,8 +27,8 @@ const API_URL = 'http://localhost:8000/api/';
     .catch(error => console.log(error))
   }
 
-  export function updateUser(u){
-    return axios.put(`${API_URL}users/${u.username}`, u);
+  export function updateUser(username, u){
+    return axios.patch(`${API_URL}users/${username}`, u);
   }
 
 
@@ -134,9 +134,9 @@ const API_URL = 'http://localhost:8000/api/';
       const url = `${API_URL}profiles`;
       return axios.post(url,profile);
   }
-  export function updateProfile(profile){
-      const url = `${API_URL}profiles/${profile.username}`;
-      return axios.put(url,profile);
+  export function updateProfile(username, profile){
+      const url = `${API_URL}profiles/${username}`;
+      return axios.patch(url,profile);
   }
 
   export function createObservation(username, observation) {
