@@ -67,7 +67,7 @@ class LoginForm extends React.Component {
           </Form>
           <Router>
             <Message>
-              New to us? <Link to='/signup'>Sign Up</Link>
+              New to us? <a href='/signup'>Sign Up</a>
             </Message>
           </Router>
         </Grid.Column>
