@@ -102,3 +102,5 @@ _.dev.json
 .dev.json
 
 **/output.txt
+
+**/assets/**
