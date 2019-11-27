@@ -86,9 +86,6 @@ class CommunityPage extends React.Component {
 
 
   OpenCommunity = (acommunity) => {
-    console.log("Open community 1")
-    console.log(acommunity)
-    console.log("Open community 1")
     this.setState(prevState => ({
       Community: acommunity
     }))

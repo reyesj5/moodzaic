@@ -44,7 +44,7 @@ class CommunitiesPage extends React.Component {
               return (
                 <Message
                     as={Button}
-                    onClick = {this.props.communityCallback.bind(this, com.name)}
+                    onClick = {this.props.communityCallback.bind(this, com)}
                     color='teal'
                     fluid size='small'
                     key = {i}>
