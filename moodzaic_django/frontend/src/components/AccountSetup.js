@@ -12,6 +12,7 @@ import {
 } from 'semantic-ui-react'
 import {createUser, createProfile} from '../integration_funcs.js';
 // import ProfileService from '../ProfileService.js';
+import {Redirect, Route} from "react-router-dom";
 
 
 
@@ -37,7 +38,8 @@ class SetupPage extends React.Component {
     age: 0,
     gender: '',
     email: '',
-    errors: []
+    errors: [],
+    finished: false
   }
   handleFirstChange = (e) => this.setState({ first: e.target.value });
   handleLastChange = (e) => this.setState({ last: e.target.value });
@@ -82,6 +84,8 @@ class SetupPage extends React.Component {
         email: this.state.email
       }
     })
+    console.log("No errors, creating account")
+    this.setState({finished: true})
   }
 
   render() {
@@ -90,6 +94,7 @@ class SetupPage extends React.Component {
     // const {QuestionList} = this.state;
     return(
       <div>
+        {this.state.finished ? <Redirect to="/" /> : <div></div>}
         <Grid textAlign='center' style={{ height: '100vh' }} verticalAlign='middle'>
           <Grid.Column style={{ maxWidth: 1000 }}>
             <Container text style={{ marginTop: '-1' }}>
