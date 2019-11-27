@@ -104,9 +104,9 @@ class App extends Component {
       <div>
         <Router>
           <Switch>
-            <Route path="/signup">
+          <Route path="/signup">
             <SignUpForm />
-            </Route>
+          </Route>
             <Route path="/MyMood">
               {this.state.LoggedIn ?
                 <div>

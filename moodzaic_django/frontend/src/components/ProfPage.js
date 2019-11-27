@@ -11,6 +11,7 @@ import {
 import Reminders from './Reminders.js';
 import UpdateProfile from './UpdateProfile.js';
 import {getProfile} from '../integration_funcs.js'
+import MoodVis from './MoodVis.js'
 
 class ProfilePage extends React.Component {
 
@@ -53,7 +54,7 @@ class ProfilePage extends React.Component {
                 <p>My age? <strong>{profile.age}</strong></p>
                 {profile.gender === '' ? '' : <p>My Gender? <strong>{profile.gender}</strong></p>}
                 <p>
-                Once you input your mood, I can display your mood history here!
+                <MoodVis/>
                 </p>
               </Container>
             </Grid.Column>

@@ -13,21 +13,23 @@ import {
   // Redirect
 } from "react-router-dom";
 
+function isError(e) {
+  return e && e.stack && e.message;
+}
 
 class SignUpForm extends React.Component {
   state = {
     redirect: false,
-    user:{}
+    user:{},
+    errors: []
   }
 
-  userCreation = (user, username, password) => {
-    if (!user) {
-      const u = {
-        username: username,
-        password: password
-      };
-        this.setState({redirect: true, user: u});
+  userCreation = (username, password) => {
+    const u = {
+      username: username,
+      password: password
     }
+    this.setState({redirect: true, user: u});
   }
 
   handleSubmit = (event) => {
@@ -35,16 +37,34 @@ class SignUpForm extends React.Component {
     let password = event.target[1].value;
     let confirm_password = event.target[2].value;
     //const [username, password, confirm_password] = event.target.map(t => t.value);
-    console.log([username, password]);
+    console.log([username, password, confirm_password]);
+    if (username.trim() === "") {
+      this.setState({errors: ["Please enter a username"]})
+      return;
+    } else if (password.trim() === "") {
+      this.setState({errors: ["Please enter a password"]})
+      return;
+    } else if (confirm_password.trim() === "") {
+      this.setState({errors: ["Please confirm your password"]})
+      return;
+    }
     if (password === confirm_password) {
       getUserByUsername(username).then(user => {
-        this.userCreation(user, username, password);
+        if(!isError(user)) {
+          this.setState ({errors: ["An account with that username already exists"]})
+          return;
+        }
+        this.userCreation(username, password);
       })
       //console.log([username, password]);
+    } else {
+      this.setState ({errors: ["Please enter matching passwords"]})
+      return;
     }
   }
 
   render() {
+    const {errors} = this.state;
     const {redirect} = this.state;
     if (redirect) {
        // return <Redirect to='/Welcome'/>;
@@ -56,6 +76,7 @@ class SignUpForm extends React.Component {
           <Header as='h2' color='teal' textAlign='center'>
             <Image src={logo} /> Sign up for an account
           </Header>
+          <div>{errors.length > 0 ? <Message color="red">{errors[0]}</Message> : <p></p>}</div>
           <Form size='large'  onSubmit={this.handleSubmit}>
             <Segment stacked>
               <Form.Input fluid icon='user' iconPosition='left' placeholder='Username' />

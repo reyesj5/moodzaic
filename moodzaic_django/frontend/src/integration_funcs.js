@@ -24,7 +24,10 @@ const API_URL = 'http://localhost:8000/api/';
       console.log(response.data);
       return response.data;
     })
-    .catch(error => console.log(error))
+    .catch(error => {
+      console.log(error)
+      return error
+    })
   }
 
   export function updateUser(username, u){
@@ -61,13 +64,18 @@ const API_URL = 'http://localhost:8000/api/';
     }
 
   export function updateCommunity(community){
+      console.log(community);
       const url = `${API_URL}community/${community.name}`;
-      return axios.put(url,community);
+      return axios.put(url, community);
   }
 
   export function usersCommunities(username){
       const url = `${API_URL}${username}/communities`;
       return axios.get(url).then(response => response.data);
+  }
+
+  export function createComment() {
+    return
   }
 
 

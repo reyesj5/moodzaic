@@ -4,7 +4,8 @@ import {
   Header,
   Form,
   Button,
-  Dropdown
+  Dropdown,
+  Message
 } from 'semantic-ui-react'
 // import MyMenu from './Menu.js';
 // import Footer from './Footer.js';
@@ -63,13 +64,16 @@ class MoodPage extends React.Component {
   state = {
     QuestionObj: getDailyQuestions(),
     MoodList: getMoods(),
+    errors: []
   }
+
   handleChange = (name, e) => {
     this.setState(
-      { [name]: e.target.value },
+      { [name]: parseInt(e.target.value) },
       () => console.log(this.state)
     )
   }
+
   handleMood = (e, {value}) => {
     console.log(value)
     this.setState(
@@ -77,6 +81,31 @@ class MoodPage extends React.Component {
       () => console.log(this.state)
     )
   }
+
+  validate = (observation) => {
+    const errors = [];
+    if (typeof(observation.sleep) === 'undefined' || !(0 <= observation.sleep <= 24)) {
+      errors.push("Please enter a value between 0 and 24 for hours of sleep");
+    }
+    if (typeof(observation.exercise) === 'undefined' || !(0 <= parseInt (observation.exercise) <= 24)) {
+      errors.push("Please enter a value between 0 and 24 for hours of exercise");
+    }
+    if (typeof(observation.meals) === 'undefined') {
+      errors.push("Please enter a value for number of meals");
+    }
+    if (typeof(observation.work) === 'undefined' || !(0 <= observation.work <= 24)) {
+      errors.push("Please enter a value between 0 and 24 for hours of work");
+    }
+    if (typeof(observation.mood) === 'undefined') {
+      errors.push("Please enter a value for mood");
+    }
+    if ((observation.sleep + observation.work + observation.exercise) > 24) {
+      console.log("Greater than 24")
+      errors.push("Total hours of sleep, work, and exercise cannot be greater than 24");
+    }
+    return errors;
+  }
+
   handleClick = () => {
     var observation = {
       sleep: this.state.sleep,
@@ -85,18 +114,25 @@ class MoodPage extends React.Component {
       work: this.state.work,
       mood: this.state.mood
     }
+    const errors = this.validate(observation);
+    this.setState({ errors });
+    if (errors.length > 0) {
+      return;
+    }
     createObservation(this.props.profile.username, observation)
+      .then(console.log("Finished sending observation"))
   }
 
   render() {
     const {QuestionObj} = this.state;
     const {MoodList} = this.state;
-                      //(e)=>this.handleMood(e)
+    const { errors } = this.state;
     return(
       <div>
         <Container text style={{ marginTop: '7em' }}>
           <Header as='h1'>How are you feeling?</Header>
           <p>Some ~important~ questions for you about your mood today.</p>
+          <div>{errors.length > 0 ? <Message color="red">{errors[0]}</Message> : <p></p>}</div>
           <Form>
             {Object.entries(QuestionObj).map((Question, index) => {
               return (
