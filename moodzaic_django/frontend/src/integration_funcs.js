@@ -24,7 +24,10 @@ const API_URL = 'http://localhost:8000/api/';
       console.log(response.data);
       return response.data;
     })
-    .catch(error => console.log(error))
+    .catch(error => {
+      console.log(error)
+      return error
+    })
   }
 
   export function updateUser(u){
