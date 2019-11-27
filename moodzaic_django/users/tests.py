@@ -156,7 +156,7 @@ class ProfileTestCase(TestCase):
         self.assertFalse(testProfile.setGoals(7, 9))
     def test_setGoalsNumTooHigh(self):
         testProfile = Profile.objects.get(MoodScore = 2)
-        self.assertFalse(testProfile.setGoals(3, 25))
+        self.assertFalse(testProfile.setGoals(2, 25))
 
 
     def test_makePost(self):
@@ -231,7 +231,7 @@ class ObservationTestCase(TestCase):
             sleep = 7,
             exercise = 3,
             meals = 2,
-            mood = Mood.objects.create(name = "sad", mood = 2)
+            mood = 1
         )
     def test_setSleep(self):
         testObservation = Observation.objects.get(sleep = 7)
@@ -276,16 +276,17 @@ class ObservationTestCase(TestCase):
         self.assertFalse(testObservation.setWork(25))
     def test_setMood(self):
         testObservation = Observation.objects.get(sleep = 7)
-        testObservation.setMood("happy", 3)
-        self.assertEqual(testObservation.mood.name, "happy")
+        self.assertTrue(testObservation.setMood(3))
+    def test_setMood_tooHigh(self):
+        testObservation = Observation.objects.get(sleep = 7)
+        self.assertFalse(testObservation.setMood(33))
+    def test_setMood_negative(self):
+        testObservation = Observation.objects.get(sleep = 7)
+        self.assertFalse(testObservation.setMood(-33))
     def test_setMood_wrongType(self):
         testObservation = Observation.objects.get(sleep = 7)
-        testObservation.setMood(3.2, 3)
-        self.assertEqual(testObservation.mood.name, "sad")
-    def test_setMood_wrongType(self):
-        testObservation = Observation.objects.get(sleep = 7)
-        self.assertFalse(testObservation.setMood("happy", "happy"))
-
+        self.assertFalse(testObservation.setMood("happy"))
+'''
 # Testing that the user moods can set and changed
 class MoodTestCase(TestCase):
     def setUp(self):
@@ -313,6 +314,7 @@ class MoodTestCase(TestCase):
     def test_setMood_negative(self):
         testMood = Mood.objects.get(mood = 2)
         self.assertFalse(testMood.setMood(-6))
+'''
 
 # "View" tests check whether things GET, POST, PUT requests are handled properly in the backend
 
