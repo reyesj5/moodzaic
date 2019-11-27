@@ -318,7 +318,7 @@ class ViewsUserTest(APITestCase):
         
     # testing the GET request for all users
     def test_allUsers(self):
-        url = '/api/all/users/'
+        url = '/api/users'
         # No users exist
         response = self.client.get(url, format="json")
         self.assertEqual(json.loads(response.content), [])
@@ -408,7 +408,7 @@ class ViewsProfileTest(APITestCase):
         self.user2 = {"username": "marco", "password": "dogdog", "first_name": "name", "last_name": "lastname", "email": "dog@email.ema"}
         
         actUser1 = User.objects.create(**self.user1)
-        User.objects.create(**self.user2)
+        # User.objects.create(**self.user2)
         
         self.profile1 = {"MoodScore" : 2,
         "age": 20, 
@@ -422,14 +422,14 @@ class ViewsProfileTest(APITestCase):
         "username": "emil", 
         "user": self.user1 }
 
-        Profile.objects.create(**self.profile1)
+        Profile.objects.create(**self.profile2)
     
    
     def test_getProfile(self):
         response = self.client.get('/api/profiles/emil', format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         profile = json.loads(response.content)
-        self.assertEqual(profile, self.profile1)
+        self.assertEqual(profile, self.profile2)
 
         response = self.client.get('/api/profiles/dog', format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
