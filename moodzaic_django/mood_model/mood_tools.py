@@ -7,10 +7,15 @@ def getEmotions(file = 'static/notifications.txt'):
         emotions = file.read().splitlines()
     return emotions
 
-def getReminders(file = 'static/notifications.txt'):
+def getEmotionMap():
     emotions = getEmotions()
+    emotion_map = {}
     for i in range(len(emotions)):
         emotion_map[emotions[i]] = i
+    return emotion_map
+
+def getReminders(file = 'static/notifications.txt'):
+    emotion_map = getEmotionMap()
     with open('static/notifications.txt','r', encoding="utf-8") as file: # Use file to refer to the file object
         data = file.read().splitlines()
     reminders = {}
