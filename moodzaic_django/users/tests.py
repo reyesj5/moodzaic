@@ -218,16 +218,20 @@ class ProfileTestCase(TestCase):
         self.assertFalse(testProfile.setGender(4))
     def test_getMoodReminder_str(self):
         testProfile = Profile.objects.get(MoodScore = 2)
+        reminders = testProfile.updateReminders(2)
         reminders = testProfile.getMoodReminders()
-        # print('----------------')
-        # print(reminders)
-        # print("-------------------")
         reminders = reminders.split(";")
-        # print(reminders)
         self.assertEqual(reminders[1], "Do not worry about what you cannot control.")
     def test_updateReminder_invalidstr(self):
         testProfile = Profile.objects.get(MoodScore = 2)
         self.assertFalse(testProfile.updateReminders('Tired'))
+    def test_removeReminder_str(self):
+        testProfile = Profile.objects.get(MoodScore = 2)
+        reminders = testProfile.updateReminders(2)
+        testProfile.removeReminder("Do not worry about what you cannot control.")
+        reminders = testProfile.getMoodReminders()
+        reminders = reminders.split(";")
+        self.assertEqual(reminders[1], 'Remember: it’s okay if you don’t know what’s coming next.')
 
 # Observations are asked daily and stored in the database
 class ObservationTestCase(TestCase):

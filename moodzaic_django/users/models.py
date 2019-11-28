@@ -178,7 +178,7 @@ class Profile(models.Model):
         self.save()
         return True
 
-    def removeReminder(self, Reminder):
+    def removeReminder(self, reminder):
         #mood_int can be either the predicted mood or actual mood to get reminder
         try:
             currentReminders = self.reminderList.split(';')
@@ -191,7 +191,6 @@ class Profile(models.Model):
         return True
 
     def getMoodReminders(self):
-        self.updateReminders(self.MoodScore)
         return self.reminderList
 
     def setAge(self, age):

@@ -149,12 +149,9 @@ class Weights(models.Model):
                 timeframe_data = observations.filter(date__gte=timeframe_ago, date__lte=today)
 
                 for obs in timeframe_data.iterator():
-                    # print(obs)
-                    # print(obs.exercise)
-                    # print(obs.work)
                     weekly_exercise, weekly_work = self.getData(obs, observations, 7)
-                    obs.weeklyExercise = weekly_exercise
-                    obs.weeklyWork = weekly_work
+                    obs.setWeeklyExercise(weekly_exercise)
+                    obs.setWeeklyWork(weekly_work)
                     obs.save()
                 return True
             return False
