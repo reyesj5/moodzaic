@@ -101,10 +101,7 @@ class CommunityPage extends React.Component {
     console.log(this.state)
 
     if (this.state.loadingMine) {
-      myPage =
-      <div>
-      <p>Reaching out to others is a necessary part of caring for the self.</p>
-      </div>
+      myPage = ''
       myButton = ''
     }
 
