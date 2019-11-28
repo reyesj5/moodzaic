@@ -2,13 +2,14 @@ import React from 'react'
 import {
   Container,
   Button,
+  Message
 } from 'semantic-ui-react'
 
 // import { addCommunity, isMyCommunity } from '../integration_funcs.js'
 // import CommunityService from '../CommunityService.js';
 // import UserService from '../UserService.js';
 import MakeCommunity from './MakeCommunity.js';
-import {updateCommunity} from '../integration_funcs'
+import {getAllCommunities, updateCommunity} from '../integration_funcs'
 
 
 
@@ -16,22 +17,42 @@ import {updateCommunity} from '../integration_funcs'
 
 class AllCommunities extends React.Component {
   state = {
-    makeMode: false
-    // profile: {}
+    makeMode: false,
+    renderNumber: 3,
+    loadingAll: false,
+    allCommunities: []
+  }
+
+  componentDidMount() {
+    this.setState({ loadingAll: true });
+    getAllCommunities()
+      .then(communities => this.setState({ allCommunities: communities }))
+      .then(mine => this.setState( {loadingAll: false} ))
   }
 
   componentDidUpdate() {
     console.log(this.state, this.props);
   }
 
-  handleAddClick(community) {
-    // var username = this.state.Username;
-    // var user_plus_community = {
-    //   User: username,
-    //   Community: community
-    // }
-    updateCommunity(community);
+  showMore = () => {
+    console.log("Showing more");
+    this.setState(prevState => ({
+      renderNumber: (this.state.renderNumber + 3)
+    }))
   }
+
+  handleAddClick(community) {
+    community.users.push(this.props.user)
+    updateCommunity(community)
+  }
+
+  // setAllCommunitiesState() {
+  //   getAllCommunities()
+  //     .then(communities => this.setState({
+  //       allCommunities: communities
+  //     })
+  //   )
+  // }
 
   toggleMakeMode = () => {
     this.setState(prevState => ({
@@ -45,14 +66,31 @@ class AllCommunities extends React.Component {
     }))
   }
 
+  isUserInCommunity = (com) => {
+    for (var i=0; i < this.props.myCommunities.length; i++) {
+        if (this.props.myCommunities[i].name === com.name) {
+            return true;
+        }
+    }
+    return false;
+}
+
   render() {
-    const communities = this.props.allCommunities.map((com, i) => {
-      return <Button
-                color='purple' fluid size='large'
-                key = {i} onClick = {this.handleAddClick({name: com.name, users: com.users.push(this.props.user)})}>
-                {com.name}: {this.props.myCommunities.includes(com) ? 'added!' : 'add?'}
-              </ Button>;
-    })
+    const communities = this.state.allCommunities.slice(0, this.state.renderNumber).map((com, i) => {
+      const included = this.isUserInCommunity(com);
+      return (
+        <Message
+            as={Button}
+            onClick = {this.handleAddClick.bind(this, com)}
+            color={included ? 'teal' : 'grey'}
+            fluid size='small'
+            key = {i}>
+          <Message.Header>{com.name}</Message.Header>
+          <p>
+          {included ? `You're in this community!` :'Click to add!'}
+          </p>
+        </Message>
+    )})
 
     const makeCommunityButton =
       <Button
@@ -61,29 +99,17 @@ class AllCommunities extends React.Component {
         {'Create a new community!'}
       </ Button>;
 
-    // let myPage;
-    //
-    // if(this.state.makeMode === false) {
-    //   myPage = <MakeCommunity callback={this.toggleMakeMode()} user={this.props.user}/>
-    // }
-    //
-    // else {
-    //   myPage =
-    //   <Container text style={{ marginTop: '7em' }}>
-    //   {communities}
-    //   <p> don't see any you like? </p>
-    //   {makeCommunityButton}
-    //   </Container>
-    // }
-
     return (
       <div>
         {(this.state.makeMode === true) ?
           <MakeCommunity callback={this.toggleMakeMode} user={this.props.user}/>
           :
-          <Container text style={{ marginTop: '7em' }}>
+          <Container text align='center' style={{ marginTop: '1em', marginBottom: '1em' }}>
           {communities}
-          <p> don't see any you like? </p>
+          {(this.state.renderNumber < this.state.allCommunities.length) ?
+            <Button onClick = {this.showMore}>Show More Communities</Button> :
+            <p>That's all the communities!</p>}
+          <p> Don't see any you like? </p>
           {makeCommunityButton}
           </Container>
         }

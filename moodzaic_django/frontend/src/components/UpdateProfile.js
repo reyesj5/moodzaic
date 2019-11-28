@@ -21,77 +21,45 @@ import {updateProfile, updateUser} from '../integration_funcs.js'
 
 class UpdateProfile extends React.Component {
   state = {
-    first: '',
-    last: '',
-    password: '',
-    confirmp: '',
-    age: 0,
-    gender: '',
-    email: '',
+    user: {},
+    profile: {},
     confirming: true
   }
-  handleFirstChange = (e) => this.setState({ first: e.target.value });
-  handleLastChange = (e) => this.setState({ last: e.target.value });
-  handlePasswordChange = (e) => this.setState({ password: e.target.value });
-  handleConfirmpChange = (e) => this.setState({ confirmp: e.target.value });
-  handleAgeChange = (e) => this.setState({ age: e.target.value });
-  handleGenderChange = (e) => this.setState({ gender: e.target.value });
-  handleEmailChange = (e) => this.setState({ email: e.target.value });
+  handleChange = (e, object, attribute) => {
+    console.log(object, attribute, e.target.value);
+    let obj = this.state[object];
+    obj[attribute] = e.target.value;
+    this.setState(prevState => ({
+        [object]: obj
+      }), () => console.log(this.state));
+  }
 
   handleSubmit = () => {
     this.setState(prevState => ({
       confirming: true
     }))
 
-    if(this.state.first === '') {
-      this.setState(prevState => ({
-        first: this.props.user.first_name
-      }))
-    }
-    if(this.state.last === '') {
-      this.setState(prevState => ({
-        last: this.props.user.last_name
-      }))
-    }
-    if(this.state.password === '') {
-      this.setState(prevState => ({
-        password: this.props.user.password
-      }))
-    }
-    if(this.state.age === '') {
-      this.setState(prevState => ({
-        age: this.props.profile.age
-      }))
-    }
-    if(this.state.gender === '') {
-      this.setState(prevState => ({
-        gender: this.props.profile.gender
-      }))
-    }
-    if(this.state.email === '') {
-      this.setState(prevState => ({
-        email: this.props.user.email
-      }))
-    }
-
+    let username = this.props.user.username;
+    console.log(username);
     if(this.state.password === this.state.confirmp) {
-      updateUser({
-        username: this.props.username,
-        password: this.state.password,
-        first_name: this.state.first,
-        last_name: this.state.last,
-        email: this.state.email
-      })
-      updateProfile({
-        username: this.props.profile.username,
-        age: this.state.age,
-        gender: this.state.gender,
-        reminder_list: this.props.profile.reminder_list
-      })
+      if (this.state.user != {}) {
+        updateUser(username, this.state.user).then(response => {
+
+        }).catch(error => {
+          this.setState({confirming: false});
+        })
+      }
+      if (this.state.profile != {}) {
+        updateProfile(username, this.state.profile).then(response => {
+
+        }).catch(error => {
+          this.setState({confirming: false});
+        })
+      }
       this.props.callback();
     }
     else {
-      this.setstate({confirming: false})
+      this.setState({confirming: false})
     }
   }
   // handleSubmit = (user, profile) => {
@@ -113,43 +81,43 @@ class UpdateProfile extends React.Component {
             <p>Fill in anything about your profile you want to change!</p>
             <Form>
               <div className="two fields">
-                <Form.Field name='first' onChange={this.handleFirstChange}>
+                <Form.Field name='first_name' onChange={(e) => this.handleChange(e, "user", "first_name")}>
                   <label>First Name</label>
                   <input />
                 </Form.Field>
-                <Form.Field name='last' onChange={this.handleLastChange}>
+                <Form.Field name='last_name' onChange={(e) => this.handleChange(e, "user", "last_name")}>
                   <label>Last Name</label>
                   <input />
                 </Form.Field>
               </div>
               <div className="three fields">
-              <Form.Field name='age' onChange={this.handleAgeChange}>
+              <Form.Field name='age' onChange={(e) => this.handleChange(e, "profile", "age")}>
                 <label>Age</label>
                 <input placeholder='Age'/>
               </Form.Field>
-              <Form.Field name='gender' onChange={this.handleGenderChange}>
+              <Form.Field name='gender' onChange={(e) => this.handleChange(e, "profile", "gender")}>
                 <label>Gender</label>
                 <input />
               </Form.Field>
-              <Form.Field name='email' onChange={this.handleEmailChange}>
+              <Form.Field name='email' onChange={(e) => this.handleChange(e, "user", "email")}>
                 <label>Email</label>
                 <input />
               </Form.Field>
               </div>
               <div className="two fields">
-                <Form.Field name='password' onChange={this.handlePasswordChange}>
+                <Form.Field name='password' onChange={(e) => this.handleChange(e, "user", "password")}>
                   <label>New Password</label>
                   <input type='password'/>
                 </Form.Field>
                 {this.state.confirming ?
-                  <Form.Field name='password check' onChange={this.handleConfirmpChange}>
+                  <Form.Field name='password check' onChange={(e) => this.handleChange(e, "user", "confirmp")}>
                     <label>Confirm New Password</label>
                     <input type='password'/>
                   </Form.Field>
                 :
-                <Form.Field error type='password' name='password check' onChange={this.handleConfirmpChange}>
+                <Form.Field type='password' name='password check' onChange={(e) => this.handleChange(e, "user", "confirmp")}>
                   <label>Confirm New Password</label>
-                  <input />
+                  <input error/>
                 </Form.Field>
               }
               </div>

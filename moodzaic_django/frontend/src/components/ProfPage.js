@@ -11,6 +11,7 @@ import {
 import Reminders from './Reminders.js';
 import UpdateProfile from './UpdateProfile.js';
 import {getProfile} from '../integration_funcs.js'
+import MoodVis from './MoodVis.js'
 
 class ProfilePage extends React.Component {
 
@@ -45,15 +46,15 @@ class ProfilePage extends React.Component {
             <Container text style={{ marginTop: '7em', marginLeft: '10em' }}>
               <Header as='h1'>
                 {user.username}'s Profile
-                <Button icon onClick={this.toggleEditMode}>
-                  <Icon name="edit outline"/>
-                </Button>
               </Header>
+              <Button icon onClick={this.toggleEditMode}>
+                <Icon name="edit outline"/>
+              </Button>
                 <p>My name? <strong>{user.first_name} {user.last_name}</strong></p>
                 <p>My age? <strong>{profile.age}</strong></p>
                 {profile.gender === '' ? '' : <p>My Gender? <strong>{profile.gender}</strong></p>}
                 <p>
-                Once you input your mood, I can display your mood history here!
+                <MoodVis/>
                 </p>
               </Container>
             </Grid.Column>

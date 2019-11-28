@@ -5,6 +5,8 @@ import {
   Form,
   Grid,
 } from 'semantic-ui-react'
+
+// import {setAllCommunitiesState} from './AllCommunities.js'
 // import CommunityService from '../CommunityService.js';
 import {createCommunity} from '../integration_funcs'
 
@@ -14,15 +16,18 @@ import {createCommunity} from '../integration_funcs'
 
 class MakeCommunity extends React.Component {
   state = {
-    name: ''
+    name: '',
+    allCommunities: []
   }
 
   handleChange = (e) => this.setState({ name: e.target.value });
 
-  handleSubmit = () => {
+  handleSubmit = (event) => {
+      event.preventDefault();
       console.log('new name:', this.state.name);
       console.log('user from props', this.props.user);
       createCommunity({name: this.state.name, users: [this.props.user]});
+      // this.props.setAllCommunitiesState();
       this.props.callback();
   }
 
@@ -42,7 +47,7 @@ class MakeCommunity extends React.Component {
                   <label>Name of Community</label>
                   <input />
                 </Form.Field>
-                <Form.Button color='teal' onClick={this.handleSubmit}>
+                <Form.Button type='submit' color='teal' onClick={this.handleSubmit}>
                   Create Community
                 </Form.Button>
             </Form>
