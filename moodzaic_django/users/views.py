@@ -30,6 +30,8 @@ class UserViewSet(viewsets.ModelViewSet):
         exists = User.objects.filter(username=request.data["username"]).first()
         if exists is not None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+        if (request.data['age']<0):
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         serializer = self.get_serializer(data=request.data)
         print(serializer)
         if not serializer.is_valid():
@@ -173,6 +175,9 @@ def allProfiles(request):
         return Response(serializer.data)
 
     elif request.method == 'POST':
+        # if (request.data['age'] < 0):
+        #     return Response(status=status.HTTP_404_NOT_FOUND)
+
         serializer = ProfileSerializer(data=request.data)
 
         if serializer.is_valid():
