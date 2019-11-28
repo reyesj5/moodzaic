@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from users.models import User, Profile, Observation
+from mood_model.mood_tools import getEmotions
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -54,6 +55,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     #     return data
 
 class ObservationSerializer(serializers.ModelSerializer):
+
     class Meta:
         user = serializers.RelatedField(many=True, read_only=True)#, slug_field='username')
         model = Observation
@@ -61,3 +63,5 @@ class ObservationSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'url': {'lookup_field': 'username'}
         }
+
+        

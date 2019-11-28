@@ -95,6 +95,7 @@ def setObservation(request, username):
     #need to serialize profile too?
     emotions = getEmotions()
     request.data["mood"] = emotions.index(request.data["mood"])
+    print(request.data)
     obsSerializer = ObservationSerializer(data = request.data)
     if obsSerializer.is_valid():
         obsSerializer.save()
@@ -109,8 +110,9 @@ def getObservations(request, username):
     profileID = Profile.objects.get(username=username).id
     observations = Observation.objects.filter(user=profileID)
     serializer = ObservationSerializer(observations, many=True)
-    emotions = getEmotions()
-    serializer.data["mood"] = emotions[serializer.data["mood"]]
+
+    # print(serializer.data)
+    # serializer.data["mood"] = emotions[int(serializer.data["mood"])]
     return Response(serializer.data)
 
 @api_view(['GET'])
