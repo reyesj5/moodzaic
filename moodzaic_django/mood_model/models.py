@@ -126,3 +126,11 @@ class Weights(models.Model):
             return False
         self.bias_int_list = ",".join(str(x) for x in biases_list)
         return True
+
+    def updateLongtermData(self):
+        #todo
+        pass
+
+    def updateMoodPrediction(self):
+        #todo
+        pass
