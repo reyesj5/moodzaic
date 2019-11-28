@@ -30,7 +30,8 @@ class UserViewSet(viewsets.ModelViewSet):
         exists = User.objects.filter(username=request.data["username"]).first()
         if exists is not None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        if (request.data['age']<0):
+
+        if (len(request.data["username"])<1):
             return Response(status=status.HTTP_400_BAD_REQUEST)
         serializer = self.get_serializer(data=request.data)
         print(serializer)
@@ -47,6 +48,25 @@ class ProfileViewSet(viewsets.ModelViewSet):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
     lookup_field = 'username'
+
+    def partial_update(self, request, username):
+        print('HERE')
+        print(type(request.data))
+        print(request.data)
+        data = request.data
+        for k in data:
+            if k == 'name':
+                print('HERE2')
+                if (data[k]==''):
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = ProfileSerializer(Profile.objects.get(username=username), data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        print(serializer.errors)
+        return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
     # def partial_update(self, request, username):
     #     instance = Profile.objects.get(username=username)

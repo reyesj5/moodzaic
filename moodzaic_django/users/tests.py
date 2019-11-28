@@ -439,9 +439,9 @@ class ViewsProfileTest(APITestCase):
         "user": self.user1 }
 
         self.profile3 = {"MoodScore" : 2,
-        "age": -10,
+        "age": 20,
         "gender": "man",
-        "username": "emil",
+        "username": "",
         "user": self.user3 }
 
     def test_getProfile(self):
@@ -467,7 +467,7 @@ class ViewsProfileTest(APITestCase):
         self.assertEqual(Profile.objects.count(), 1)
         self.assertEqual(Profile.objects.get().username, 'emil')
 
-        # fails to post as a result of invalid age
+        # fails to post as a result of invalid username
         data = self.profile3
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -486,8 +486,8 @@ class ViewsProfileTest(APITestCase):
         self.assertEqual(Profile.objects.get().age, 50)
         self.assertEqual(Profile.objects.get().username, 'emil')
 
-        # fails to update as a result of invalid age
-        changes = {"age": -30}
+        # fails to update as a result of invalid username
+        changes = {'name': ''}
         response = self.client.patch('/api/profiles/emil', changes, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(Profile.objects.count(), 1)
