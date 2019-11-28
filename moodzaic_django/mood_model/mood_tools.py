@@ -2,12 +2,12 @@ import json
 
 emotion_map = {}
 
-def getEmotions():
+def getEmotions(file = 'static/notifications.txt'):
     with open('static/emotions.txt','r', encoding="utf-8") as file: # Use file to refer to the file object
         emotions = file.read().splitlines()
     return emotions
 
-def getReminders():
+def getReminders(file = 'static/notifications.txt'):
     emotions = getEmotions()
     for i in range(len(emotions)):
         emotion_map[emotions[i]] = i
@@ -22,13 +22,6 @@ def getReminders():
         else:
             reminders[curr].append(data[i])
     return reminders
-
-# def getReminders():
-#     print(reminders)
-#     return reminders
-#
-# def getEmotions():
-#     return ['Fear', 'Sad', 'Hesitant', 'Calm', 'Happy']
 
 if __name__ == "__main__":
     getReminders()
