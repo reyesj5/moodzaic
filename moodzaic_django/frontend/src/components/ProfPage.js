@@ -57,7 +57,7 @@ class ProfilePage extends React.Component {
                   <p>My name? <strong>{user.first_name} {user.last_name}</strong></p>
                   <p>My age? <strong>{profile.age}</strong></p>
                   {profile.gender === '' ? '' : <p>My Gender? <strong>{profile.gender}</strong></p>}
-                  <MoodVis/>
+                  <MoodVis profile={profile}/>
                 </Container>
               </Grid.Column>
               <Grid.Column width = {5} style={{ margin: '6em 0em 0em', padding: '0em 0em' }}>

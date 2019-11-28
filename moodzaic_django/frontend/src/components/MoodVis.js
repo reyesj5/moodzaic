@@ -11,12 +11,13 @@ import {
 } from 'semantic-ui-react'
 import MyMenu from './Menu.js';
 import Footer from './Footer.js';
-// import {
-//   XYPlot, XAxis, YAxis,
-//   VerticalGridLines,
-//   HorizontalGridLines,
-//   LineSeries
-// } from 'react-vis';
+import {
+  XYPlot, XAxis, YAxis,
+  VerticalGridLines,
+  HorizontalGridLines,
+  LineSeries,
+  VerticalBarSeries
+} from 'react-vis';
 
 import {
   BrowserRouter as Router,
@@ -24,11 +25,13 @@ import {
   Route,
   Link
 } from "react-router-dom";
+import {getUserObservations} from '../integration_funcs';
 
 class MoodVis extends React.Component {
   state = {
     activeItem: "Your Mood",
-    data: [
+    pastObservations: [],
+    sampleData: [
       {x: 0, y: 8},
       {x: 1, y: 5},
       {x: 2, y: 4},
@@ -41,10 +44,17 @@ class MoodVis extends React.Component {
       {x: 9, y: 0}
     ]
   }
+  componentDidMount() {
+    console.log("Mounted")
+    const observations = getUserObservations(this.props.profile.username)
+    this.setState({pastObservations: observations})
+  }
   handleItemClick = (e, { name }) => {
     this.setState({ activeItem: name })
-    console.log(this.state.activeItem)
   }
+  organizeMoodData(observations) {}
+  organizeHabitData(observations) {}
+  organizeCalData(observations) {}
   render () {
     var activeItem = this.state.activeItem;
     console.log("rendering: " + activeItem)
@@ -72,11 +82,11 @@ class MoodVis extends React.Component {
           <Segment fixed='bottom'>
 
             {activeItem === 'Your Mood' ?
-              <MoodChart /> : <div/>}
+              <MoodChart data={this.state.sampleData}/> : <div/>}
             {activeItem === 'Daily Habits' ?
-              <HabitChart /> : <div/>}
+              <HabitChart data={this.state.sampleData}/> : <div/>}
             {activeItem === 'Calendar' ?
-              <CalChart /> : <div/>}
+              <CalChart data={this.state.sampleData}/> : <div/>}
           </ Segment>
         </div>
       </div>
@@ -93,6 +103,13 @@ class MoodChart extends React.Component {
     return(
       <div>
         <h3>MoodChart</h3>
+        <XYPlot height={300} width= {400}>
+          <VerticalGridLines />
+          <HorizontalGridLines />
+          <VerticalBarSeries data={this.props.data} />
+          <XAxis />
+          <YAxis />
+        </XYPlot>
       </div>
     )
   }
@@ -102,6 +119,13 @@ class HabitChart extends React.Component {
     return(
       <div>
         <h3>HabitChart</h3>
+        <XYPlot height={300} width= {400} color="#cd3b54">
+          <VerticalGridLines />
+          <HorizontalGridLines />
+          <VerticalBarSeries data={this.props.data} />
+          <XAxis />
+          <YAxis />
+        </XYPlot>
       </div>
     )
   }
@@ -111,6 +135,13 @@ class CalChart extends React.Component {
     return(
       <div>
         <h3>CalChart</h3>
+        <XYPlot height={300} width= {400} color="#ba4fb9">
+          <VerticalGridLines />
+          <HorizontalGridLines />
+          <VerticalBarSeries data={this.props.data} />
+          <XAxis />
+          <YAxis />
+        </XYPlot>
       </div>
     )
   }
@@ -126,7 +157,7 @@ class CalChart extends React.Component {
 //       <HorizontalGridLines />
 //       <XAxis />
 //       <YAxis />
-//       <LineSeries data={this.props.data} />
+//       <LineSeries sampleData={this.props.sampleData} />
 //     </XYPlot>
 //   )
 //   }
