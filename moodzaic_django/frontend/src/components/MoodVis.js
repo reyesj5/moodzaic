@@ -106,7 +106,8 @@ class MoodVis extends React.Component {
   organizeCalData(observations) {}
 
   render () {
-    this.organizeHabitData([this.state.sampleObs, this.state.sampleObs, this.state.sampleObs])
+    var fakeHabits = this.organizeHabitData([this.state.sampleObs, this.state.sampleObs, this.state.sampleObs]);
+    var fakeMood = this.organizeMoodData([this.state.sampleObs, this.state.sampleObs, this.state.sampleObs]);
     var activeItem = this.state.activeItem;
     console.log("rendering: " + activeItem)
     return(
@@ -133,9 +134,9 @@ class MoodVis extends React.Component {
           <Segment fixed='bottom'>
 
             {activeItem === 'Your Mood' ?
-              <MoodChart data={this.state.sampleData}/> : <div/>}
+              <MoodChart data={fakeMood}/> : <div/>}
             {activeItem === 'Daily Habits' ?
-              <HabitChart data={this.state.sampleData}/> : <div/>}
+              <HabitChart data={fakeHabits}/> : <div/>}
             {activeItem === 'Calendar' ?
               <CalChart data={this.state.sampleData}/> : <div/>}
           </ Segment>
@@ -158,7 +159,7 @@ class MoodChart extends React.Component {
         <XYPlot height={300} width= {400}>
           <VerticalGridLines />
           <HorizontalGridLines />
-          <VerticalBarSeries data={this.props.data} />
+          <LineSeries data={this.props.data} color="blue"/>
           <XAxis />
           <YAxis />
         </XYPlot>
@@ -168,13 +169,18 @@ class MoodChart extends React.Component {
 }
 class HabitChart extends React.Component {
   render() {
+    var sleep = this.props.data.sleep
+    var exercise = this.props.data.exercise
+    var work = this.props.data.work
     return(
       <div>
         <h3>HabitChart</h3>
         <XYPlot height={300} width= {400} color="#cd3b54">
           <VerticalGridLines />
           <HorizontalGridLines />
-          <VerticalBarSeries data={this.props.data} />
+          <VerticalBarSeries data={sleep} color="blue" />
+          <VerticalBarSeries data={exercise} color="red" />
+          <VerticalBarSeries data={work} color="yellow" />
           <XAxis />
           <YAxis />
         </XYPlot>
