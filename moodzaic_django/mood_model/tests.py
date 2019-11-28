@@ -16,7 +16,7 @@ class WeightsTestCase(TestCase):
 
         profile1 = Profile.objects.create(user=user1)
 
-        Observation.objects.create(date=datetime.strptime('11/20/2019, 10:20', '%m/%d/%Y, %H:%M').time(), sleep=4.4, exercise=1.1, meals=2, work=1.1, user=profile1, mood=41)
+        Observation.objects.create(date=datetime.strptime('11/20/2019, 10:20', '%m/%d/%Y, %H:%M').time(), sleep=4.4, exercise=4.1, meals=2, work=1.1, user=profile1, mood=41)
 
         Weights.objects.create(
             user=User.objects.get(username="user1"),
@@ -125,30 +125,37 @@ class WeightsTestCase(TestCase):
         profile = user.profile
         obs = Observation.objects.filter(user__user__username=profile.user.username).first()
         #goals, goals completed, goals missed, goals ratio, past mood score
-        obs.ngoals = 5
-        obs.missedGoals = 2
-        obs.goalRatio = 2/5
+        obs.numberOfGoals = 5
+        obs.goalsMissed = 2
+        obs.goalsRatio = 2/5
         obs.pastMoodScore = 4
-        testWeights.updateLongtermData()
-        self.assertNotEqual(3,obs.ngoals)
-        # self.assertTrue(5,obs.ngoals)
-        # self.assertFalse(0,obs.missedGoals)
-        # self.assertTrue(2,obs.missedGoals)
-        # self.assertFalse(0.5,obs.goalRatio)
-        # self.assertTrue(2/5,obs.goalRatio)
-        # self.assertFalse(4,obs.pastMoodScore)
-        # self.assertTrue(8,obs.pastmMoodScore)
+        self.assertEqual(0.0,obs.weeklyExercise)
+        self.assertEqual(0.0,obs.weeklyWork)
+        self.assertNotEqual(3,obs.numberOfGoals)
+        self.assertTrue(5,obs.numberOfGoals)
+        self.assertFalse(0,obs.goalsMissed)
+        self.assertTrue(2,obs.goalsMissed)
+        self.assertEqual(0.4,obs.goalsRatio)
+        self.assertTrue(2/5,obs.goalsRatio)
+        self.assertEqual(4,obs.pastMoodScore)
+        self.assertTrue(8,obs.pastMoodScore)
+        
+        self.assertTrue(testWeights.updateLongtermData(2))
+        obs = Observation.objects.filter(user__user__username=profile.user.username).first()
+        self.assertEqual(4.1,obs.weeklyExercise)
+        self.assertTrue(1.1,obs.weeklyWork)
 
 
     def test_updateMoodPrediction(self):
         testWeights = Weights.objects.first()
         user = testWeights.user
         profile = user.profile
-        obs = Observation.objects.filter(user__user__username=profile.user.username).first()
-        oldMood = user.profile.getMoodToday(obs.mood)
-        testWeights.updateMoodPrediction()
-        self.assertEqual(oldMood,user.profile.getMoodToday(obs.mood))
-        self.assertEqual("Rejected",user.profile.getMoodToday(obs.mood))
+        obs1 = Observation.objects.filter(user__user__username=profile.user.username).first()
+        oldMood = "Rejected"
+        testWeights.updateMoodPrediction(25)
+        self.assertEqual(oldMood,user.profile.getMoodToday(obs1.mood))
+        obs2 = Observation.objects.filter(user__user__username=profile.user.username).last()
+        self.assertEqual(25,obs2.pastMoodScore)
 
 
 # Testing the methods for our neural network to predict moods

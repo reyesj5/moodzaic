@@ -33,7 +33,6 @@ class Weights(models.Model):
         weekly_data = observations.filter(date__gte=week_ago, date__lte=today)
 
         days_with_obs = weekly_data.__len__
-
         if days_with_obs == 0:
             return 0, 0
 
@@ -55,17 +54,27 @@ class Weights(models.Model):
 
         input_data = []
         mood_data = []
-        for obs in observations.iterator():
-            weekly_exercise, weekly_work = self.getData(obs, observations, timeframe)
 
-            row = [
-                obs.sleep, obs.exercise, weekly_exercise, obs.meals,
-                0, 0, 0, 0, 0, # goals, goals completed, goals missed, goals ratio, past mood score
-                obs.work, weekly_work
-            ]
-            input_data.append(row)
-            mood_data.append(obs.mood)
+        if len(observations) > 0:
+            today = observations[0].date.today()
+            timeframe_ago = today - datetime.timedelta(days=timeframe)
+            timeframe_data = observations.filter(date__gte=timeframe_ago, date__lte=today)
+
+
+            for obs in timeframe_data.iterator():
+                weekly_exercise, weekly_work = self.getData(obs, observations, 7)
+
+                row = [
+                    obs.sleep, obs.exercise, weekly_exercise, obs.meals,
+                    obs.numberOfGoals, obs.goalsCompleted, obs.goalsMissed,
+                    obs.goalsRatio, obs.pastMoodScore,
+                    obs.work, weekly_work
+                ]
+                input_data.append(row)
+                mood_data.append(obs.mood)
+
         return np.array(input_data), np.array(mood_data)
+
 
 
     def getWeightBiasDictionaries(self):
@@ -104,6 +113,7 @@ class Weights(models.Model):
         input_data, mood_data = self.transformUserData(1)
         output = model.feedforward(input_data[0])
         mood = model.roundClass(output)
+        self.updateMoodPrediction(mood)
         return mood
         #self.user.profile.setNotifications()
 
@@ -127,10 +137,49 @@ class Weights(models.Model):
         self.bias_int_list = ",".join(str(x) for x in biases_list)
         return True
 
-    def updateLongtermData(self):
-        #todo
-        pass
+    def updateLongtermData(self, timeframe):
+        try:
+            profile = self.user.profile
+            observations = Observation.objects.filter(user__user__username=profile.user.username)
+            observations = observations.order_by("date")
 
-    def updateMoodPrediction(self):
-        #todo
-        pass
+            if len(observations) > 0:
+                today = observations[0].date.today()
+                timeframe_ago = today - datetime.timedelta(days=timeframe)
+                timeframe_data = observations.filter(date__gte=timeframe_ago, date__lte=today)
+
+                for obs in timeframe_data.iterator():
+                    # print(obs)
+                    # print(obs.exercise)
+                    # print(obs.work)
+                    weekly_exercise, weekly_work = self.getData(obs, observations, 7)
+                    obs.weeklyExercise = weekly_exercise
+                    obs.weeklyWork = weekly_work
+                    obs.save()
+                return True
+            return False
+        except:
+            return False
+
+
+    def updateMoodPrediction(self, prediction):
+        profile = self.user.profile
+        observations = Observation.objects.filter(user__user__username=profile.user.username)
+        observations = observations.order_by("date")
+        try:
+            today = observations[0].date.today()
+            tomorrow = today - datetime.timedelta(days=-1)
+            obsTomorrow = observations.filter(date__gte=tomorrow, date__lte=tomorrow)
+            if len(obsTomorrow) != 0:
+                for obs in obsTomorrow:
+                    obs.pastMoodScore = prediction
+                    obs.save()
+            else:
+                Observation.objects.create(
+                    date = tomorrow,
+                    pastMoodScore = prediction,
+                    user = profile
+                )
+            return True
+        except:
+            return False

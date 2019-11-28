@@ -285,7 +285,7 @@ class Observation(models.Model):
     goalsCompleted = models.IntegerField(default=0)
     goalsMissed = models.IntegerField(default = 0)
     goalsRatio = models.FloatField(default=0)
-    pastMoodScore = models.IntegerField(default = 0)
+    pastMoodScore = models.IntegerField(default = -1)
     work = models.FloatField(default=0)
     weeklyWork = models.FloatField(default=0)
     user = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True)
