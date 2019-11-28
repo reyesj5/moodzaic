@@ -18,8 +18,8 @@ class Community extends React.Component {
     replyMode: false
   }
 
-  componentDidMount() {
-    getPosts()
+  async componentDidMount() {
+    await getPosts()
       .then(posts => this.setState({ allPosts:  posts }))
       .then(
         this.setState(prevState => ({
@@ -32,29 +32,30 @@ class Community extends React.Component {
       }
 
   toggleReplyMode = () => {
-    this.setState(prevState => ({
-      replyMode: !prevState.replyMode
-    }))
+    console.log(this.state.replyMode)
+    this.setState({
+      replyMode: !this.state.replyMode
+    })
   }
 
   handleChange = (e, { name, value }) => this.setState({ [name]: value })
 
   handleSubmit = () => {
     createPost({
-      postid: this.state.posts.length + 1,
+      postid: this.state.allPosts.length + 1,
       poster: this.props.user,
       community: this.props.myCommunity,
-      message: this.state.message
+      post: this.state.message
     });
     this.setState({ message: '' });
   }
 
   handleReply = (op) => {
     createComment({
-      postid: this.state.posts.length + 1,
+      postid: this.state.allPosts.length + 1,
       poster: this.props.user,
       community: this.props.myCommunity,
-      message: this.state.message,
+      post: this.state.message,
       originalPost: op
     });
     this.setState({ message: '' });
@@ -64,7 +65,7 @@ class Community extends React.Component {
     const { message } = this.state
     const community = this.props.myCommunity;
     // const username = this.props.user.username;
-    const posts = this.state.myPosts;
+    const posts = this.state.allPosts;
 
     const reply_box = () => {
       return(
@@ -96,24 +97,46 @@ class Community extends React.Component {
         <Comment key = {i} >
           <Comment.Avatar src={logo} />
           <Comment.Content>
-            <Comment.Author as='a'>{post.poster.name}</Comment.Author>
+            <Comment.Author as='a'>{post.poster.username}</Comment.Author>
             <Comment.Metadata>
               <div>{post.time}</div>
             </Comment.Metadata>
-            <Comment.Text>{post.message}</Comment.Text>
+            <Comment.Text>{post.post}</Comment.Text>
             <Comment.Actions>
-              <Comment.Action onClick={this.toggleReplyMode}>Reply</Comment.Action>
-              {this.replyMode ? reply_box : ''}
+              <Comment.Action onClick={this.toggleReplyMode.bind(this)}>Reply</Comment.Action>
+              {this.state.replyMode ? reply_box() : ''}
             </Comment.Actions>
           </Comment.Content>
-          {post.comment_list.empty ? '' :
-          <Comment.Group>
-            {printPosts(posts.filter((p) => p.originalPost === post))}
-          </Comment.Group>
-          }
         </Comment>
       )
     })
+    // const printPosts = posts.map((post, i) => {
+    //   console.log("checking posts")
+    //   console.log(post)
+    //   console.log("checking posts")
+    //
+    //   return (
+    //     <Comment key = {i} >
+    //       <Comment.Avatar src={logo} />
+    //       <Comment.Content>
+    //         <Comment.Author as='a'>{post.poster.name}</Comment.Author>
+    //         <Comment.Metadata>
+    //           <div>{post.time}</div>
+    //         </Comment.Metadata>
+    //         <Comment.Text>{post.message}</Comment.Text>
+    //         <Comment.Actions>
+    //           <Comment.Action onClick={this.toggleReplyMode}>Reply</Comment.Action>
+    //           {this.replyMode ? reply_box : ''}
+    //         </Comment.Actions>
+    //       </Comment.Content>
+    //       {post.comment_list.empty ? '' :
+    //       <Comment.Group>
+    //         {printPosts(posts.filter((p) => p.originalPost === post))}
+    //       </Comment.Group>
+    //       }
+    //     </Comment>
+    //   )
+    // })
 
     return (
       <div>

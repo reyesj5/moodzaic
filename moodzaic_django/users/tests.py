@@ -326,7 +326,7 @@ class ViewsUserTest(APITestCase):
 
     # testing the GET request for all users
     def test_allUsers(self):
-        url = '/api/all/users/'
+        url = '/api/users'
         # No users exist
         response = self.client.get(url, format="json")
         self.assertEqual(json.loads(response.content), [])
@@ -363,26 +363,27 @@ class ViewsUserTest(APITestCase):
         User.objects.create(**self.user2)
 
         # should succeed since the change is valid
-        user1Changed = {"username": "emil", "password": "snibby", "first_name": "name", "last_name": "lastname", "email": "dog@dog.dog"}
-        response = self.client.put('/api/update/emil', user1Changed,  format="json")
+        user1Changed = {"first_name": "newname", "last_name": "lastname"}
+        response = self.client.patch('/api/users/emil', user1Changed,  format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # number of objects is the same as before
         self.assertEqual(User.objects.count(), 2)
         # the email has been changed
-        self.assertEqual(User.objects.first().email, "dog@dog.dog")
+        self.assertEqual(User.objects.first().first_name, "newname")
 
         # should fail since change is invalid
-        user1ChangedBadEmail = {"username": "emil", "password": "snibby", "first_name": "name", "last_name": "lastname", "email": "dog"}
-        response = self.client.put('/api/update/marco', user1ChangedBadEmail,  format="json")
 
+        user1ChangedBadEmail = {"password": "snibby", "first_name": "name", "last_name": "lastname", "email": "dog"}
+        response = self.client.patch('/api/users/marco', user1ChangedBadEmail,  format="json")
+        
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(User.objects.count(), 2)
         self.assertNotEqual(User.objects.first().email, "dog")
 
         # should fail since username already exists
         user1ChangedToExistingUser = {"username": "marco", "password": "snibby", "first_name": "name", "last_name": "lastname", "email": "dog"}
-        response = self.client.put('/api/update/emil', user1ChangedToExistingUser,  format="json")
-
+        response = self.client.patch('/api/users/emil', user1ChangedToExistingUser,  format="json")
+        
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(User.objects.count(), 2)
         self.assertNotEqual(User.objects.first().username, "marco")
@@ -390,22 +391,22 @@ class ViewsUserTest(APITestCase):
 
     def test_createUser(self):
         # successful user1 creation
-        response = self.client.post('/api/create/user', self.user1, format="json")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response = self.client.post('/api/users', self.user1, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         # checking that the user was created successfully
         self.assertEqual(User.objects.count(), 1)
         self.assertEqual(User.objects.last().username, "emil")
 
         # successful user2 creation
-        response = self.client.post('/api/create/user', self.user2, format="json")
-        self.assertEqual(respose.status_code, status.HTTP_200_OK)
+        response = self.client.post('/api/users', self.user2, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         self.assertEqual(User.objects.count(), 2)
         self.assertEqual(User.objects.last().username, "marco")
 
         # failed user creation, repeated user
-        response = self.client.post('/api/create/user', self.user2, format="json")
-        self.assertEqual(respose.status_code, status.HTTP_400_BAD_REQUEST)
+        response = self.client.post('/api/users', self.user2, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(User.objects.count(), 2)
 
 
@@ -416,8 +417,9 @@ class ViewsProfileTest(APITestCase):
         self.user2 = {"username": "marco", "password": "dogdog", "first_name": "name", "last_name": "lastname", "email": "dog@email.ema"}
 
         actUser1 = User.objects.create(**self.user1)
-        User.objects.create(**self.user2)
 
+        #actUser2 = User.objects.create(**self.user2)
+        
         self.profile1 = {"MoodScore" : 2,
         "age": 20,
         "gender": "man",
@@ -432,19 +434,19 @@ class ViewsProfileTest(APITestCase):
 
         Profile.objects.create(**self.profile1)
 
-
     def test_getProfile(self):
+        Profile.objects.create(**self.profile1)
         response = self.client.get('/api/profiles/emil', format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         profile = json.loads(response.content)
-        self.assertEqual(profile, self.profile1)
+        self.assertEqual(profile, self.profile2)
 
         response = self.client.get('/api/profiles/dog', format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
     def test_createProfile(self):
-        url = '/api/create/profile'
+        url = '/api/profiles'
         data = self.profile2
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -452,12 +454,11 @@ class ViewsProfileTest(APITestCase):
         self.assertEqual(Profile.objects.get().username, 'emil')
 
     def test_updateProfile(self):
-        url = '/api/create/profile'
-        data = self.profile2
-        response = self.client.post(url, data, format='json')
-
-        data['age'] = 50
-        response = self.client.put('api/profiles/emil', data, format='json')
+        url = '/api/profiles'
+        Profile.objects.create(**self.profile1)
+        
+        changes = {"age": 50}
+        response = self.client.patch('api/profiles/emil', changes, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -502,6 +503,7 @@ class ViewsObservationsTest(APITestCase):
 
     def test_getAllUserObservation(self):
         url = '/api/observations/create/emil'
+
         data = self.observation2
         response = self.client.post(url, data, format="json")
 
@@ -529,3 +531,4 @@ class ViewsObservationsTest(APITestCase):
         data = self.observation1
         response = self.client.post(url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+

@@ -17,6 +17,6 @@ urlpatterns = [
     path('api/<username>/communities', views.usersCommunities),
 
     # path('api/post/', views.makePost),
-    # path('api/post/all', views.PostListCreate.as_view()),
+    path('api/all/post', views.allPosts),
     # url(r'^api/post/(?P<pk>[\w]+)$', views.postDetails)
 ]

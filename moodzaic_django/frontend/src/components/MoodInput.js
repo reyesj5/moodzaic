@@ -120,7 +120,10 @@ class MoodPage extends React.Component {
       return;
     }
     createObservation(this.props.profile.username, observation)
-      .then(console.log("Finished sending observation"))
+      .then(response => {
+        console.log("Finished sending observation")
+
+      }).catch(error => console.log(error));
   }
 
   render() {
