@@ -377,8 +377,6 @@ class Observation(models.Model):
                 ratio = self.goalsCompleted
             else:
                 ratio = self.goalsCompleted*1.0/self.goalsMissed
-                print(ratio)
-            print(ratio)
             self.goalsRatio = ratio
             self.save()
             return True
