@@ -6,12 +6,15 @@ from rest_framework.routers import DefaultRouter
 router = DefaultRouter(trailing_slash=False)
 router.register(r'users', views.UserViewSet)
 router.register(r'profiles', views.ProfileViewSet)
-router.register(r'observations/(?P<username>[\w]+)', views.ObservationViewSet, base_name='Observation')
+#router.register(r'observations/create/(?P<username>[\w]+)', views.ObservationViewSet, base_name='Observation')
 
 urlpatterns = [
     path('api/', include(router.urls)),
+    url(r'^api/observations/create/(?P<username>[\w]+)', views.setObservation),
+    url(r'^api/observations/(?P<username>[\w]+)', views.getObservations)
+
     # path('api/all/users/', views.UserViewSet.list ),
-    # url(r'^api/users/(?P<username>[\w]+)$', views.UserViewSet.retrieve),
+    #url(r'^api/users/(?P<username>[\w]+)$', views.UserViewSet.retrieve),
     # path('api/create/users/', views.UserViewSet.create),
 
     

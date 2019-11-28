@@ -372,6 +372,7 @@ class ViewsUserTest(APITestCase):
         self.assertEqual(User.objects.first().first_name, "newname")
 
         # should fail since change is invalid
+
         user1ChangedBadEmail = {"password": "snibby", "first_name": "name", "last_name": "lastname", "email": "dog"}
         response = self.client.patch('/api/users/marco', user1ChangedBadEmail,  format="json")
         
@@ -416,6 +417,7 @@ class ViewsProfileTest(APITestCase):
         self.user2 = {"username": "marco", "password": "dogdog", "first_name": "name", "last_name": "lastname", "email": "dog@email.ema"}
 
         actUser1 = User.objects.create(**self.user1)
+
         #actUser2 = User.objects.create(**self.user2)
         
         self.profile1 = {"MoodScore" : 2,
@@ -429,6 +431,8 @@ class ViewsProfileTest(APITestCase):
         "gender": "man",
         "username": "emil",
         "user": self.user1 }
+
+        Profile.objects.create(**self.profile1)
 
     def test_getProfile(self):
         Profile.objects.create(**self.profile1)
@@ -467,8 +471,6 @@ class ViewsObservationsTest(APITestCase):
 
         client = APIClient()
 
-        self.mood1 = {'name':"sad", 'mood': '2'}
-
         self.user1 = {"username": "emil", "password": "snibby", "first_name": "name", "last_name": "lastname", "email": "email@email.ema"}
         userObject = User.objects.create(**self.user1)
 
@@ -485,36 +487,48 @@ class ViewsObservationsTest(APITestCase):
         "user": self.user1 }
 
         profileObject = Profile.objects.create(**self.profile1)
+        userId = Profile.objects.get().id
+
 
         self.observation1 = {'sleep': '7',
             'exercise':'3',
             'meals':'2',
-            'mood': self.mood1,
-            'user': self.profile2}
+            'mood': 'Revolted',
+            'user': userId}
         self.observation2 = {'sleep': '9',
             'exercise':'4',
             'meals':'3',
-            'mood': self.mood1,
-            'user': self.profile2}
+            'mood': 'Revulsion',
+            'user': userId}
 
     def test_getAllUserObservation(self):
+        url = '/api/observations/create/emil'
+
+        data = self.observation2
+        response = self.client.post(url, data, format="json")
+
+        data = self.observation1
+        response = self.client.post(url, data, format="json")
+
         url = '/api/observations/emil'
         response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        print(response)
-        self.assertEqual(json.loads(response.content), self.observation1)
-
-    def test_postObervation(self):
-        url = '/api/users/emil/observations'
+        testList = [self.observation1, self.observation2]
+        self.assertEqual(len(json.loads(response.content)), 2)
+    
+    def test_postObservation(self):
+        url = '/api/observations/create/emil'
         data = self.observation2
         response = self.client.post(url, data, format="json")
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        observation = Observation.objects.get()
+        self.assertEqual(observation.sleep, 9)
+        self.assertEqual(observation.exercise, 4)
+        self.assertEqual(observation.mood, 3)
+
 
         data = self.observation1
         response = self.client.post(url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-
-        response = self.client.get(url, format="json")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(json.loads(response.content), [self.observation1, self.observation2])

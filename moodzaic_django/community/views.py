@@ -116,7 +116,6 @@ def postComments(request, pk):
         serializer = CommentSerializer(comments, many=True)
         return Response(serializer.data)
 
-
 # Return all posts
 @api_view(['GET'])
 def allPosts(request):
