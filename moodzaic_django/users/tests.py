@@ -498,19 +498,16 @@ class ViewsObservationsTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(json.loads(response.content), self.observation1)
     
-    def test_postObervation(self):
-        url = '/api/users/emil/observations'
+    def test_postObservation(self):
+        url = '/api/observations/create/emil'
         data = self.observation2
         response = self.client.post(url, data, format="json")
+        print('1')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         data = self.observation1
         response = self.client.post(url, data, format="json")
+        print('2')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-
-        response = self.client.get(url, format="json")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(json.loads(response.content), [self.observation1, self.observation2])
 
     

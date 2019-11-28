@@ -5,6 +5,10 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import generics
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -33,6 +37,15 @@ class ObservationViewSet(viewsets.ModelViewSet):
         serializer.save
         
 
+@api_view(['POST'])
+def setObservation(request, username):
+    #just update observations
+    print('SMOOGY')
+    #userProf = Profile.objects.get(username=username)
+    obsSerializer = ObservationSerializer(data = request.data)
+    obsSerializer.is_valid()
+    logger.error(obsSerializer.errors)
+    return Response(obsSerializer.data)
 
 @api_view(['GET'])
 def allUsers(request):

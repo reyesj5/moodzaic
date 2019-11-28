@@ -47,4 +47,13 @@ class ObservationSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'url': {'lookup_field': 'username'}
         }
+    def create(self, validated_data):
+        moodData = validated_data.pop('mood')
+        profileData = validated_data.pop('user')
+        profile = Profile.objects.get_or_create(username=profileData['username'],
+                                                age=profileData['age'],
+                                                gender=profileData['gender'],
+                                                user=profileData['user'])
+        validated_data['profile'] = profile
+        observation = Observation.objects.create(**validated_data)
 
