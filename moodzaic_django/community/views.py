@@ -85,6 +85,7 @@ def createPost(request):
 @api_view(['POST'])
 def createComment(request):
     if request.method == 'POST':
+        print(request.data)
         serializer = CommentSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()

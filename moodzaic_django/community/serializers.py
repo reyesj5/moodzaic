@@ -53,6 +53,8 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post
         fields = ['post', 'community', 'poster', 'id']
 
+
+
     def create(self, validated_data):
         userData = validated_data.pop('poster')
         user = User.objects.get_or_create(username=userData['username'],
@@ -77,7 +79,17 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = ['post', 'community', 'poster', 'originalPost', 'originalPostId']
 
+    def to_internal_value(self, data):
+        internal_value = super(CommentSerializer, self).to_internal_value(data)
+        ogpostid = data["originalPost"]["id"]
+        
+        internal_value.update({
+            "ogpostid": ogpostid
+        })
+        return internal_value
+
     def create(self, validated_data):
+        print(validated_data)
         userData = validated_data.pop('poster')
         user = User.objects.get_or_create(username=userData['username'],
                                                        email=userData['email'],
@@ -90,8 +102,8 @@ class CommentSerializer(serializers.ModelSerializer):
         validated_data['community'] = community
 
         originalPostData = validated_data.pop('originalPost')
-        originalPost = Post.objects.get_or_create(id = validated_data['originalPostId'])[0]
+        originalPost = Post.objects.get_or_create(id = validated_data['ogpostid'])[0]
         validated_data['originalPost'] = originalPost
-
+        del validated_data["ogpostid"]
         comment = Comment.objects.create(**validated_data)
         return comment

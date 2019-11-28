@@ -3,7 +3,8 @@ import logo from '../logo.png';
 import {
   Header,
   Form,
-  Comment
+  Comment,
+  Button
 } from 'semantic-ui-react'
 // import PostService from '../PostService.js';
 import { getPosts, createPost, createComment } from '../integration_funcs.js'
@@ -12,10 +13,11 @@ import { getPosts, createPost, createComment } from '../integration_funcs.js'
 class Community extends React.Component {
   state = {
     message: '',
+
     // now: '',
     allPosts: [],
     myPosts: [],
-    replyMode: false
+    replyMode: -1
   }
 
   async componentDidMount() {
@@ -31,17 +33,17 @@ class Community extends React.Component {
         })))
       }
 
-  toggleReplyMode = () => {
+  toggleReplyMode = (i) => {
     console.log(this.state.replyMode)
     this.setState({
-      replyMode: !this.state.replyMode
+      replyMode: i
     })
   }
 
   handleChange = (e, { name, value }) => this.setState({ [name]: value })
 
   handleSubmit = () => {
-    createPost({
+    createPost({ 
       postid: this.state.allPosts.length + 1,
       poster: this.props.user,
       community: this.props.myCommunity,
@@ -51,43 +53,53 @@ class Community extends React.Component {
   }
 
   handleReply = (op) => {
+    console.log(op);
+    op.postid = op.id;
     createComment({
       postid: this.state.allPosts.length + 1,
       poster: this.props.user,
       community: this.props.myCommunity,
       post: this.state.message,
       originalPost: op
+    }).then(response => {
+      this.setState({ message: '' });
     });
-    this.setState({ message: '' });
+    
   }
 
   render() {
-    const { message } = this.state
+    const { message, replyMode } = this.state
     const community = this.props.myCommunity;
     // const username = this.props.user.username;
     const posts = this.state.allPosts;
 
-    const reply_box = () => {
+    const reply_box = (post) => {
       return(
-        <Form onSubmit={this.handleReply}>
+        <Form onSubmit={this.handleReply.bind(this, post)}>
           <Form.TextArea
             placeholder='Reply to this comment'
             name='message'
             value={message}
             onChange={this.handleChange}
           />
+          <Button.Group>
           <Form.Button
+            size='mini'
+            compact
             content='reply'
             labelPosition='left'
             type='submit'
             icon='edit' primary
           />
           <Form.Button
+            size='mini'
+            compact
             content='cancel'
-            labelPosition='right'
-            onClick={this.toggleReplyMode}
+            labelPosition='left'
+            onClick={this.toggleReplyMode.bind(this, -1)}
             icon='edit' primary
           />
+          </Button.Group>
         </Form>
       )
     }
@@ -103,8 +115,8 @@ class Community extends React.Component {
             </Comment.Metadata>
             <Comment.Text>{post.post}</Comment.Text>
             <Comment.Actions>
-              <Comment.Action onClick={this.toggleReplyMode.bind(this)}>Reply</Comment.Action>
-              {this.state.replyMode ? reply_box() : ''}
+              <Comment.Action onClick={this.toggleReplyMode.bind(this, i)}>Reply</Comment.Action>
+              {this.state.replyMode == i ? reply_box(post) : ''}
             </Comment.Actions>
           </Comment.Content>
         </Comment>
@@ -156,7 +168,7 @@ class Community extends React.Component {
               <Form.TextArea
                 placeholder='Say something to the community!'
                 name='message'
-                value={message}
+                value={replyMode == -1? message : ''}
                 onChange={this.handleChange}
               />
             }
