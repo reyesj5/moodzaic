@@ -174,6 +174,18 @@ class Profile(models.Model):
         self.save()
         return True
 
+    def removeReminder(self, Reminder):
+        #mood_int can be either the predicted mood or actual mood to get reminder
+        try:
+            currentReminders = self.reminderList.split(';')
+            pos = currentReminders.index(reminder)
+        except:
+            return False
+        del currentReminders[pos]
+        self.reminderList = ";".join(currentReminders)
+        self.save()
+        return True
+
     def getMoodReminders(self):
         self.updateReminders(self.MoodScore)
         return self.reminderList
