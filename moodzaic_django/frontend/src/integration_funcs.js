@@ -152,7 +152,7 @@ const API_URL = 'http://localhost:8000/api/';
   }
 
   export function createObservation(username, observation) {
-    const url = `${API_URL}observations/${username}`;
+    const url = `${API_URL}observations/create/${username}`;
     return axios.post(url, observation);
   }
 
