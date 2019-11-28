@@ -531,7 +531,7 @@ class ViewsObservationsTest(APITestCase):
         observation = Observation.objects.get()
         self.assertEqual(observation.sleep, 9)
         self.assertEqual(observation.exercise, 4)
-        self.assertEqual(observation.mood, 1)
+        self.assertEqual(observation.mood, 5)
 
         data = self.observation1
         response = self.client.post(url, data, format="json")
