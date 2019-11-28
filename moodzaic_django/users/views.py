@@ -40,6 +40,34 @@ class ObservationViewSet(viewsets.ModelViewSet):
 @api_view(['POST'])
 def setObservation(request, username):
     #need to serialize profile too?
+    moods = [
+        "Loathing",
+        "Repugnant",
+        "Revolted",
+        "Revulsion",
+        "Detestable",
+        "Aversion",
+        "Hesitant",
+        "Remoresful",
+        "Ashamed",
+        "Ignored",
+        "Victimized",
+        "Powerless",
+        "Vulnerable",
+        "Inferior",
+        "Empty",
+        "Abandoned",
+        "Isolated",
+        "Apathetic",
+        "Indifferent",
+        "Inspired",
+        "Open",
+        "Playful",
+        "Sensitive",
+        "Hopeful",
+        "Loving"
+    ]
+    (request.data['mood']) = moods.index(request.data['mood'])
     obsSerializer = ObservationSerializer(data = request.data)
     if obsSerializer.is_valid():
         obsSerializer.save()

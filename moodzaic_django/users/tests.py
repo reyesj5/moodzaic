@@ -492,12 +492,12 @@ class ViewsObservationsTest(APITestCase):
         self.observation1 = {'sleep': '7',
             'exercise':'3',
             'meals':'2',
-            'mood': '1',
+            'mood': 'Revolted',
             'user': userId}
         self.observation2 = {'sleep': '9',
             'exercise':'4',
             'meals':'3',
-            'mood': '2',
+            'mood': 'Revulsion',
             'user': userId}
 
     def test_getAllUserObservation(self):
@@ -523,6 +523,8 @@ class ViewsObservationsTest(APITestCase):
         observation = Observation.objects.get()
         self.assertEqual(observation.sleep, 9)
         self.assertEqual(observation.exercise, 4)
+        self.assertEqual(observation.mood, 3)
+
 
         data = self.observation1
         response = self.client.post(url, data, format="json")
