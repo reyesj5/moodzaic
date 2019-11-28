@@ -432,13 +432,17 @@ class ViewsProfileTest(APITestCase):
 
     def test_getProfile(self):
         Profile.objects.create(**self.profile1)
+        print(Profile.objects.get(username="emil").age)
         response = self.client.get('/api/profiles/emil', format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         profile = json.loads(response.content)
-        self.assertEqual(profile, self.profile2)
+
+        self.assertEqual(profile["age"], self.profile2["age"])
+        self.assertEqual(profile["gender"], self.profile2["gender"])
+        self.assertEqual(profile["user"], self.profile2["user"])
 
         response = self.client.get('/api/profiles/dog', format="json")
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
     def test_createProfile(self):
@@ -454,13 +458,13 @@ class ViewsProfileTest(APITestCase):
         Profile.objects.create(**self.profile1)
         
         changes = {"age": 50}
-        response = self.client.patch('api/profiles/emil', changes, format='json')
+        response = self.client.patch('/api/profiles/emil', changes, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Profile.objects.count(), 1)
         self.assertEqual(Profile.objects.get().age, 50)
-        self.assertEqual(Profile.objects.get().name, 'emil')
+        self.assertEqual(Profile.objects.get().username, 'emil')
 
 class ViewsObservationsTest(APITestCase):
     def setUp(self):
@@ -501,7 +505,6 @@ class ViewsObservationsTest(APITestCase):
         url = '/api/observations/emil'
         response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        print(response)
         self.assertEqual(json.loads(response.content), self.observation1)
 
     def test_postObervation(self):
