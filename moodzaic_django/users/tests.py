@@ -507,6 +507,12 @@ class ViewsObservationsTest(APITestCase):
             'mood': 'Anger',
             'user': userId}
 
+        self.observation3 = {'sleep': '9',
+            'exercise':'4',
+            'meals':'3',
+            'mood': '8888',
+            'user': userId}
+
     def test_getAllUserObservation(self):
         url = '/api/observations/create/emil'
 
@@ -536,3 +542,7 @@ class ViewsObservationsTest(APITestCase):
         data = self.observation1
         response = self.client.post(url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        data = self.observation3
+        response = self.client.post(url, data, format="json")
+        self.assertNotEqual(response.status_code, status.HTTP_200_OK)
