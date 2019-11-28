@@ -75,7 +75,7 @@ Run `source env/bin/activate`
  
 Run `pip install -r requirements.txt`
  
-Cd into `/moodzaic/moodaic_django`
+Cd into `/moodzaic/moodzaic_django`
  
 Run `python3 manage.py makemigrations`
  
