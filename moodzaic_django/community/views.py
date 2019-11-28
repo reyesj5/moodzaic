@@ -121,7 +121,6 @@ def postComments(request, pk):
         print(serializer.data)
         return Response(serializer.data)
 
-
 # Return all posts
 @api_view(['GET'])
 def allPosts(request):
