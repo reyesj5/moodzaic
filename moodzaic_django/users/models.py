@@ -174,7 +174,7 @@ class Profile(models.Model):
         self.save()
         return True
 
-    def getMoodReminders(self, MoodScore):
+    def getMoodReminders(self):
         self.updateReminders(self.MoodScore)
         return self.reminderList
 
