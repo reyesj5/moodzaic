@@ -64,7 +64,8 @@ class MoodPage extends React.Component {
   state = {
     QuestionObj: getDailyQuestions(),
     MoodList: getMoods(),
-    errors: []
+    errors: [],
+    validation: ""
   }
 
   handleChange = (name, e) => {
@@ -119,10 +120,11 @@ class MoodPage extends React.Component {
     if (errors.length > 0) {
       return;
     }
+    this.setState({validation: "Sending mood"})
     createObservation(this.props.profile.username, observation)
       .then(response => {
         console.log("Finished sending observation")
-
+        this.setState({validation: "Mood submitted! Come back again tomorrow"})
       }).catch(error => console.log(error));
   }
 
@@ -130,12 +132,14 @@ class MoodPage extends React.Component {
     const {QuestionObj} = this.state;
     const {MoodList} = this.state;
     const { errors } = this.state;
+    const { validation } = this.state;
     return(
       <div>
         <Container text style={{ marginTop: '7em' }}>
           <Header as='h1'>How are you feeling?</Header>
           <p>Some ~important~ questions for you about your mood today.</p>
           <div>{errors.length > 0 ? <Message color="red">{errors[0]}</Message> : <p></p>}</div>
+          <div>{validation !== "" ? <Message color="green">{validation}</Message> : <p></p>}</div>
           <Form>
             {Object.entries(QuestionObj).map((Question, index) => {
               return (
