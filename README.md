@@ -3,38 +3,38 @@
 ## Milestone 4.b Submission
 ## Acceptance Tests
  
-Click the link titled “sign up”.
-Input username “joe” and password “foo”
-Input name “Joe” “Shmoe”, age 10, gender “boy”, email “joe@mail.com”
-On the profile page, this information should be shown.
-Click the edit symbol to edit profile information. Change any information; any information not inputted will not change. Try to input invalid responses like an ill-formed email, which will produce an error in the logs.
-Log out, and log back in with username “joe” and password “foo” (unless you changed the password).
-Your updated information will be displayed on the profile.
-Click on “Record Mood” in the menu.
-Input numeric values into each field. Leaving inputs blank will result in an error message. Choose “Sad” as your mood.
-Return to your profile. The reminders should read: “You are not alone”, “There is nothing wrong with getting help”... with the option to show more reminders. The three visualizations should show some reasonable defaults reflecting a user’s mood, daily habits, and goal progress.
-Click on “My Communities”, then click on “All Communities”. Click “Create New Community”, and input name “My Community”.
-Click on “My Moodzaic”, then navigate back to “My Communities”. There, you will find your new community.
-Click on it to enter, and write a post.
-Click on “My Moodzaic”, then navigate back to “My Community”. There, you will find your new post.
-Log out, and create a new account. Navigate back to “All Communities”. There you will see “My Community”, greyed out because you are not yet part of it.
-Log back in to joe and navigate to “My Community”.
-Click reply, and type a reply to the post. Click submit to submit.
-Click on “My Moodzaic”, then navigate back to “My Community”. There, you will find the reply.
+1. Click the link titled “sign up”.
+2. Input username “joe” and password “foo”
+3. Input name “Joe” “Shmoe”, age 10, gender “boy”, email “joe@mail.com”
+4. On the profile page, this information should be shown.
+5. Click the edit symbol to edit profile information. Change any information; any information not inputted will not change. Try to input invalid responses like an ill-formed email, which will produce an error in the logs.
+6. Log out, and log back in with username “joe” and password “foo” (unless you changed the password).
+7. Your updated information will be displayed on the profile.
+8. Click on “Record Mood” in the menu.
+9. Input numeric values into each field. Leaving inputs blank will result in an error message. Choose “Sad” as your mood.
+10. Return to your profile. The reminders should read: “You are not alone”, “There is nothing wrong with getting help”... with the option to show more reminders. The three visualizations should show some reasonable defaults reflecting a user’s mood, daily habits, and goal progress.
+11. Click on “My Communities”, then click on “All Communities”. Click “Create New Community”, and input name “My Community”.
+12. Click on “My Moodzaic”, then navigate back to “My Communities”. There, you will find your new community.
+13. Click on it to enter, and write a post.
+14. Click on “My Moodzaic”, then navigate back to “My Community”. There, you will find your new post.
+15. Log out, and create a new account. Navigate back to “All Communities”. There you will see “My Community”, greyed out because you are not yet part of it.
+16. Log back in to joe and navigate to “My Community”.
+17. Click reply, and type a reply to the post. Click submit to submit.
+18. Click on “My Moodzaic”, then navigate back to “My Community”. There, you will find the reply.
  
 ## Text Description of Implementation
  
 We have implemented the following use cases:
--signing up and creating a profile, including goals
--logging in and out
--viewing profile information on the profile page
--editing profile information
--inputting daily observations, to be used by the ml
--receiving reminders on the profile page, as outputted by the ml
--creating communities
--joining communities 
--posting and commenting in communities
--viewing mood history visualizations on profile page
+- signing up and creating a profile, including goals
+- logging in and out
+- viewing profile information on the profile page
+- editing profile information
+- inputting daily observations, to be used by the ml
+- receiving reminders on the profile page, as outputted by the ml
+- creating communities
+- joining communities 
+- posting and commenting in communities
+- viewing mood history visualizations on profile page
  
 ## Work Division
  
@@ -57,9 +57,9 @@ On the back end, we refactored the Goals and Moods in the User “app” to not 
 We have not made any design changes from what we said we would accomplish in milestone 4a. What we were not able to accomplish is described in the following section.
  
 ## Small Tasks to Finish by Milestone 5
-* Error messages in Update Profile menu, specifically for negative ages or mismatched in puts in the Password and Verify Password sections.
-* My Moodzaic page’s visualizations need to be based on actual user data
-* Users need to be able to join communities besides on creation
+- Error messages in Update Profile menu, specifically for negative ages or mismatched in puts in the Password and Verify Password sections.
+- My Moodzaic page’s visualizations need to be based on actual user data
+- Users need to be able to join communities besides on creation
  
 ## Usage Instructions
  
