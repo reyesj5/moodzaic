@@ -218,11 +218,16 @@ class ProfileTestCase(TestCase):
         self.assertFalse(testProfile.setGender(4))
     def test_getMoodReminder_str(self):
         testProfile = Profile.objects.get(MoodScore = 2)
-        reminder = testProfile.getMoodReminders(1)
-        self.assertEqual(reminder[0], "Your fear isn\u2019t always a sign you\u2019re about to make the wrong move.")
-    def test_getMoodReminder_invalidstr(self):
+        reminders = testProfile.getMoodReminders()
+        # print('----------------')
+        # print(reminders)
+        # print("-------------------")
+        reminders = reminders.split(";")
+        # print(reminders)
+        self.assertEqual(reminders[1], "Do not worry about what you cannot control.")
+    def test_updateReminder_invalidstr(self):
         testProfile = Profile.objects.get(MoodScore = 2)
-        self.assertFalse(testProfile.getMoodReminders('Tired'))
+        self.assertFalse(testProfile.updateReminders('Tired'))
 
 # Observations are asked daily and stored in the database
 class ObservationTestCase(TestCase):
@@ -372,9 +377,10 @@ class ViewsUserTest(APITestCase):
         self.assertEqual(User.objects.first().first_name, "newname")
 
         # should fail since change is invalid
+
         user1ChangedBadEmail = {"password": "snibby", "first_name": "name", "last_name": "lastname", "email": "dog"}
         response = self.client.patch('/api/users/marco', user1ChangedBadEmail,  format="json")
-        
+
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(User.objects.count(), 2)
         self.assertNotEqual(User.objects.first().email, "dog")
@@ -382,7 +388,7 @@ class ViewsUserTest(APITestCase):
         # should fail since username already exists
         user1ChangedToExistingUser = {"username": "marco", "password": "snibby", "first_name": "name", "last_name": "lastname", "email": "dog"}
         response = self.client.patch('/api/users/emil', user1ChangedToExistingUser,  format="json")
-        
+
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(User.objects.count(), 2)
         self.assertNotEqual(User.objects.first().username, "marco")
@@ -435,10 +441,13 @@ class ViewsProfileTest(APITestCase):
         response = self.client.get('/api/profiles/emil', format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         profile = json.loads(response.content)
-        self.assertEqual(profile, self.profile2)
+
+        self.assertEqual(profile["age"], self.profile2["age"])
+        self.assertEqual(profile["gender"], self.profile2["gender"])
+        self.assertEqual(profile["user"], self.profile2["user"])
 
         response = self.client.get('/api/profiles/dog', format="json")
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
     def test_createProfile(self):
@@ -454,20 +463,18 @@ class ViewsProfileTest(APITestCase):
         Profile.objects.create(**self.profile1)
         
         changes = {"age": 50}
-        response = self.client.patch('api/profiles/emil', changes, format='json')
+        response = self.client.patch('/api/profiles/emil', changes, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Profile.objects.count(), 1)
         self.assertEqual(Profile.objects.get().age, 50)
-        self.assertEqual(Profile.objects.get().name, 'emil')
+        self.assertEqual(Profile.objects.get().username, 'emil')
 
 class ViewsObservationsTest(APITestCase):
     def setUp(self):
 
         client = APIClient()
-
-        self.mood1 = {'name':"sad", 'mood': '2'}
 
         self.user1 = {"username": "emil", "password": "snibby", "first_name": "name", "last_name": "lastname", "email": "email@email.ema"}
         userObject = User.objects.create(**self.user1)
@@ -485,36 +492,45 @@ class ViewsObservationsTest(APITestCase):
         "user": self.user1 }
 
         profileObject = Profile.objects.create(**self.profile1)
+        userId = Profile.objects.get().id
+
 
         self.observation1 = {'sleep': '7',
             'exercise':'3',
             'meals':'2',
-            'mood': self.mood1,
-            'user': self.profile2}
+            'mood': '1',
+            'user': userId}
         self.observation2 = {'sleep': '9',
             'exercise':'4',
             'meals':'3',
-            'mood': self.mood1,
-            'user': self.profile2}
+            'mood': '2',
+            'user': userId}
 
     def test_getAllUserObservation(self):
+        url = '/api/observations/create/emil'
+
+        data = self.observation2
+        response = self.client.post(url, data, format="json")
+
+        data = self.observation1
+        response = self.client.post(url, data, format="json")
+
         url = '/api/observations/emil'
         response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        print(response)
-        self.assertEqual(json.loads(response.content), self.observation1)
+        testList = [self.observation1, self.observation2]
+        self.assertEqual(len(json.loads(response.content)), 2)
 
-    def test_postObervation(self):
-        url = '/api/users/emil/observations'
+    def test_postObservation(self):
+        url = '/api/observations/create/emil'
         data = self.observation2
         response = self.client.post(url, data, format="json")
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        observation = Observation.objects.get()
+        self.assertEqual(observation.sleep, 9)
+        self.assertEqual(observation.exercise, 4)
 
         data = self.observation1
         response = self.client.post(url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-
-        response = self.client.get(url, format="json")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(json.loads(response.content), [self.observation1, self.observation2])

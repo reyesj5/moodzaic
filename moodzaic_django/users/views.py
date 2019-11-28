@@ -5,6 +5,10 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import generics
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -85,6 +89,22 @@ class ObservationViewSet(viewsets.ModelViewSet):
         serializer.save()
         
 
+@api_view(['POST'])
+def setObservation(request, username):
+    #need to serialize profile too?
+    obsSerializer = ObservationSerializer(data = request.data)
+    if obsSerializer.is_valid():
+        obsSerializer.save()
+    logger.error(obsSerializer.errors)
+    return Response(obsSerializer.data)
+
+@api_view(['GET'])
+def getObservations(request, username):
+    #need to serialize profile too?
+    profileID = Profile.objects.get(username=username).id
+    observations = Observation.objects.filter(user=profileID)
+    serializer = ObservationSerializer(observations, many=True)
+    return Response(serializer.data)
 
 @api_view(['GET'])
 def allUsers(request):
