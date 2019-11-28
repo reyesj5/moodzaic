@@ -64,7 +64,6 @@ const API_URL = 'http://localhost:8000/api/';
     }
 
   export function updateCommunity(community){
-      console.log(community);
       const url = `${API_URL}community/${community.name}`;
       return axios.put(url, community);
   }
@@ -81,7 +80,7 @@ const API_URL = 'http://localhost:8000/api/';
 
 
   export function getPosts() {
-      const url = `${API_URL}posts`;
+      const url = `${API_URL}all/post`;
       return axios.get(url).then(response => response.data);
   }
   export function getPost(id) {
@@ -93,7 +92,7 @@ const API_URL = 'http://localhost:8000/api/';
   //     return axios.delete(url);
   // }
   export function createPost(post){
-      const url = `${API_URL}create/posts`;
+      const url = `${API_URL}create/post`;
       return axios.post(url,post);
   }
 

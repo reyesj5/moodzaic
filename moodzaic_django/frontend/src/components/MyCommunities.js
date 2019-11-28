@@ -23,9 +23,9 @@ class CommunitiesPage extends React.Component {
   }
 
   render() {
-    console.log("im out here in mycommunities and these are the props", this.props)
+    // console.log("im out here in mycommunities and these are the props", this.props)
     const myCommunities = this.props.myCommunities;
-    console.log("im out here in mycommunities and these are myCommunities", this.props.myCommunities)
+    // console.log("im out here in mycommunities and these are myCommunities", this.props.myCommunities)
     // const communities =
 
 
@@ -40,10 +40,11 @@ class CommunitiesPage extends React.Component {
             :
             <div>
             {myCommunities.map((com, i) => {
+              console.log(this.props)
               return (
                 <Message
                     as={Button}
-                    // onClick = {this.props.communityCallback(com.name)}
+                    onClick = {this.props.communityCallback.bind(this, com)}
                     color='teal'
                     fluid size='small'
                     key = {i}>

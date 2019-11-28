@@ -42,14 +42,17 @@ class AllCommunities extends React.Component {
   }
 
   handleAddClick(community) {
-    // var username = this.state.Username;
-    // var user_plus_community = {
-    //   User: username,
-    //   Community: community
-    // }
     community.users.push(this.props.user)
-    updateCommunity(community);
+    updateCommunity(community)
   }
+
+  // setAllCommunitiesState() {
+  //   getAllCommunities()
+  //     .then(communities => this.setState({
+  //       allCommunities: communities
+  //     })
+  //   )
+  // }
 
   toggleMakeMode = () => {
     this.setState(prevState => ({
@@ -63,9 +66,18 @@ class AllCommunities extends React.Component {
     }))
   }
 
+  isUserInCommunity = (com) => {
+    for (var i=0; i < this.props.myCommunities.length; i++) {
+        if (this.props.myCommunities[i].name === com.name) {
+            return true;
+        }
+    }
+    return false;
+}
+
   render() {
     const communities = this.state.allCommunities.slice(0, this.state.renderNumber).map((com, i) => {
-      const included = this.props.myCommunities.includes(com) ;
+      const included = this.isUserInCommunity(com);
       return (
         <Message
             as={Button}
@@ -75,7 +87,7 @@ class AllCommunities extends React.Component {
             key = {i}>
           <Message.Header>{com.name}</Message.Header>
           <p>
-          {included ? `You're in this community!` : 'Click to add!'}
+          {included ? `You're in this community!` :'Click to add!'}
           </p>
         </Message>
     )})
