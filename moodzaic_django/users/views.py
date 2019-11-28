@@ -4,6 +4,7 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import generics
+from mood_model.mood_tools import getEmotions
 
 import logging
 
@@ -92,6 +93,9 @@ class ObservationViewSet(viewsets.ModelViewSet):
 @api_view(['POST'])
 def setObservation(request, username):
     #need to serialize profile too?
+    emotions = getEmotions()
+    request.data["mood"] = emotions.index(request.data["mood"])
+    print(request.data)
     obsSerializer = ObservationSerializer(data = request.data)
     if obsSerializer.is_valid():
         obsSerializer.save()
@@ -101,9 +105,14 @@ def setObservation(request, username):
 @api_view(['GET'])
 def getObservations(request, username):
     #need to serialize profile too?
+    
+
     profileID = Profile.objects.get(username=username).id
     observations = Observation.objects.filter(user=profileID)
     serializer = ObservationSerializer(observations, many=True)
+
+    # print(serializer.data)
+    # serializer.data["mood"] = emotions[int(serializer.data["mood"])]
     return Response(serializer.data)
 
 @api_view(['GET'])

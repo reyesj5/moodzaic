@@ -85,6 +85,7 @@ def createPost(request):
 @api_view(['POST'])
 def createComment(request):
     if request.method == 'POST':
+        print(request.data)
         serializer = CommentSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -112,8 +113,12 @@ def postComments(request, pk):
     """
     if request.method == 'GET':
         comments = Comment.objects.all()
-        comments = comments.filter(originalPostId = pk)
+        print(comments.first().originalPostId)
+        print(comments.count(), pk)
+        comments = comments.filter(originalPostId=pk)
+        print(comments.count(), pk)
         serializer = CommentSerializer(comments, many=True)
+        print(serializer.data)
         return Response(serializer.data)
 
 # Return all posts
