@@ -27,7 +27,7 @@ import {
 
 class MoodVis extends React.Component {
   state = {
-    activeItem: "mood",
+    activeItem: "Your Mood",
     data: [
       {x: 0, y: 8},
       {x: 1, y: 5},
@@ -41,9 +41,13 @@ class MoodVis extends React.Component {
       {x: 9, y: 0}
     ]
   }
-  handleItemClick = (e, { name }) => this.setState({ activeItem: name })
-  render() {
-    const {activeItem} = this.state.activeItem;
+  handleItemClick = (e, { name }) => {
+    this.setState({ activeItem: name })
+    console.log(this.state.activeItem)
+  }
+  render () {
+    var activeItem = this.state.activeItem;
+    console.log("rendering: " + activeItem)
     return(
       <div>
         <p>Mood visualizations will go here.</p>
@@ -51,28 +55,68 @@ class MoodVis extends React.Component {
           <Menu pointing>
             <Menu.Item
               name='Your Mood'
-              active={activeItem === 'mood'}
+              active={activeItem === 'Your Mood'}
               onClick={this.handleItemClick}
             />
             <Menu.Item
               name='Daily Habits'
-              active={activeItem === 'habits'}
+              active={activeItem === 'Daily Habits'}
               onClick={this.handleItemClick}
             />
             <Menu.Item
               name='Calendar'
-              active={activeItem === 'calendar'}
+              active={activeItem === 'Calendar'}
               onClick={this.handleItemClick}
             />
           </Menu>
-          <Segment attached='bottom'>
-          </Segment>
+          <Segment fixed='bottom'>
+
+            {activeItem === 'Your Mood' ?
+              <MoodChart /> : <div/>}
+            {activeItem === 'Daily Habits' ?
+              <HabitChart /> : <div/>}
+            {activeItem === 'Calendar' ?
+              <CalChart /> : <div/>}
+          </ Segment>
         </div>
       </div>
     )
   }
 }
-          // <MoodChart type={this.state.activeItem} />
+
+
+// {console.log(this.state.activeItem === 'Your Mood')}
+// {console.log(activeItem === 'Your Mood')}
+
+class MoodChart extends React.Component {
+  render() {
+    return(
+      <div>
+        <h3>MoodChart</h3>
+      </div>
+    )
+  }
+}
+class HabitChart extends React.Component {
+  render() {
+    return(
+      <div>
+        <h3>HabitChart</h3>
+      </div>
+    )
+  }
+}
+class CalChart extends React.Component {
+  render() {
+    return(
+      <div>
+        <h3>CalChart</h3>
+      </div>
+    )
+  }
+}
+
+// <MoodChart type={this.state.activeItem} />
 //
 // class MoodChart {
 //   render() {
