@@ -19,3 +19,10 @@ for i in range(len(data)):
         reminders[curr].append(data[i])
 with open('static/notifications.json', 'w') as fp:
     json.dump(reminders, fp)
+
+def getReminders():
+    print(reminders)
+    return reminders
+
+def getEmotions():
+    return ['Fear', 'Sad', 'Hesitant', 'Calm', 'Happy']
