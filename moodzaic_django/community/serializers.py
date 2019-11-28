@@ -52,7 +52,9 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ['post', 'community', 'poster', 'id']
-
+        extra_kwargs = {
+            'name': {'validators': []}
+        }
 
 
     def create(self, validated_data):
@@ -102,8 +104,10 @@ class CommentSerializer(serializers.ModelSerializer):
         validated_data['community'] = community
 
         originalPostData = validated_data.pop('originalPost')
-        originalPost = Post.objects.get_or_create(id = validated_data['ogpostid'])[0]
+        originalPost, created = Post.objects.get_or_create(id=validated_data['ogpostid'])
+
         validated_data['originalPost'] = originalPost
+        validated_data['originalPostId'] = validated_data["ogpostid"]
         del validated_data["ogpostid"]
         comment = Comment.objects.create(**validated_data)
         return comment

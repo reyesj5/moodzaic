@@ -113,8 +113,12 @@ def postComments(request, pk):
     """
     if request.method == 'GET':
         comments = Comment.objects.all()
-        comments = comments.filter(originalPostId = pk)
+        print(comments.first().originalPostId)
+        print(comments.count(), pk)
+        comments = comments.filter(originalPostId=pk)
+        print(comments.count(), pk)
         serializer = CommentSerializer(comments, many=True)
+        print(serializer.data)
         return Response(serializer.data)
 
 
