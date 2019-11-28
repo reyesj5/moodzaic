@@ -172,7 +172,7 @@ class Profile(models.Model):
         currentReminders.extend(nonRepeated)
         self.reminderList = ";".join(currentReminders)
         self.save()
-        return true
+        return True
 
     def getMoodReminders(self, MoodScore):
         self.updateReminders(self.MoodScore)

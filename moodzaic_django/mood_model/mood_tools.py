@@ -7,7 +7,7 @@ emotions = baseModel.getEmotions()
 emotion_map = {}
 for i in range(len(emotions)):
     emotion_map[emotions[i]] = i
-with open('static/notifications.txt','r') as file: # Use file to refer to the file object
+with open('static/notifications.txt','r', encoding="utf-8") as file: # Use file to refer to the file object
     data = file.read().splitlines()
 reminders = {}
 curr = ""
@@ -17,11 +17,10 @@ for i in range(len(data)):
         curr = data[i]
     else:
         reminders[curr].append(data[i])
-with open('static/notifications.json', 'w') as fp:
+with open('static/notifications.json', 'w', encoding="utf-8") as fp:
     json.dump(reminders, fp)
 
 def getReminders():
-    print(reminders)
     return reminders
 
 def getEmotions():
