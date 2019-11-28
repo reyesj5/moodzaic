@@ -21,7 +21,20 @@ class UserViewSet(viewsets.ModelViewSet):
         print(serializer.errors)
         return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
+    def create(self, request, *args, **kwargs):
+        exists = User.objects.filter(username=request.data["username"]).first()
+        if exists is not None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        serializer = self.get_serializer(data=request.data)
+        print(serializer)
+        if not serializer.is_valid():
+            print(serializer.errors)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    
 
 class ProfileViewSet(viewsets.ModelViewSet):
     queryset = Profile.objects.all()
