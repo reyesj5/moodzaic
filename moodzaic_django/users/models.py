@@ -7,6 +7,7 @@ from django.core.validators import int_list_validator
 import json
 import os
 from mood_model import mood_tools
+# from mood_model.models import Weights
 
 #from community.models import Community
 
@@ -143,7 +144,16 @@ class Profile(models.Model):
             return False
 
     def MoodScoreCalc(self):
-        weight = self.user.weights_set.get(user = self.user)
+        try:
+            weight = self.user.weights
+        except:
+            from mood_model.models import Weights
+            Weights.objects.create(
+                user=self.user,
+            )
+            weight = self.user.weights
+            weight.setWeightsWeights()
+            weight.setWeightsBias()
         mood = weight.predict()
         self.MoodScore = mood
         self.save()

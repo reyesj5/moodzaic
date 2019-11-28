@@ -133,6 +133,20 @@ class ProfileTestCase(TestCase):
         c1.addUserToCommunity(u1)
         p1 =Post.objects.create(post = "hey y'all", community= c1, poster = u1)
         p1_id = p1.id
+    def test_getMoodToday(self):
+        testProfile = Profile.objects.get(MoodScore = 2)
+        self.assertEqual("Calm", testProfile.getMoodToday(3))
+    def test_MoodScoreCalc(self):
+        testProfile = Profile.objects.get(MoodScore = 2)
+        self.assertEqual(-1, testProfile.MoodScoreCalc())
+        Observation.objects.create(
+            sleep = 7,
+            exercise = 3,
+            meals = 2,
+            mood = 1,
+            user = testProfile
+        )
+        self.assertEqual(33, testProfile.MoodScoreCalc())
     def test_setMoodScore(self):
         testProfile = Profile.objects.get(MoodScore = 2)
         self.assertTrue(testProfile.setMoodScore(3))
