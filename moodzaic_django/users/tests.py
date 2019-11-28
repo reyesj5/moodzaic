@@ -420,6 +420,8 @@ class ViewsProfileTest(APITestCase):
         client = APIClient()
         self.user1 = {"username": "emil", "password": "snibby", "first_name": "name", "last_name": "lastname", "email": "email@email.ema"}
         self.user2 = {"username": "marco", "password": "dogdog", "first_name": "name", "last_name": "lastname", "email": "dog@email.ema"}
+        self.user3 = {"username": "ari", "password": "snibby", "first_name": "name", "last_name": "lastname", "email": "email@email.ema"}
+
 
         actUser1 = User.objects.create(**self.user1)
         #actUser2 = User.objects.create(**self.user2)
@@ -435,6 +437,12 @@ class ViewsProfileTest(APITestCase):
         "gender": "man",
         "username": "emil",
         "user": self.user1 }
+
+        self.profile3 = {"MoodScore" : 2,
+        "age": 20,
+        "gender": "man",
+        "username": "",
+        "user": self.user3 }
 
     def test_getProfile(self):
         Profile.objects.create(**self.profile1)
@@ -459,6 +467,12 @@ class ViewsProfileTest(APITestCase):
         self.assertEqual(Profile.objects.count(), 1)
         self.assertEqual(Profile.objects.get().username, 'emil')
 
+        # fails to post as a result of invalid username
+        data = self.profile3
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(Profile.objects.count(), 1)
+
     def test_updateProfile(self):
         url = '/api/profiles'
         Profile.objects.create(**self.profile1)
@@ -468,6 +482,14 @@ class ViewsProfileTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Profile.objects.count(), 1)
+        self.assertEqual(Profile.objects.get().age, 50)
+        self.assertEqual(Profile.objects.get().username, 'emil')
+
+        # fails to update as a result of invalid username
+        changes = {'name': ''}
+        response = self.client.patch('/api/profiles/emil', changes, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(Profile.objects.count(), 1)
         self.assertEqual(Profile.objects.get().age, 50)
         self.assertEqual(Profile.objects.get().username, 'emil')
@@ -507,6 +529,12 @@ class ViewsObservationsTest(APITestCase):
             'mood': 'Anger',
             'user': userId}
 
+        self.observation3 = {'sleep': '9',
+            'exercise':'4',
+            'meals':'3',
+            'mood': '8888',
+            'user': userId}
+
     def test_getAllUserObservation(self):
         url = '/api/observations/create/emil'
 
@@ -536,3 +564,7 @@ class ViewsObservationsTest(APITestCase):
         data = self.observation1
         response = self.client.post(url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        data = self.observation3
+        response = self.client.post(url, data, format="json")
+        self.assertNotEqual(response.status_code, status.HTTP_200_OK)
