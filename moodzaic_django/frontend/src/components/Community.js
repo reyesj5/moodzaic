@@ -7,7 +7,7 @@ import {
   Button
 } from 'semantic-ui-react'
 // import PostService from '../PostService.js';
-import { getPosts, createPost, createComment } from '../integration_funcs.js'
+import { getPosts, createPost, createComment, getPostComments } from '../integration_funcs.js'
 
 
 class Community extends React.Component {
@@ -29,8 +29,11 @@ class Community extends React.Component {
             return(
               post.community === this.props.myCommunity
             )
-          })
+          }).map(p => ({comments: getPostComments(p.id), ...p}))
         })))
+        .then(
+          console.log(this.state)
+        )
       }
 
   toggleReplyMode = (i) => {
@@ -104,7 +107,7 @@ class Community extends React.Component {
       )
     }
 
-    const printPosts = posts.map((post, i) => {
+    const printPosts = (posts) =>  posts.map((post, i) => {
       return (
         <Comment key = {i} >
           <Comment.Avatar src={logo} />
@@ -119,6 +122,10 @@ class Community extends React.Component {
               {this.state.replyMode == i ? reply_box(post) : ''}
             </Comment.Actions>
           </Comment.Content>
+          {/* <Comment.Group>
+              {console.log(posts)}
+              {printPosts(post.comments)}
+          </Comment.Group> */}
         </Comment>
       )
     })
@@ -157,7 +164,7 @@ class Community extends React.Component {
             {community.name}
           </Header>
 
-          {printPosts}
+          {printPosts(posts)}
 
           <Form onSubmit={this.handleSubmit}>
             {this.replyMode ?

@@ -100,6 +100,11 @@ const API_URL = 'http://localhost:8000/api/';
     const url = `${API_URL}create/comment`;
     return axios.post(url,comment);
   }
+
+  export function getPostComments(id) {
+    const url = `${API_URL}post/comments/${id}`;
+    return axios.get(url).then(response => response.data).catch([])
+  }
   // export function updatePost(post){
   //     const url = `${API_URL}${post.id}`;
   //     return axios.put(url, post);
@@ -152,7 +157,7 @@ const API_URL = 'http://localhost:8000/api/';
   }
 
   export function createObservation(username, observation) {
-    const url = `${API_URL}observations/${username}`;
+    const url = `${API_URL}observations/create/${username}`;
     return axios.post(url, observation);
   }
 
