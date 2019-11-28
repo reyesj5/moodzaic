@@ -135,8 +135,12 @@ class Profile(models.Model):
         related_name='profile'
     )
 
-    def MoodToday(self):
-        return True
+    def getMoodToday(self, MoodScore):
+        try:
+            mood = mood_tools.getEmotions()[MoodScore]
+            return mood
+        except:
+            return False
 
     def MoodScoreCalc(self):
         weight = self.user.weights_set.get(user = self.user)

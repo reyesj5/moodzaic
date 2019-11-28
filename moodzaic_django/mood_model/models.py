@@ -64,7 +64,7 @@ class Weights(models.Model):
                 obs.work, weekly_work
             ]
             input_data.append(row)
-            mood_data.append(obs.mood.mood)
+            mood_data.append(obs.mood)
         return np.array(input_data), np.array(mood_data)
 
 

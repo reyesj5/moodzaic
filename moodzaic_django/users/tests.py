@@ -141,7 +141,7 @@ class ProfileTestCase(TestCase):
         self.assertFalse(testProfile.setMoodScore(-5))
     def test_setMoodScoreTooHigh(self):
         testProfile = Profile.objects.get(MoodScore = 2)
-        self.assertFalse(testProfile.setMoodScore(14))
+        self.assertFalse(testProfile.setMoodScore(45))
     def test_setGoals(self):
         testProfile = Profile.objects.get(MoodScore = 2)
         self.assertTrue(testProfile.setGoals(3, 9))
@@ -284,7 +284,7 @@ class ObservationTestCase(TestCase):
         self.assertTrue(testObservation.setMood(3))
     def test_setMood_tooHigh(self):
         testObservation = Observation.objects.get(sleep = 7)
-        self.assertFalse(testObservation.setMood(33))
+        self.assertFalse(testObservation.setMood(53))
     def test_setMood_negative(self):
         testObservation = Observation.objects.get(sleep = 7)
         self.assertFalse(testObservation.setMood(-33))
@@ -423,7 +423,7 @@ class ViewsProfileTest(APITestCase):
 
         actUser1 = User.objects.create(**self.user1)
         #actUser2 = User.objects.create(**self.user2)
-        
+
         self.profile1 = {"MoodScore" : 2,
         "age": 20,
         "gender": "man",
@@ -462,7 +462,7 @@ class ViewsProfileTest(APITestCase):
     def test_updateProfile(self):
         url = '/api/profiles'
         Profile.objects.create(**self.profile1)
-        
+
         changes = {"age": 50}
         response = self.client.patch('/api/profiles/emil', changes, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
