@@ -42,20 +42,71 @@ class MoodVis extends React.Component {
       {x: 7, y: 3},
       {x: 8, y: 2},
       {x: 9, y: 0}
-    ]
+    ],
+    sampleObs: {
+      date: "00:55:11:27:11:19", //my guess at formatting Nov. 27 2019, 11:55 PM
+      sleep: 7.5,
+      exercise: 1,
+      meals: 3,
+      work: 9,
+      user: {},
+      predictedMood: 5, //I think it's between 0 and 5,
+      mood: 4
+    }
   }
+
   componentDidMount() {
     console.log("Mounted")
     const observations = getUserObservations(this.props.profile.username)
     this.setState({pastObservations: observations})
   }
+
   handleItemClick = (e, { name }) => {
     this.setState({ activeItem: name })
   }
-  organizeMoodData(observations) {}
-  organizeHabitData(observations) {}
+
+  organizeMoodData(observations) {
+    //Past 10 moods to display in graph
+    //My looping here is kind of ugly, but I have no wifi to google JS documentation! :(
+    //If there's slicing, backwards access etc like in Python
+    var moods = [];
+    for (var i = 1; i <= 10 && i < observations.length + 1; i++) {
+      var obs = observations[observations.length - i]; //ith most recent observation
+      if(obs) {
+        moods[i - 1] = obs.mood
+      }
+    }
+    var retData = [];
+    for (i = 0; i < moods.length; i++) {
+      retData[i] = {x: i, y: moods[moods.length - i - 1]}
+    }
+    console.log(retData)
+    return retData;
+  }
+
+  //Returns object of three sets, one for sleep, exercise, and work
+  organizeHabitData(observations) {
+    var habits = [];
+    for (var i = 1; i <= 10 && i < observations.length + 1; i++) {
+      var obs = observations[observations.length - i]; //ith most recent observation
+      if(obs) {
+        habits[i - 1] = {sleep: obs.sleep, exercise: obs.exercise, work: obs.work}
+      }
+    }
+    var retData = {sleep: [], exercise: [], work: []}
+    for (i = 0; i < habits.length; i++) {
+      retData.sleep[i] = {x: i, y: habits[habits.length - i - 1].sleep}
+      retData.exercise[i] = {x: i, y: habits[habits.length - i - 1].exercise}
+      retData.work[i] = {x: i, y: habits[habits.length - i - 1].work}
+    }
+    console.log(retData)
+    return retData;
+  }
+
   organizeCalData(observations) {}
+
   render () {
+    this.organizeHabitData([this.state.sampleObs, this.state.sampleObs, this.state.sampleObs])
     var activeItem = this.state.activeItem;
     console.log("rendering: " + activeItem)
     return(
@@ -97,6 +148,7 @@ class MoodVis extends React.Component {
 
 // {console.log(this.state.activeItem === 'Your Mood')}
 // {console.log(activeItem === 'Your Mood')}
+
 
 class MoodChart extends React.Component {
   render() {

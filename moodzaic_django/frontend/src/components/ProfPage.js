@@ -60,7 +60,7 @@ class ProfilePage extends React.Component {
                   <MoodVis profile={profile}/>
                 </Container>
               </Grid.Column>
-              <Grid.Column width = {5} style={{ margin: '6em 0em 0em', padding: '0em 0em' }}>
+              <Grid.Column width = {5} style={{ margin: '4.5em 0em 0em', padding: '0em 0em' }}>
                 <Reminders profile={profile}/>
               </Grid.Column>
             </Grid>
