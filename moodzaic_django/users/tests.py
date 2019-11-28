@@ -218,11 +218,16 @@ class ProfileTestCase(TestCase):
         self.assertFalse(testProfile.setGender(4))
     def test_getMoodReminder_str(self):
         testProfile = Profile.objects.get(MoodScore = 2)
-        reminder = testProfile.getMoodReminders(1)
-        self.assertEqual(reminder[0], "Your fear isn\u2019t always a sign you\u2019re about to make the wrong move.")
-    def test_getMoodReminder_invalidstr(self):
+        reminders = testProfile.getMoodReminders()
+        # print('----------------')
+        # print(reminders)
+        # print("-------------------")
+        reminders = reminders.split(";")
+        # print(reminders)
+        self.assertEqual(reminders[1], "Do not worry about what you cannot control.")
+    def test_updateReminder_invalidstr(self):
         testProfile = Profile.objects.get(MoodScore = 2)
-        self.assertFalse(testProfile.getMoodReminders('Tired'))
+        self.assertFalse(testProfile.updateReminders('Tired'))
 
 # Observations are asked daily and stored in the database
 class ObservationTestCase(TestCase):
@@ -375,7 +380,7 @@ class ViewsUserTest(APITestCase):
 
         user1ChangedBadEmail = {"password": "snibby", "first_name": "name", "last_name": "lastname", "email": "dog"}
         response = self.client.patch('/api/users/marco', user1ChangedBadEmail,  format="json")
-        
+
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(User.objects.count(), 2)
         self.assertNotEqual(User.objects.first().email, "dog")
@@ -383,7 +388,7 @@ class ViewsUserTest(APITestCase):
         # should fail since username already exists
         user1ChangedToExistingUser = {"username": "marco", "password": "snibby", "first_name": "name", "last_name": "lastname", "email": "dog"}
         response = self.client.patch('/api/users/emil', user1ChangedToExistingUser,  format="json")
-        
+
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(User.objects.count(), 2)
         self.assertNotEqual(User.objects.first().username, "marco")
@@ -417,7 +422,6 @@ class ViewsProfileTest(APITestCase):
         self.user2 = {"username": "marco", "password": "dogdog", "first_name": "name", "last_name": "lastname", "email": "dog@email.ema"}
 
         actUser1 = User.objects.create(**self.user1)
-
         #actUser2 = User.objects.create(**self.user2)
         
         self.profile1 = {"MoodScore" : 2,
@@ -432,17 +436,18 @@ class ViewsProfileTest(APITestCase):
         "username": "emil",
         "user": self.user1 }
 
-        Profile.objects.create(**self.profile1)
-
     def test_getProfile(self):
         Profile.objects.create(**self.profile1)
         response = self.client.get('/api/profiles/emil', format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         profile = json.loads(response.content)
-        self.assertEqual(profile, self.profile2)
+
+        self.assertEqual(profile["age"], self.profile2["age"])
+        self.assertEqual(profile["gender"], self.profile2["gender"])
+        self.assertEqual(profile["user"], self.profile2["user"])
 
         response = self.client.get('/api/profiles/dog', format="json")
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
     def test_createProfile(self):
@@ -458,13 +463,13 @@ class ViewsProfileTest(APITestCase):
         Profile.objects.create(**self.profile1)
         
         changes = {"age": 50}
-        response = self.client.patch('api/profiles/emil', changes, format='json')
+        response = self.client.patch('/api/profiles/emil', changes, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Profile.objects.count(), 1)
         self.assertEqual(Profile.objects.get().age, 50)
-        self.assertEqual(Profile.objects.get().name, 'emil')
+        self.assertEqual(Profile.objects.get().username, 'emil')
 
 class ViewsObservationsTest(APITestCase):
     def setUp(self):
@@ -515,7 +520,7 @@ class ViewsObservationsTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         testList = [self.observation1, self.observation2]
         self.assertEqual(len(json.loads(response.content)), 2)
-    
+
     def test_postObservation(self):
         url = '/api/observations/create/emil'
         data = self.observation2
@@ -529,4 +534,3 @@ class ViewsObservationsTest(APITestCase):
         data = self.observation1
         response = self.client.post(url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
