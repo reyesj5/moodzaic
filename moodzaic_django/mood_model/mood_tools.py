@@ -29,3 +29,6 @@ def getReminders():
 #
 # def getEmotions():
 #     return ['Fear', 'Sad', 'Hesitant', 'Calm', 'Happy']
+
+if __name__ == "__main__":
+    getReminders()
