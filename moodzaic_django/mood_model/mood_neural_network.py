@@ -156,7 +156,11 @@ class MoodNeuralNetwork:
 
     def activation(self, x):
         # activation function: sigmoid function
-        return 1 / (1 + np.exp(-x))
+        try:
+            result =  1 / (1 + np.exp(-x))
+        except:
+            result = 0
+        return result
 
     def deriv_activation(self, x):
         # Derivative of activation, normalized
@@ -197,7 +201,7 @@ class MoodNeuralNetwork:
                     self._weights['weight' + str(neuron['weights'][j])] -= self.learn_rate * neuron['delta'] * inputs[j] * self.deriv_activation(neuron['output'])
                 #self._biases['bias' + str(neuron['bias'])] += self.learn_rate * neuron['delta']
 
-    def train(self, data, all_y_trues):
+    def train(self, data, all_y_trues, DEBUG = False):
         '''
         - data is a (n x 11) numpy array, n = # of samples in the dataset.
         - all_y_trues is a numpy array with n elements.
@@ -225,7 +229,7 @@ class MoodNeuralNetwork:
                 self.update_weights(x)
 
             # --- Calculate total loss at the end of each epoch
-            if epoch % 10 == 0:
+            if epoch % 10 == 0 and DEBUG:
                 y_preds = np.apply_along_axis(self.feedforward, 1, data)
                 loss = self.loss(all_y_trues, y_preds)
                 count = 0

@@ -36,7 +36,7 @@ class Post(models.Model):
     post = models.CharField(max_length=1000)
     community = models.ForeignKey(Community, on_delete=models.CASCADE, null=True)
     poster = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-
+    
     def setPost(self, post):
         if (len(post) > 0 and len(post) <= 1000):
             self.post = post
@@ -65,6 +65,8 @@ class Post(models.Model):
 
 class Comment(Post):
     originalPost = models.ForeignKey(Post, related_name='+', on_delete=models.CASCADE)
+    originalPostId = models.IntegerField(null=True)
+
 
     def getOriginalPost(self):
         return self.originalPost
