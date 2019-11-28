@@ -6,6 +6,7 @@ from datetime import datetime
 from django.core.validators import int_list_validator
 import json
 import os
+from mood_model import mood_tools
 
 #from community.models import Community
 
@@ -121,10 +122,8 @@ class Profile(models.Model):
     MoodScore = models.IntegerField(default=0)
     age = models.IntegerField(default=18)
     gender = models.CharField(max_length=9, default='')
-    #reminderList = models.ListCharField(base_field=CharField, size=None)
+    reminderList = models.TextField(default = '')
     username = models.CharField(max_length=150, default='')
-    json_data = open('users/notifications.json')
-    reminder_list = json.load(json_data)
     goals=models.TextField(
         validators=[int_list_validator],
         default= "-1,-1,-1,-1"
@@ -143,31 +142,41 @@ class Profile(models.Model):
         weight = self.user.weights_set.get(user = self.user)
         mood = weight.predict()
         self.MoodScore = mood
+        self.save()
         return self.MoodScore
 
     def setMoodScore(self, MoodScore):
-        if (MoodScore >= 0 and MoodScore <=4):
+        if (MoodScore >= 0 and MoodScore <=len(mood_tools.getEmotions())):
             self.MoodScore = MoodScore
             self.save()
             return True
         else:
             return False
 
-    def getMoodReminders(self, MoodScore):
+    def updateReminders(self, MoodScore):
         #mood_int can be either the predicted mood or actual mood to get reminder
-        mood_dict = {0: "Sad", 1:"Fear", 2: "Hesitant", 3: "Calm", 4:"Happy" }
+        moods = mood_tools.getEmotions()
         try:
-            mood_str = mood_dict[MoodScore]
+            mood_str = moods[MoodScore]
+            allReminders = mood_tools.getReminders()
+            newReminders = allReminders[mood_str]
         except:
             return False
-        path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'notifications.json')
-        try:
-            with open(path, 'r') as json_data:
-                data = json.load(json_data)
-                reminder = data[mood_str]
-        except:
-            return False
-        return reminder
+        currentReminders = self.reminderList.split(';')
+        nonRepeated = []
+        for i in newReminders:
+            try:
+                currentReminders.index(i)
+            except:
+                nonRepeated.append(i)
+        currentReminders.extend(nonRepeated)
+        self.reminderList = ";".join(currentReminders)
+        self.save()
+        return true
+
+    def getMoodReminders(self, MoodScore):
+        self.updateReminders(self.MoodScore)
+        return self.reminderList
 
     def setAge(self, age):
         if not (isinstance(age, type(2))):
@@ -254,8 +263,15 @@ class Observation(models.Model):
     date = models.DateField('date observed', auto_now_add=True, blank=True)
     sleep = models.FloatField(default=0)
     exercise = models.FloatField(default = 0)
+    weeklyExercise = models.FloatField(default = 0)
     meals = models.IntegerField(default=0)
+    numberOfGoals = models.IntegerField(default=0)
+    goalsCompleted = models.IntegerField(default=0)
+    goalsMissed = models.IntegerField(default = 0)
+    goalsRatio = models.FloatField(default=0)
+    pastMoodScore = models.IntegerField(default = 0)
     work = models.FloatField(default=0)
+    weeklyWork = models.FloatField(default=0)
     user = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True)
     predictedMood = models.IntegerField(default = 0)
     mood = models.IntegerField(default=-1)
@@ -264,18 +280,27 @@ class Observation(models.Model):
         if not (isinstance(hours, type(2.0))) and not (isinstance(hours, type(2))):
             return False
         if hours  >= 0 and hours <= 24:
-            self.sleep = hours
+            self.sleep = hours * 1.0
             self.save()
             return True
         else:
             return False
 
-
     def setExercise(self, hours):
         if not (isinstance(hours, type(2.0))) and not (isinstance(hours, type(2))):
             return False
         if hours  >= 0 and hours <= 24:
-            self.exercise = hours
+            self.exercise = hours * 1.0
+            self.save()
+            return True
+        else:
+            return False
+
+    def setWeeklyExercise(self, hours):
+        if not (isinstance(hours, type(2.0))) and not (isinstance(hours, type(2))):
+            return False
+        if hours  >= 0:
+            self.weeklyExercise = hours * 1.0
             self.save()
             return True
         else:
@@ -291,6 +316,57 @@ class Observation(models.Model):
         else:
             return False
 
+    def setNumberOfGoals(self, num):
+        if not (isinstance(num, type(2))):
+            return False
+        if num  >= 0:
+            self.numberOfGoals = num
+            self.save()
+            return True
+        else:
+            return False
+
+    def setGoalsCompleted(self, num):
+        if not (isinstance(num, type(2))):
+            return False
+        if num  >= 0:
+            self.goalsCompleted = num
+            self.save()
+            return True
+        else:
+            return False
+
+    def setGoalsMissed(self, num):
+        if not (isinstance(num, type(2))):
+            return False
+        if num  >= 0:
+            self.goalsMissed = num
+            self.save()
+            return True
+        else:
+            return False
+
+    def setGoalsRatio(self):
+        try:
+            if self.goalsMissed < 1:
+                ratio = self.goalsCompleted
+            else:
+                ratio = self.goalsCompleted/self.goalsMissed
+            self.goalRatio = ratio
+            self.save()
+            return True
+        except:
+            return False
+
+    def setPastMoodScore(self, mood_int):
+        if not (isinstance(mood_int, type(2))):
+            return False
+        if mood_int >=0 and mood_int <=len(mood_tools.getEmotions()):
+            self.pastMoodScore = mood_int
+            self.save()
+            return True
+        else:
+            return False
 
     def setWork(self, hours):
         if not (isinstance(hours, type(2.0))) and not (isinstance(hours, type(2))):
@@ -302,10 +378,30 @@ class Observation(models.Model):
         else:
             return False
 
+    def setWeeklyWork(self, hours):
+        if not (isinstance(hours, type(2.0))) and not (isinstance(hours, type(2))):
+            return False
+        if hours  >= 0:
+            self.work = hours * 1.0
+            self.save()
+            return True
+        else:
+            return False
+
+    def setPredictedMood(self, mood_int):
+        if not (isinstance(mood_int, type(2))):
+            return False
+        if mood_int >=0 and mood_int <=len(mood_tools.getEmotions()):
+            self.mood = mood_int
+            self.save()
+            return True
+        else:
+            return False
+
     def setMood(self, mood_int):
         if not (isinstance(mood_int, type(2))):
             return False
-        if mood_int >=0 and mood_int <=4:
+        if mood_int >=0 and mood_int <=len(mood_tools.getEmotions()):
             self.mood = mood_int
             self.save()
             return True
