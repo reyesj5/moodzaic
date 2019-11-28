@@ -376,8 +376,10 @@ class Observation(models.Model):
             if self.goalsMissed < 1:
                 ratio = self.goalsCompleted
             else:
-                ratio = self.goalsCompleted/self.goalsMissed
-            self.goalRatio = ratio
+                ratio = self.goalsCompleted*1.0/self.goalsMissed
+                print(ratio)
+            print(ratio)
+            self.goalsRatio = ratio
             self.save()
             return True
         except:
@@ -407,7 +409,7 @@ class Observation(models.Model):
         if not (isinstance(hours, type(2.0))) and not (isinstance(hours, type(2))):
             return False
         if hours  >= 0:
-            self.work = hours * 1.0
+            self.weeklyWork = hours * 1.0
             self.save()
             return True
         else:
@@ -417,7 +419,7 @@ class Observation(models.Model):
         if not (isinstance(mood_int, type(2))):
             return False
         if mood_int >=0 and mood_int <=len(mood_tools.getEmotions()):
-            self.mood = mood_int
+            self.predictedMood = mood_int
             self.save()
             return True
         else:
