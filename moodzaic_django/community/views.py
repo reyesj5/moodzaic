@@ -67,7 +67,8 @@ def communityDetails(request, name):
             if serializer.is_valid():
                 serializer.update(community, request.data)
                 return Response(serializer.data)
-            return Response(serializer.data)
+            logger.error(serializer.errors)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         except Community.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -114,6 +115,14 @@ def postComments(request, pk):
         comments = comments.filter(originalPostId = pk)
         serializer = CommentSerializer(comments, many=True)
         return Response(serializer.data)
+
+
+# Return all posts
+@api_view(['GET'])
+def allPosts(request):
+    posts = Post.objects.all()
+    serializer = PostSerializer(posts, many=True)
+    return Response(serializer.data)
 
 # class PostListCreate(generics.ListCreateAPIView):
 #     queryset = Post.objects.all()

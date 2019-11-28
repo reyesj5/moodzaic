@@ -2,6 +2,7 @@ import React from 'react'
 import {
   Container,
   Button,
+  Message
 } from 'semantic-ui-react'
 
 
@@ -21,34 +22,39 @@ class CommunitiesPage extends React.Component {
     openCommunity: false
   }
 
-  // openCommunity(c) {
-  //   return <Community communityName = {c} />
-  // }
-  openCommunity = (c) => {
-         this.props.communityCallback(c);
-    }
-
   render() {
+    // console.log("im out here in mycommunities and these are the props", this.props)
     const myCommunities = this.props.myCommunities;
-    const communities = myCommunities.map((com, i) => {
-      return <Button
-                color='teal' fluid size='large'
-                key = {i}
-                onClick = {this.openCommunity(com)}>
-                {com}
-              </ Button>;
-    })
+    // console.log("im out here in mycommunities and these are myCommunities", this.props.myCommunities)
+    // const communities =
+
 
     return (
       <div>
-        <Container text style={{ marginTop: '7em' }}>
+        <Container text align='center' style={{ marginTop: '7em' }}>
           {myCommunities.length === 0 ?
             <div>
             <p> You're not in any communities yet :( </p>
             <p> take a look at all the communities and choose one to join! </p>
             </div>
             :
-            {communities}
+            <div>
+            {myCommunities.map((com, i) => {
+              console.log(this.props)
+              return (
+                <Message
+                    as={Button}
+                    onClick = {this.props.communityCallback.bind(this, com)}
+                    color='teal'
+                    fluid size='small'
+                    key = {i}>
+                  <Message.Header>
+                    {com.name}
+                  </Message.Header>
+                </Message>
+              )
+            })}
+            </div>
           }
         </Container>
       </div>

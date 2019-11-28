@@ -11,12 +11,50 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     lookup_field = 'username'
 
+    def partial_update(self, request, username):
+        print(request.data)
+        serializer = UserSerializer(User.objects.get(username=username), data=request.data, partial=True)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        print(serializer.errors)
+        return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+
+    def create(self, request, *args, **kwargs):
+        exists = User.objects.filter(username=request.data["username"]).first()
+        if exists is not None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        serializer = self.get_serializer(data=request.data)
+        print(serializer)
+        if not serializer.is_valid():
+            print(serializer.errors)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    
+
 class ProfileViewSet(viewsets.ModelViewSet):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
     lookup_field = 'username'
 
-    # def get_observations(self, obj)
+    # def partial_update(self, request, username):
+    #     instance = Profile.objects.get(username=username)
+
+    #     if not instance:
+    #         return Response(status=status.HTTP_404_NOT_FOUND)
+        
+    #     serializer = self.get_serializer(
+    #         data=request.data,
+    #         partial=True
+    #     )
+    #     if not serializer.is_valid():
+    #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    #     serializer.save()
+    #     return Response(serializer.data, status=status.HTTP_200_OK)
 
 class ObservationViewSet(viewsets.ModelViewSet):
     # queryset = Observation.objects.all()
@@ -27,10 +65,24 @@ class ObservationViewSet(viewsets.ModelViewSet):
         # username = self.request.user.username
         return Observation.objects.filter(user__username=self.kwargs.get('username', None))
     
+    def create(self, request, *args, **kwargs):
+        print(request.data)
+        serializer = self.get_serializer(data=request.data)
+        print(serializer)
+        if not serializer.is_valid():
+            print(serializer.errors)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
     def perform_create(self, serializer):
         print(self.kwargs['username'])
-        serializer.user = Profile.objects.get(username=self.kwargs['username'])
-        serializer.save
+        print("print", serializer)
+        #TODO: perform ML operation here
+        # serializer.user = Profile.objects.get(username=self.kwargs['username'])
+        serializer.save()
         
 
 

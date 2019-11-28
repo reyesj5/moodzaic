@@ -214,14 +214,39 @@ class ViewsCommunityTests(APITestCase):
 
     def test_usersCommunities(self):
         fitnessCommunity = Community.objects.create(name = "fitness")
-        u1 = User.objects.create(username = "emil", password = "emil_pw")
+        lazyCommunity = Community.objects.create(name = "lazy")
+        emil = User.objects.create(username = "emil", password = "emil_pw")
+        jersey = User.objects.create(username = 'jersey', password='jersey_pw')
 
         response = self.client.get('/api/emil/communities', format='json')
         self.assertEqual(json.loads(response.content), [])
 
-        fitnessCommunity.addUserToCommunity(u1)
+        fitnessCommunity.addUserToCommunity(emil)
         response = self.client.get('/api/emil/communities', format='json')
         self.assertEqual(json.loads(response.content), [{'name': 'fitness', 'users': [{'email': '','first_name': '','last_name': '','password': 'emil_pw','username': 'emil'}]}])
+
+        lazyCommunity.addUserToCommunity(emil)
+        lazyCommunity.addUserToCommunity(jersey)
+        response = self.client.get('/api/emil/communities', format='json')
+        self.assertEqual(json.loads(response.content), [{'name': 'fitness',
+    'users': [{'email': '',
+               'first_name': '',
+               'last_name': '',
+               'password': 'emil_pw',
+               'username': 'emil'}]},
+   {'name': 'lazy',
+    'users': [{'email': '',
+               'first_name': '',
+               'last_name': '',
+               'password': 'emil_pw',
+               'username': 'emil'},
+              {'email': '',
+               'first_name': '',
+               'last_name': '',
+               'password': 'jersey_pw',
+               'username': 'jersey'}]}]
+)
+
 
     # Tests getting all communities.
     # This function allows us to get every community

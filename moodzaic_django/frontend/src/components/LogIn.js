@@ -12,7 +12,8 @@ class LoginForm extends React.Component {
   state = {
     LoggedIn: false,
     username: '',
-    password: ''
+    password: '',
+    errors: []
   }
 
 
@@ -25,24 +26,42 @@ class LoginForm extends React.Component {
   handleSubmit = () => {
     // let username = event.target[0].value;
     // let password = event.target[1].value;
+    const errors = this.validate();
+    this.setState({ errors });
+    if (errors.length > 0) {
+      return;
+    }
     getUserByUsername(this.state.username).then(user => {
       console.log(user, user.i);
       if (user && (this.state.password === user.password)) {
         // console.log('it worked! we logging in')
         this.props.callback(user);
+      } else {
+        this.setState({errors: ["Incorrect username or password"]})
       }
     });
+  }
 
-
+  validate = () => {
+    const errors = [];
+    if (this.state.username.trim() === "") {
+      errors.push("Please enter your username");
+    }
+    if (this.state.password.trim() === "") {
+      errors.push("Please enter your password")
+    }
+    return errors;
   }
 
   render() {
+    const { errors } = this.state
     return(
       <Grid textAlign='center' style={{ height: '100vh' }} verticalAlign='middle'>
         <Grid.Column style={{ maxWidth: 450 }}>
           <Header as='h2' color='teal' textAlign='center'>
             <Image src={logo} /> Log-in to your account
           </Header>
+          <div>{errors.length > 0 ? <Message color="red">{errors[0]}</Message> : <p></p>}</div>
           <Form size='large'>
             <Segment stacked>
               <Form.Input fluid
@@ -67,7 +86,7 @@ class LoginForm extends React.Component {
           </Form>
           <Router>
             <Message>
-              New to us? <Link to='/signup'>Sign Up</Link>
+              New to us? <a href='/signup'>Sign Up</a>
             </Message>
           </Router>
         </Grid.Column>

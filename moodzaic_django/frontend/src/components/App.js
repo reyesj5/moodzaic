@@ -104,14 +104,14 @@ class App extends Component {
       <div>
         <Router>
           <Switch>
-            <Route path="/signup">
+          <Route path="/signup">
             <SignUpForm />
-            </Route>
+          </Route>
             <Route path="/MyMood">
               {this.state.LoggedIn ?
                 <div>
                   <MyMenu callback={this.LogOut}/>
-                  <MoodPage />
+                  <MoodPage profile={this.state.profile}/>
                   <Footer/>
                 </div> :
                 <Redirect to="/" />
