@@ -470,8 +470,6 @@ class ViewsObservationsTest(APITestCase):
 
         client = APIClient()
 
-        self.mood1 = {'name':"sad", 'mood': '2'}
-
         self.user1 = {"username": "emil", "password": "snibby", "first_name": "name", "last_name": "lastname", "email": "email@email.ema"}
         userObject = User.objects.create(**self.user1)
 
@@ -488,32 +486,44 @@ class ViewsObservationsTest(APITestCase):
         "user": self.user1 }
 
         profileObject = Profile.objects.create(**self.profile1)
+        userId = Profile.objects.get().id
+
 
         self.observation1 = {'sleep': '7',
             'exercise':'3',
             'meals':'2',
-            'mood': self.mood1,
-            'user': self.profile2}
+            'mood': '1',
+            'user': userId}
         self.observation2 = {'sleep': '9',
             'exercise':'4',
             'meals':'3',
-            'mood': self.mood1,
-            'user': self.profile2}
+            'mood': '2',
+            'user': userId}
 
     def test_getAllUserObservation(self):
-        url = '/api/users/emil/observations'
+        url = '/api/observations/create/emil'
+        data = self.observation2
+        response = self.client.post(url, data, format="json")
+
+        data = self.observation1
+        response = self.client.post(url, data, format="json")
+
+        url = '/api/observations/emil'
         response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(json.loads(response.content), self.observation1)
+        testList = [self.observation1, self.observation2]
+        self.assertEqual(len(json.loads(response.content)), 2)
     
     def test_postObservation(self):
         url = '/api/observations/create/emil'
         data = self.observation2
         response = self.client.post(url, data, format="json")
-        print('1')
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        observation = Observation.objects.get()
+        self.assertEqual(observation.sleep, 9)
+        self.assertEqual(observation.exercise, 4)
 
         data = self.observation1
         response = self.client.post(url, data, format="json")
-        print('2')
         self.assertEqual(response.status_code, status.HTTP_200_OK)

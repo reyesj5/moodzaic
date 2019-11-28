@@ -32,20 +32,27 @@ class ObservationViewSet(viewsets.ModelViewSet):
         return Observation.objects.filter(user__username=self.kwargs.get('username', None))
     
     def perform_create(self, serializer):
-        print(self.kwargs['username'])
+        #print(self.kwargs['username'])
         serializer.user = Profile.objects.get(username=self.kwargs['username'])
         serializer.save
         
 
 @api_view(['POST'])
 def setObservation(request, username):
-    #just update observations
-    print('SMOOGY')
-    #userProf = Profile.objects.get(username=username)
+    #need to serialize profile too?
     obsSerializer = ObservationSerializer(data = request.data)
-    obsSerializer.is_valid()
+    if obsSerializer.is_valid():
+        obsSerializer.save()
     logger.error(obsSerializer.errors)
     return Response(obsSerializer.data)
+
+@api_view(['GET'])
+def getObservations(request, username):
+    #need to serialize profile too?
+    profileID = Profile.objects.get(username=username).id
+    observations = Observation.objects.filter(user=profileID)
+    serializer = ObservationSerializer(observations, many=True)
+    return Response(serializer.data)
 
 @api_view(['GET'])
 def allUsers(request):

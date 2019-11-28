@@ -10,9 +10,11 @@ router.register(r'profiles', views.ProfileViewSet)
 
 urlpatterns = [
     path('api/', include(router.urls)),
-    url(r'^api/observations/create/(?P<username>[\w]+)', views.setObservation)
+    url(r'^api/observations/create/(?P<username>[\w]+)', views.setObservation),
+    url(r'^api/observations/(?P<username>[\w]+)', views.getObservations)
+
     # path('api/all/users/', views.UserViewSet.list ),
-    # url(r'^api/users/(?P<username>[\w]+)$', views.UserViewSet.retrieve),
+    #url(r'^api/users/(?P<username>[\w]+)$', views.UserViewSet.retrieve),
     # path('api/create/users/', views.UserViewSet.create),
 
     
