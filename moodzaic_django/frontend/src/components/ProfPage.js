@@ -4,7 +4,8 @@ import {
   Grid,
   Header,
   Icon,
-  Button
+  Button,
+  Segment
 } from 'semantic-ui-react'
 // import MyMenu from './Menu.js';
 // import Footer from './Footer.js';
@@ -41,27 +42,29 @@ class ProfilePage extends React.Component {
         <UpdateProfile user={user} profile={profile} callback={this.toggleEditMode}/>
         :
         <div>
-        <Grid columns={2}>
-          <Grid.Column width = {10}>
-            <Container text style={{ marginTop: '7em', marginLeft: '10em' }}>
-              <Header as='h1'>
-                {user.username}'s Profile
-              </Header>
-              <Button icon onClick={this.toggleEditMode}>
-                <Icon name="edit outline"/>
-              </Button>
-                <p>My name? <strong>{user.first_name} {user.last_name}</strong></p>
-                <p>My age? <strong>{profile.age}</strong></p>
-                {profile.gender === '' ? '' : <p>My Gender? <strong>{profile.gender}</strong></p>}
-                <p>
-                <MoodVis/>
-                </p>
-              </Container>
-            </Grid.Column>
-            <Grid.Column width = {5}>
-              <Reminders profile={profile}/>
-            </Grid.Column>
-          </Grid>
+          <Segment vertical>
+            <Grid inverted columns={2}>
+              <Grid.Column width = {10}>
+                <Container text style={{ margin: '6em 0em 0em', padding: '0em 1em' }}>
+                {//style={{ marginTop: '7em', marginLeft: '10em' }}>
+                }
+                  <Header as='h1'>
+                    {user.username}'s Profile
+                  </Header>
+                  <Button icon onClick={this.toggleEditMode}>
+                    <Icon name="edit outline"/>
+                  </Button>
+                  <p>My name? <strong>{user.first_name} {user.last_name}</strong></p>
+                  <p>My age? <strong>{profile.age}</strong></p>
+                  {profile.gender === '' ? '' : <p>My Gender? <strong>{profile.gender}</strong></p>}
+                  <MoodVis profile={profile}/>
+                </Container>
+              </Grid.Column>
+              <Grid.Column width = {5} style={{ margin: '4.5em 0em 0em', padding: '0em 0em' }}>
+                <Reminders profile={profile}/>
+              </Grid.Column>
+            </Grid>
+          </Segment>
         </div>
       }
       </div>

@@ -38,7 +38,7 @@ class Post(models.Model):
     poster = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
     def setPost(self, post):
-        if (len(post) > 0 and len(post) <= 1000):
+        if (len(post) > 0 and len(post) <= 1000 and not(post.isspace())):
             self.post = post
             self.save()
         return
@@ -65,11 +65,15 @@ class Post(models.Model):
 
 class Comment(Post):
     originalPost = models.ForeignKey(Post, related_name='+', on_delete=models.CASCADE)
+    originalPostId = models.IntegerField(null=True)
+
 
     def getOriginalPost(self):
         return self.originalPost
 
     def setOriginalPost(self, originalPost):
+        if (isinstance(originalPost, Comment) or not(isinstance(originalPost, Post))):
+            return
         self.originalPost = originalPost
         self.save()
         return

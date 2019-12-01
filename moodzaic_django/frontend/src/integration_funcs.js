@@ -24,11 +24,14 @@ const API_URL = 'http://localhost:8000/api/';
       console.log(response.data);
       return response.data;
     })
-    .catch(error => console.log(error))
+    .catch(error => {
+      console.log(error)
+      return error
+    })
   }
 
-  export function updateUser(u){
-    return axios.put(`${API_URL}users/${u.username}`, u);
+  export function updateUser(username, u){
+    return axios.patch(`${API_URL}users/${username}`, u);
   }
 
 
@@ -70,9 +73,9 @@ const API_URL = 'http://localhost:8000/api/';
       return axios.get(url).then(response => response.data);
   }
 
-  export function createComment() {
-    return
-  }
+  // export function createComment() {
+  //   return
+  // }
 
 
 
@@ -91,6 +94,16 @@ const API_URL = 'http://localhost:8000/api/';
   export function createPost(post){
       const url = `${API_URL}create/post`;
       return axios.post(url,post);
+  }
+
+  export function createComment(comment){
+    const url = `${API_URL}create/comment`;
+    return axios.post(url,comment);
+  }
+
+  export function getPostComments(id) {
+    const url = `${API_URL}post/comments/${id}`;
+    return axios.get(url).then(response => response.data).catch([])
   }
   // export function updatePost(post){
   //     const url = `${API_URL}${post.id}`;
@@ -138,13 +151,13 @@ const API_URL = 'http://localhost:8000/api/';
       const url = `${API_URL}profiles`;
       return axios.post(url,profile);
   }
-  export function updateProfile(profile){
-      const url = `${API_URL}profiles/${profile.username}`;
-      return axios.put(url,profile);
+  export function updateProfile(username, profile){
+      const url = `${API_URL}profiles/${username}`;
+      return axios.patch(url,profile);
   }
 
   export function createObservation(username, observation) {
-    const url = `${API_URL}observations/${username}`;
+    const url = `${API_URL}observations/create/${username}`;
     return axios.post(url, observation);
   }
 

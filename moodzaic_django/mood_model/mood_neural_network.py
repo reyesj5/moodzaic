@@ -2,6 +2,7 @@ import numpy as np
 import random
 import json
 import csv
+from mood_model.mood_tools import getEmotions
 
 class MoodNeuralNetwork:
     '''
@@ -15,29 +16,27 @@ class MoodNeuralNetwork:
     _weights = {}
     _biases = {}
     _network = []
-    _emotions = ['Fear', 'Sad', 'Hesitant', 'Calm', 'Happy']
+    _emotions = []
     epochs = 1000
     learn_rate = 0.1 # number of times to loop through the entire dataset
 
-    def __init__(self, nclasses = 5, weights = None, biases = None):
-        self.nclasses = nclasses
+    def __init__(self, weights = None, biases = None):
+        self._emotions = getEmotions()
+        self.nclasses = len(self._emotions)
         # Weights
         if weights:
             if len(weights) != 208:
                 raise ValueError("There must be 208 weights for the model")
             self.setWeights(weights)
         else:
-            for i in range(208):
-                self._weights["weight" + str(i)] = np.random.normal()
+            self.setWeights("static/base_weights.json", True)
         # biases
         if biases:
             if len(biases) != 21:
                 raise ValueError("Number of biases must be 21")
             self.setBias(biases)
         else:
-            for i in range(21):
-                # self._biases["bias" + str(i)] = np.random.uniform()
-                self._biases["bias" + str(i)] = 1.0
+            self.setBias("static/base_biases.json", True)
         # network
         if len(self._network) == 0:
             for i in range(4):
@@ -149,14 +148,18 @@ class MoodNeuralNetwork:
         if training:
             return layer1, layer2, layer3, output
         else:
-            return output
+            return output[0]
 
     def roundClass(self, output):
-        return np.rint(output*(self.nclasses-1))
+        return int(np.rint(output*(self.nclasses-1)))
 
     def activation(self, x):
         # activation function: sigmoid function
-        return 1 / (1 + np.exp(-x))
+        try:
+            result =  1 / (1 + np.exp(-x))
+        except:
+            result = 0
+        return result
 
     def deriv_activation(self, x):
         # Derivative of activation, normalized
@@ -197,7 +200,7 @@ class MoodNeuralNetwork:
                     self._weights['weight' + str(neuron['weights'][j])] -= self.learn_rate * neuron['delta'] * inputs[j] * self.deriv_activation(neuron['output'])
                 #self._biases['bias' + str(neuron['bias'])] += self.learn_rate * neuron['delta']
 
-    def train(self, data, all_y_trues):
+    def train(self, data, all_y_trues, DEBUG = False):
         '''
         - data is a (n x 11) numpy array, n = # of samples in the dataset.
         - all_y_trues is a numpy array with n elements.
@@ -225,7 +228,7 @@ class MoodNeuralNetwork:
                 self.update_weights(x)
 
             # --- Calculate total loss at the end of each epoch
-            if epoch % 10 == 0:
+            if epoch % 10 == 0 and DEBUG:
                 y_preds = np.apply_along_axis(self.feedforward, 1, data)
                 loss = self.loss(all_y_trues, y_preds)
                 count = 0
@@ -237,9 +240,9 @@ class MoodNeuralNetwork:
                 # print("Epoch %d loss: %.3f accuracy: %.2f%%" % (epoch, loss, accuracy*100))
 
     def saveModel(self, filename):
-        with open(filename + '_weights.json', 'w') as fp:
+        with open("../static/" + filename + '_weights.json', 'w') as fp:
             json.dump(self._weights, fp)
-        with open(filename + '_biases.json', 'w') as fp:
+        with open("../static/" + filename + '_biases.json', 'w') as fp:
             json.dump(self._biases, fp)
         return True
 
@@ -253,16 +256,14 @@ class MoodNeuralNetwork:
 
 if __name__ == "__main__":
     # Reading in emotions
-    baseModel = MoodNeuralNetwork(5)
+    baseModel = MoodNeuralNetwork()
     emotions = baseModel.getEmotions()
-    emotion_map = {}
-    for i in range(len(emotions)):
-        emotion_map[emotions[i]] = i
+    emotion_map = mood_tools.getEmotionMap()
     # with open('emotions.json', 'w') as fp:
     #     json.dump(emotions), fp)
 
     # Reading in sample data
-    with open('mood_tracking_responses.csv', 'r') as f:
+    with open('../static/mood_tracking_responses.csv', 'r') as f:
         reader = csv.reader(f)
         data = list(reader)
     true_mood = []
@@ -285,22 +286,23 @@ if __name__ == "__main__":
     # generating model
     # print(true_mood)
     # print(data)
-    baseModel.setWeights("base_weights.json", True)
-    baseModel.setBias("base_biases.json", True)
-    # for i in range(data.shape[0]):
-    #     result = baseModel.feedforward(data[i])
-    #     print(result)
-    #     print("Actual mood:",true_mood[i], "Predicted mood:", baseModel.roundClass(result))
-    #     print("Actual mood:",emotions[true_mood[i]], "Predicted mood:", emotions[int(baseModel.roundClass(result)[0])])
+    # baseModel.setWeights("base_weights.json", True)
+    # baseModel.setBias("base_biases.json", True)
+    # baseModel.saveModel("base")
+    for i in range(data.shape[0]):
+        result = baseModel.feedforward(data[i])
+        print(result)
+        print("Actual mood:",true_mood[i], "Predicted mood:", baseModel.roundClass(result))
+        print("Actual mood:",emotions[true_mood[i]], "Predicted mood:", emotions[int(baseModel.roundClass(result)[0])])
     print('-------------beggining training-------------------------')
     baseModel.train(data, true_mood)
     print('--------------------end---------------------------------')
-    # for i in range(data.shape[0]):
-    #     result = baseModel.feedforward(data[i])
-    #     print(result)
-    #     print("Actual mood:",true_mood[i], "Predicted mood:", baseModel.roundClass(result))
-    #     print("Actual mood:",emotions[true_mood[i]], "Predicted mood:", emotions[int(baseModel.roundClass(result)[0])])
-    baseModel.saveModel("base")
+    for i in range(data.shape[0]):
+        result = baseModel.feedforward(data[i])
+        print(result)
+        print("Actual mood:",true_mood[i], "Predicted mood:", baseModel.roundClass(result))
+        print("Actual mood:",emotions[true_mood[i]], "Predicted mood:", emotions[int(baseModel.roundClass(result)[0])])
+    # baseModel.saveModel("base")
     # print(true_mood)
     # print(data)
 

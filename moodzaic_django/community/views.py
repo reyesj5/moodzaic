@@ -1,6 +1,6 @@
-from community.models import Community, Post
+from community.models import Community, Post, Comment
 from users.models import User
-from community.serializers import CommunitySerializer, PostSerializer
+from community.serializers import CommunitySerializer, PostSerializer, CommentSerializer
 
 from rest_framework import generics
 from rest_framework.response import Response
@@ -78,7 +78,18 @@ def createPost(request):
     if request.method == 'POST':
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
-            comment = serializer.save()
+            serializer.save()
+            return Response(serializer.data)
+        logger.error(serializer.errors)
+        return Response(serializer.data)
+
+@api_view(['POST'])
+def createComment(request):
+    if request.method == 'POST':
+        print(request.data)
+        serializer = CommentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
             return Response(serializer.data)
         logger.error(serializer.errors)
         return Response(serializer.data)
@@ -86,7 +97,7 @@ def createPost(request):
 @api_view(['GET'])
 def postDetails(request, pk):
     """
-    Retrieve a post by name.
+    Retrieve a post by pk.
     """
     if request.method == 'GET':
         try:
@@ -95,6 +106,21 @@ def postDetails(request, pk):
             return Response(serializer.data)
         except Post.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['GET'])
+def postComments(request, pk):
+    """
+    Retrieve all comments with originalPostId = pk.
+    """
+    if request.method == 'GET':
+        comments = Comment.objects.all()
+        print(comments.first().originalPostId)
+        print(comments.count(), pk)
+        comments = comments.filter(originalPostId=pk)
+        print(comments.count(), pk)
+        serializer = CommentSerializer(comments, many=True)
+        print(serializer.data)
+        return Response(serializer.data)
 
 # Return all posts
 @api_view(['GET'])

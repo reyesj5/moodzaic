@@ -5,6 +5,7 @@ import {
   Segment,
   Button
 } from 'semantic-ui-react'
+import { updateProfile } from '../integration_funcs'
 
 
 class Reminders extends React.Component {
@@ -43,6 +44,13 @@ class Reminders extends React.Component {
     }))
   }
 
+  removeReminder = (index) => {
+    let reminders = this.props.profile.reminderList;
+    reminders.splice(index, 1);
+    updateProfile(this.props.profile.username, {reminderList: reminders});
+  }
+
+
   render() {
     const myReminders = this.state.myReminders;
     const renderNumber = this.state.renderNumber;
@@ -55,7 +63,7 @@ class Reminders extends React.Component {
             <h1>Reminders!</h1>
             {myReminders.slice(0, renderNumber).map((r, i) => {
               return(
-                <Message key = {i} color = 'purple'>
+                <Message key = {i} color = 'purple' onClick={() => this.removeReminder(i)}>
                   <p>{r}</p>
                </Message>
              )})}

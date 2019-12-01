@@ -100,3 +100,7 @@ coverage.xml
 ._.dev.json
 _.dev.json
 .dev.json
+
+**/output.txt
+
+**/assets/**

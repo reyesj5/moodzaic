@@ -4,6 +4,11 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import generics
+from mood_model.mood_tools import getEmotions
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -11,12 +16,72 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     lookup_field = 'username'
 
+    def partial_update(self, request, username):
+        print(request.data)
+        serializer = UserSerializer(User.objects.get(username=username), data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        print(serializer.errors)
+        return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+
+    def create(self, request, *args, **kwargs):
+        exists = User.objects.filter(username=request.data["username"]).first()
+        if exists is not None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        if (len(request.data["username"])<1):
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        serializer = self.get_serializer(data=request.data)
+        print(serializer)
+        if not serializer.is_valid():
+            print(serializer.errors)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
 class ProfileViewSet(viewsets.ModelViewSet):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
     lookup_field = 'username'
 
-    # def get_observations(self, obj)
+    def partial_update(self, request, username):
+        print('HERE')
+        print(type(request.data))
+        print(request.data)
+        data = request.data
+        for k in data:
+            if k == 'name':
+                print('HERE2')
+                if (data[k]==''):
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = ProfileSerializer(Profile.objects.get(username=username), data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        print(serializer.errors)
+        return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+
+    # def partial_update(self, request, username):
+    #     instance = Profile.objects.get(username=username)
+
+    #     if not instance:
+    #         return Response(status=status.HTTP_404_NOT_FOUND)
+
+    #     serializer = self.get_serializer(
+    #         data=request.data,
+    #         partial=True
+    #     )
+    #     if not serializer.is_valid():
+    #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    #     serializer.save()
+    #     return Response(serializer.data, status=status.HTTP_200_OK)
 
 class ObservationViewSet(viewsets.ModelViewSet):
     # queryset = Observation.objects.all()
@@ -26,20 +91,60 @@ class ObservationViewSet(viewsets.ModelViewSet):
         user = User.objects.get(username=self.kwargs['username'])
         # username = self.request.user.username
         return Observation.objects.filter(user__username=self.kwargs.get('username', None))
-    
+
+    def create(self, request, *args, **kwargs):
+        print(request.data)
+        serializer = self.get_serializer(data=request.data)
+        print(serializer)
+        if not serializer.is_valid():
+            print(serializer.errors)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
     def perform_create(self, serializer):
         print(self.kwargs['username'])
-        serializer.user = Profile.objects.get(username=self.kwargs['username'])
-        serializer.save
-        
+        print("print", serializer)
+        #TODO: perform ML operation here
+        # serializer.user = Profile.objects.get(username=self.kwargs['username'])
+        serializer.save()
 
+
+@api_view(['POST'])
+def setObservation(request, username):
+    #need to serialize profile too?
+    emotions = getEmotions()
+    if not(request.data['mood'] in emotions):
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    request.data["mood"] = emotions.index(request.data["mood"])
+    print(request.data)
+    obsSerializer = ObservationSerializer(data = request.data)
+    if obsSerializer.is_valid():
+        obsSerializer.save()
+    logger.error(obsSerializer.errors)
+    return Response(obsSerializer.data)
+
+@api_view(['GET'])
+def getObservations(request, username):
+    #need to serialize profile too?
+
+
+    profileID = Profile.objects.get(username=username).id
+    observations = Observation.objects.filter(user=profileID)
+    serializer = ObservationSerializer(observations, many=True)
+
+    # print(serializer.data)
+    # serializer.data["mood"] = emotions[int(serializer.data["mood"])]
+    return Response(serializer.data)
 
 @api_view(['GET'])
 def allUsers(request):
     """
     List all code snippets, or create a new snippet.
     """
-    
+
     users = User.objects.all()
     serializer = UserSerializer(users, many=True)
     return Response(serializer.data)
@@ -90,6 +195,9 @@ def allProfiles(request):
         return Response(serializer.data)
 
     elif request.method == 'POST':
+        # if (request.data['age'] < 0):
+        #     return Response(status=status.HTTP_404_NOT_FOUND)
+
         serializer = ProfileSerializer(data=request.data)
 
         if serializer.is_valid():
@@ -110,7 +218,7 @@ def profileDetails(request, username):
     if request.method == 'GET':
         serializer = ProfileSerializer(profile, context={'request': request})
         return Response(serializer.data)
-        
+
     elif request.method == 'DELETE':
         profile.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
