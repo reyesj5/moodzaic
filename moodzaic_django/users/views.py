@@ -46,6 +46,23 @@ class ProfileViewSet(viewsets.ModelViewSet):
     serializer_class = ProfileSerializer
     lookup_field = 'username'
 
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        if "reminderList" in request.data:
+            instance.removeReminder(request.data["reminderList"])
+            del request.data["reminderList"]
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
     # def partial_update(self, request, username):
     #     instance = Profile.objects.get(username=username)
 
@@ -99,6 +116,9 @@ def setObservation(request, username):
     obsSerializer = ObservationSerializer(data = request.data)
     if obsSerializer.is_valid():
         obsSerializer.save()
+        profile = Profile.objects.get(username=username)
+        profile.MoodScoreCalc()
+        profile.updateReminders()
     logger.error(obsSerializer.errors)
     return Response(obsSerializer.data)
 
