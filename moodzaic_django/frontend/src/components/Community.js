@@ -21,7 +21,7 @@ class Community extends React.Component {
   }
 
   async componentDidMount() {
-    await getPosts()
+    await getPosts(this.props.myCommunity.name)
       .then(posts => this.setState({ allPosts:  posts }))
       .then(
         this.setState(prevState => ({
@@ -46,7 +46,7 @@ class Community extends React.Component {
   handleChange = (e, { name, value }) => this.setState({ [name]: value })
 
   handleSubmit = () => {
-    createPost({ 
+    createPost({
       postid: this.state.allPosts.length + 1,
       poster: this.props.user,
       community: this.props.myCommunity,
@@ -67,7 +67,7 @@ class Community extends React.Component {
     }).then(response => {
       this.setState({ message: '' });
     });
-    
+
   }
 
   render() {
@@ -75,6 +75,9 @@ class Community extends React.Component {
     const community = this.props.myCommunity;
     // const username = this.props.user.username;
     const posts = this.state.allPosts;
+    console.log("---1---")
+    console.log(posts)
+    console.log("---1---")
 
     const reply_box = (post) => {
       return(

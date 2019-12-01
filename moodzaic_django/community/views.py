@@ -129,6 +129,14 @@ def allPosts(request):
     serializer = PostSerializer(posts, many=True)
     return Response(serializer.data)
 
+# Return community's posts
+@api_view(['GET'])
+def communityPosts(request, communityName):
+    posts = Post.objects.filter(community__name=communityName)
+    logger.error(posts)
+    serializer = PostSerializer(posts, many=True)
+    return Response(serializer.data)
+
 # class PostListCreate(generics.ListCreateAPIView):
 #     queryset = Post.objects.all()
 #     serializer_class = PostSerializer
