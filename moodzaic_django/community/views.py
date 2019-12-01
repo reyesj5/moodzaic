@@ -20,6 +20,7 @@ def allCommunities(request):
     serializer = CommunitySerializer(communities, many=True)
     return Response(serializer.data)
 
+# Get a user's communities
 @api_view(['GET'])
 def usersCommunities(request, username):
     user = User.objects.get(username=username)
