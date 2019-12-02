@@ -115,8 +115,7 @@ class ObservationViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         self.perform_create(serializer)
-        # REMINDERS: where the ML should be implemented. commented out because it
-        #            is creating observaitons instead of updating
+        # REMINDERS
         user.MoodScoreCalc()
         user.updateReminders(user.MoodScore)
         # end of attempt
@@ -139,8 +138,8 @@ class ObservationViewSet(viewsets.ModelViewSet):
         self.perform_update(serializer)
         user = Profile.objects.get(username=self.kwargs['username'])
 
-        user.MoodScoreCalc()
-        user.updateReminders(user.MoodScore)
+        # user.MoodScoreCalc()
+        # user.updateReminders(user.MoodScore)
         if getattr(instance, '_prefetched_objects_cache', None):
             instance._prefetched_objects_cache = {}
 
