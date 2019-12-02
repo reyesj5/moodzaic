@@ -17,23 +17,21 @@ class Community extends React.Component {
     // now: '',
     allPosts: [],
     myPosts: [],
-    replyMode: -1
+    replyMode: -1,
+    comments: []
   }
 
   async componentDidMount() {
-    await getPosts()
-      .then(posts => this.setState({ allPosts:  posts }))
-      .then(
-        this.setState(prevState => ({
-          myPosts: (this.state.allPosts).filter((post) => {
-            return(
-              post.community === this.props.myCommunity
-            )
-          }).map(p => ({comments: getPostComments(p.id), ...p}))
-        })))
-        .then(
-          console.log(this.state)
-        )
+    await getPosts(this.props.myCommunity.name)
+      .then(posts => {
+        this.setState({ allPosts:  posts });
+        posts.map((post) => {
+        getPostComments(post.id).then(comments => {
+          if (comments != []) {
+            let newComments = this.state.comments.concat(comments)
+            this.setState({ comments: newComments })
+          }
+        })})})
       }
 
   toggleReplyMode = (i) => {
@@ -46,7 +44,7 @@ class Community extends React.Component {
   handleChange = (e, { name, value }) => this.setState({ [name]: value })
 
   handleSubmit = () => {
-    createPost({ 
+    createPost({
       postid: this.state.allPosts.length + 1,
       poster: this.props.user,
       community: this.props.myCommunity,
@@ -67,7 +65,7 @@ class Community extends React.Component {
     }).then(response => {
       this.setState({ message: '' });
     });
-    
+
   }
 
   render() {
@@ -75,6 +73,11 @@ class Community extends React.Component {
     const community = this.props.myCommunity;
     // const username = this.props.user.username;
     const posts = this.state.allPosts;
+    const comments = this.state.comments;
+
+    console.log("comment start")
+    console.log(comments.filter((comment) => {return comment.originalPostId === 1}))
+    console.log("comment end")
 
     const reply_box = (post) => {
       return(
@@ -107,7 +110,7 @@ class Community extends React.Component {
       )
     }
 
-    const printPosts = (posts) =>  posts.map((post, i) => {
+    const printPosts = (posts) => posts.map((post, i) => {
       return (
         <Comment key = {i} >
           <Comment.Avatar src={logo} />
@@ -122,16 +125,36 @@ class Community extends React.Component {
               {this.state.replyMode == i ? reply_box(post) : ''}
             </Comment.Actions>
           </Comment.Content>
-          {/* <Comment.Group>
-              {console.log(posts)}
-              {printPosts(post.comments)}
-          </Comment.Group> */}
+            <Comment.Group>
+              {printComments(comments.filter((comment) => {return comment.originalPostId === post.id}))}
+            </Comment.Group>
         </Comment>
       )
     })
+
+    const printComments = (comments) => comments.map((comment, i) => {
+      return (
+        <Comment key = {i} >
+          <Comment.Avatar src={logo} />
+          <Comment.Content>
+            <Comment.Author as='a'>{comment.poster.username}</Comment.Author>
+            <Comment.Metadata>
+              <div>{comment.time}</div>
+            </Comment.Metadata>
+            <Comment.Text>{comment.post}</Comment.Text>
+          </Comment.Content>
+        </Comment>
+      )
+    })
+
+    // {<Comment.Group>
+    //   {getPostComments(post.id).then(comments => {console.log(comments);printPosts(comments)})}
+    // </Comment.Group>/}
     // const printPosts = posts.map((post, i) => {
     //   console.log("checking posts")
     //   console.log(post)
+    // {printPosts(getPostComments(post.id))}
+
     //   console.log("checking posts")
     //
     //   return (
@@ -150,7 +173,7 @@ class Community extends React.Component {
     //       </Comment.Content>
     //       {post.comment_list.empty ? '' :
     //       <Comment.Group>
-    //         {printPosts(posts.filter((p) => p.originalPost === post))}
+    //         {printPosts(comments.filter((comment) => {return comment.originalPostId === 1}))))}
     //       </Comment.Group>
     //       }
     //     </Comment>
