@@ -53,7 +53,7 @@ class SetupPage extends React.Component {
       errors.push("Please enter your name");
     }
     if (this.state.age < 18 || this.state.age > 120) {
-      errors.push("Please enter a valid age");
+      errors.push("Please enter a valid age (18 - 120)");
     }
     if (this.state.email.trim() === "") {
       errors.push("Please enter a valid email address");

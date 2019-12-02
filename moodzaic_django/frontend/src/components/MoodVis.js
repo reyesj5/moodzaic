@@ -26,6 +26,8 @@ import {
   Link
 } from "react-router-dom";
 import {getUserObservations} from '../integration_funcs';
+// import '...../node_modules/react-vis/dist/style.css';
+import '../../../../node_modules/react-vis/dist/style.css';
 
 class MoodVis extends React.Component {
   state = {
@@ -56,7 +58,6 @@ class MoodVis extends React.Component {
   }
 
   componentDidMount() {
-    console.log("Mounted")
     const observations = getUserObservations(this.props.profile.username)
     this.setState({pastObservations: observations})
   }
@@ -157,11 +158,11 @@ class MoodChart extends React.Component {
       <div>
         <h3>MoodChart</h3>
         <XYPlot height={300} width= {400}>
+          <XAxis />
+          <YAxis tickValues={[0, 1, 3, 4, 5]} title="Mood Level"/>
           <VerticalGridLines />
           <HorizontalGridLines />
           <LineSeries data={this.props.data} color="blue"/>
-          <XAxis />
-          <YAxis />
         </XYPlot>
       </div>
     )
@@ -204,21 +205,5 @@ class CalChart extends React.Component {
     )
   }
 }
-
-// <MoodChart type={this.state.activeItem} />
-//
-// class MoodChart {
-//   render() {
-//     return(
-//     <XYPlot height={300} width= {300}>
-//       <VerticalGridLines />
-//       <HorizontalGridLines />
-//       <XAxis />
-//       <YAxis />
-//       <LineSeries sampleData={this.props.sampleData} />
-//     </XYPlot>
-//   )
-//   }
-// }
 
 export default MoodVis
