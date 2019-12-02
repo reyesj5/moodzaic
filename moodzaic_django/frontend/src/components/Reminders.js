@@ -5,7 +5,7 @@ import {
   Segment,
   Button
 } from 'semantic-ui-react'
-import { updateProfile } from '../integration_funcs'
+import { updateProfile, getProfile } from '../integration_funcs'
 
 
 class Reminders extends React.Component {
@@ -50,6 +50,10 @@ class Reminders extends React.Component {
     updateProfile(this.props.profile.username, {reminderList: reminders});
   }
 
+  getReminderList = () => {
+    this.setState(prevState => ({
+      myReminders: (getProfile(this.props.profile.username).reminderList)}))
+  }
 
   render() {
     const myReminders = this.state.myReminders;

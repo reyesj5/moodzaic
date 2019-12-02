@@ -33,7 +33,8 @@ class App extends Component {
           username: '',
           age: 0,
           gender: '',
-          user: {}
+          user: {},
+          reminderList: [],
         },
         MyCommunityList: [],
         MyObservationList: [],
