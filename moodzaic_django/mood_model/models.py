@@ -20,11 +20,11 @@ class Weights(models.Model):
 
     weights_int_list = models.TextField(
         validators=[int_list_validator],
-        default=""
+        default=""#.join([str(0)] * 208)
     )
     bias_int_list = models.TextField(
         validators=[int_list_validator],
-        default=""
+        default=""#.join([str(0)] * 21)
     )
 
     def getData(self, obs, observations, timeframe):
@@ -86,8 +86,11 @@ class Weights(models.Model):
         biases = self.bias_int_list.split(',')
         weightDict = {}
         biasDict = {}
+        print(weights)
+        print(biases)
         for i in range(len(weights)):
             if i < 21:
+                
                 biasDict['bias' + str(i)] = float(biases[i])
             weightDict['weight' + str(i)] = float(weights[i])
         return weightDict, biasDict

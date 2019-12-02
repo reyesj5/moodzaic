@@ -3,6 +3,7 @@ from datetime import date
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
+import pytz
 from django.core.validators import int_list_validator
 import json
 import os
@@ -285,7 +286,7 @@ class Profile(models.Model):
             return False
 
 class Observation(models.Model):
-    date = models.DateField('date observed', auto_now_add=True, blank=True)
+    date = models.DateField('date observed', default=datetime.now(pytz.timezone('US/Central')).date(), blank=True)
     sleep = models.FloatField(default=0)
     exercise = models.FloatField(default = 0)
     weeklyExercise = models.FloatField(default = 0)
@@ -300,6 +301,7 @@ class Observation(models.Model):
     user = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True)
     predictedMood = models.IntegerField(default = 0)
     mood = models.IntegerField(default=-1)
+
 
     def setSleep(self, hours):
         if not (isinstance(hours, type(2.0))) and not (isinstance(hours, type(2))):
