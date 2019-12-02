@@ -15,8 +15,11 @@ class Reminders extends React.Component {
   }
 
   componentDidMount() {
-    if (this.props.profile.reminderList) {
-      this.setState({myReminders: this.props.profile.reminderList})
+    console.log(this.props.profile.username)
+    console.log(this.props.profile)
+    console.log(this.props.profile.reminderList)
+    if (this.props.profile.reminderList || this.props.profile.reminderList === "") {
+      this.setState({myReminders: this.props.profile.reminderList.split(";")})
     } else {
       console.log("No reminder list field in user " + this.props.profile.username)
       this.setState({myReminders:
@@ -50,31 +53,35 @@ class Reminders extends React.Component {
     updateProfile(this.props.profile.username, {reminderList: reminders});
   }
 
-
   render() {
     const myReminders = this.state.myReminders;
     const renderNumber = this.state.renderNumber;
     //console.log('rendernumber', renderNumber);
-    console.log(myReminders.slice(0, renderNumber));
-    return(
-      <div>
-      <Container>
-        <Segment placeholder>
-            <h1>Reminders!</h1>
-            {myReminders.slice(0, renderNumber).map((r, i) => {
-              return(
-                <Message key = {i} color = 'purple' onClick={() => this.removeReminder(i)}>
-                  <p>{r}</p>
-               </Message>
-             )})}
-             {(renderNumber <= myReminders.length) ?
-               <Button onClick = {this.showMore}>Show Older Reminders</Button> :
-               <p>That's all the reminders you've gotten! Keep recording observations to get some more :)</p>
-             }
-          </Segment>
-        </Container>
-      </div>
-    )
+    if(myReminders.length > 0) {
+      return(
+        <div></div>)
+      }
+    else {
+      return(
+        <div>
+        <Container>
+          <Segment placeholder>
+              <h1>Reminders!</h1>
+              {myReminders.slice(0, renderNumber).map((r, i) => {
+                return(
+                  <Message key = {i} color = 'purple' onClick={() => this.removeReminder(i)}>
+                    <p>{r}</p>
+                </Message>
+              )})}
+              {(renderNumber <= myReminders.length) ?
+                <Button onClick = {this.showMore}>Show Older Reminders</Button> :
+                <p>That's all the reminders you've gotten! Keep recording observations to get some more :)</p>
+              }
+            </Segment>
+          </Container>
+        </div>
+      )
+            }
   }
 }
 
