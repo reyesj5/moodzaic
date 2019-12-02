@@ -160,7 +160,7 @@ class Profile(models.Model):
         return self.MoodScore
 
     def setMoodScore(self, MoodScore):
-        if (MoodScore >= 0 and MoodScore <=len(mood_tools.getEmotions())):
+        if (MoodScore >= 0 and MoodScore <len(mood_tools.getEmotions())):
             self.MoodScore = MoodScore
             self.save()
             return True
@@ -386,7 +386,7 @@ class Observation(models.Model):
     def setPastMoodScore(self, mood_int):
         if not (isinstance(mood_int, type(2))):
             return False
-        if mood_int >=0 and mood_int <=len(mood_tools.getEmotions()):
+        if mood_int >=0 and mood_int <len(mood_tools.getEmotions()):
             self.pastMoodScore = mood_int
             self.save()
             return True
@@ -416,7 +416,7 @@ class Observation(models.Model):
     def setPredictedMood(self, mood_int):
         if not (isinstance(mood_int, type(2))):
             return False
-        if mood_int >=0 and mood_int <=len(mood_tools.getEmotions()):
+        if mood_int >=0 and mood_int <len(mood_tools.getEmotions()):
             self.predictedMood = mood_int
             self.save()
             return True
@@ -426,7 +426,7 @@ class Observation(models.Model):
     def setMood(self, mood_int):
         if not (isinstance(mood_int, type(2))):
             return False
-        if mood_int >=0 and mood_int <=len(mood_tools.getEmotions()):
+        if mood_int >=0 and mood_int <len(mood_tools.getEmotions()):
             self.mood = mood_int
             self.save()
             return True

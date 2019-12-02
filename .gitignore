@@ -104,3 +104,4 @@ _.dev.json
 **/output.txt
 
 **/assets/**
+**/package-lock.json
