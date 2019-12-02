@@ -101,18 +101,16 @@ class Weights(models.Model):
         #self.updateLongtermData(timeframe)
         profile = self.user.profile
         observations = Observation.objects.filter(user__user__username=profile.user.username)
-        observations = observations.order_by("date")
+        observations = observations.order_by("-date")
 
         input_data = []
         mood_data = []
 
         if len(observations) > 0:
-            today = observations[0].date.today()
-            timeframe_ago = today - datetime.timedelta(days=timeframe)
-            timeframe_data = observations.filter(date__gte=timeframe_ago, date__lte=today)
+            if len(observations) >= timeframe:
+                observations = observations[:timeframe]
 
-
-            for obs in timeframe_data.iterator():
+            for obs in observations:
 
                 row = [
                     obs.sleep, obs.exercise, obs.weeklyExercise, obs.meals,
@@ -128,7 +126,7 @@ class Weights(models.Model):
     def retrain(self):
         weightDict, biasDict = self.getWeightBiasDictionaries()
         model = MoodNeuralNetwork(weights=weightDict, biases=biasDict)
-        input_data, mood_data = self.transformUserData(30)
+        input_data, mood_data = self.transformUserData(30) # Past 30 observations
         model.train(input_data, mood_data)
         weightDict = model.getWeights()
         weights = []
@@ -164,14 +162,16 @@ class Weights(models.Model):
             observations = observations.order_by("date")
 
             if len(observations) > 0:
-                today = observations[0].date.today()
-                timeframe_ago = today - datetime.timedelta(days=timeframe)
-                timeframe_data = observations.filter(date__gte=timeframe_ago, date__lte=today)
-
-                for obs in timeframe_data.iterator():
+                if len(observations) > timeframe:
+                    timeframe_data = observations[len(observations)-timeframe-1:]
+                else:
+                    timeframe_data = observations[:]
+                for i in range(1,len(timeframe_data)):
+                    obs = timeframe_data[i]
                     weekly_exercise, weekly_work = self.getData(obs, observations, 7)
                     obs.setWeeklyExercise(weekly_exercise)
                     obs.setWeeklyWork(weekly_work)
+                    obs.setPastMoodScore(timeframe_data[i-1].predictedMood)
                     obs.save()
                 return True
             return False
@@ -184,16 +184,16 @@ class Weights(models.Model):
         observations = observations.order_by("date")
         try:
             today = observations[0].date.today()
-            tomorrow = today - datetime.timedelta(days=-1)
-            obsTomorrow = observations.filter(date__gte=tomorrow, date__lte=tomorrow)
-            if len(obsTomorrow) != 0:
-                for obs in obsTomorrow:
-                    obs.pastMoodScore = prediction
+            #tomorrow = today - datetime.timedelta(days=-1)
+            obsToday = observations.filter(date__gte=today, date__lte=today)
+            if len(obsToday) != 0:
+                for obs in obsToday:
+                    obs.setPredictedMood(prediction)
                     obs.save()
             else:
                 Observation.objects.create(
-                    date = tomorrow,
-                    pastMoodScore = prediction,
+                    date = today,
+                    predictedMood = prediction,
                     user = profile
                 )
             return True
