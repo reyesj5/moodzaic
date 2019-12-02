@@ -55,7 +55,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         for k in request.data:
             if k == 'name':
-                if (data[k]==''):
+                if (request.data[k]==''):
                     return Response(status=status.HTTP_400_BAD_REQUEST)
         # REMINDERS: my attempt at removing a user, with the function implemented by backend
         print(request.data)
