@@ -132,7 +132,7 @@ def allPosts(request):
 # Return community's posts
 @api_view(['GET'])
 def communityPosts(request, communityName):
-    posts = Post.objects.filter(community__name=communityName)
+    posts = Post.objects.filter(community__name=communityName, comment__isnull=True)
     logger.error(posts)
     serializer = PostSerializer(posts, many=True)
     return Response(serializer.data)
