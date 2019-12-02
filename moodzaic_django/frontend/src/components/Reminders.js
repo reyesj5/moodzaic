@@ -60,31 +60,26 @@ class Reminders extends React.Component {
     console.log(myReminders);
     const renderNumber = this.state.renderNumber;
     //console.log('rendernumber', renderNumber);
-    if(myReminders.length < 0) {
-      return(
-        <div></div>)
-      }
-    else {
-      return(
-        <div>
-        <Container>
-          <Segment placeholder>
-              <h1>Reminders!</h1>
-              {myReminders.slice(0, renderNumber).map((r, i) => {
-                return(
-                  <Message key = {i} color = 'purple' onClick={() => this.removeReminder(r)}>
-                    <p>{r}</p>
-                </Message>
-              )})}
-              {(renderNumber <= myReminders.length) ?
-                <Button onClick = {this.showMore}>Show Older Reminders</Button> :
-                <p>That's all the reminders you've gotten! Keep recording observations to get some more :)</p>
-              }
-            </Segment>
-          </Container>
-        </div>
-      )
+    
+    return(
+      <div>
+      <Container>
+        <Segment placeholder>
+            <h1>Reminders!</h1>
+            {myReminders.slice(0, renderNumber).map((r, i) => {
+              return(
+                <Message key = {i} color = 'purple' onClick={() => this.removeReminder(r)}>
+                  <p>{r}</p>
+              </Message>
+            )})}
+            {(renderNumber <= myReminders.length) ?
+              <Button onClick = {this.showMore}>Show Older Reminders</Button> :
+              <p>That's all the reminders you've gotten! Keep recording observations to get some more :)</p>
             }
+          </Segment>
+        </Container>
+      </div>
+    )
   }
 }
 
