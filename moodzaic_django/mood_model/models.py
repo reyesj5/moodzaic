@@ -78,6 +78,10 @@ class Weights(models.Model):
 
 
     def getWeightBiasDictionaries(self):
+        if len(self.weights_int_list) == 0:
+            self.setWeightsWeights()
+        if len(self.bias_int_list) == 0:
+            self.setWeightsBias()
         weights = self.weights_int_list.split(',')
         biases = self.bias_int_list.split(',')
         weightDict = {}
@@ -111,7 +115,10 @@ class Weights(models.Model):
         weightDict, biasDict = self.getWeightBiasDictionaries()
         model = MoodNeuralNetwork(weights=weightDict, biases=biasDict)
         input_data, mood_data = self.transformUserData(1)
-        output = model.feedforward(input_data[0])
+        try:
+            output = model.feedforward(input_data[0])
+        except:
+            return -1
         mood = model.roundClass(output)
         self.updateMoodPrediction(mood)
         return mood
@@ -124,17 +131,33 @@ class Weights(models.Model):
         self.user = user
         return True
 
-    def setWeightsWeights(self, weights_list):
-        if len(weights_list) != 208:
-            return False
+    def setWeightsWeights(self, weights_list = False):
+        if weights_list:
+            if len(weights_list) != 208:
+                return False
 
-        self.weights_int_list = ",".join(str(x) for x in weights_list)
+            self.weights_int_list = ",".join(str(x) for x in weights_list)
+        else:
+            model = MoodNeuralNetwork()
+            weightDict = model.getWeights()
+            weights = []
+            for i in range(len(weightDict)):
+                weights.append(weightDict["weight" + str(i)])
+            self.setWeightsWeights(weights)
         return True
 
-    def setWeightsBias(self, biases_list):
-        if len(biases_list) != 21:
-            return False
-        self.bias_int_list = ",".join(str(x) for x in biases_list)
+    def setWeightsBias(self, biases_list = False):
+        if biases_list:
+            if len(biases_list) != 21:
+                return False
+            self.bias_int_list = ",".join(str(x) for x in biases_list)
+        else:
+            model = MoodNeuralNetwork()
+            biasDict = model.getBiases()
+            biases = []
+            for i in range(len(biasDict)):
+                biases.append(biasDict["bias" + str(i)])
+            self.setWeightsBias(biases)
         return True
 
     def updateLongtermData(self, timeframe):
@@ -149,12 +172,9 @@ class Weights(models.Model):
                 timeframe_data = observations.filter(date__gte=timeframe_ago, date__lte=today)
 
                 for obs in timeframe_data.iterator():
-                    # print(obs)
-                    # print(obs.exercise)
-                    # print(obs.work)
                     weekly_exercise, weekly_work = self.getData(obs, observations, 7)
-                    obs.weeklyExercise = weekly_exercise
-                    obs.weeklyWork = weekly_work
+                    obs.setWeeklyExercise(weekly_exercise)
+                    obs.setWeeklyWork(weekly_work)
                     obs.save()
                 return True
             return False

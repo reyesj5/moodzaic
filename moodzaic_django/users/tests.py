@@ -133,6 +133,20 @@ class ProfileTestCase(TestCase):
         c1.addUserToCommunity(u1)
         p1 =Post.objects.create(post = "hey y'all", community= c1, poster = u1)
         p1_id = p1.id
+    def test_getMoodToday(self):
+        testProfile = Profile.objects.get(MoodScore = 2)
+        self.assertEqual("Calm", testProfile.getMoodToday(3))
+    def test_MoodScoreCalc(self):
+        testProfile = Profile.objects.get(MoodScore = 2)
+        self.assertEqual(-1, testProfile.MoodScoreCalc())
+        Observation.objects.create(
+            sleep = 7,
+            exercise = 3,
+            meals = 2,
+            mood = 1,
+            user = testProfile
+        )
+        self.assertEqual(33, testProfile.MoodScoreCalc())
     def test_setMoodScore(self):
         testProfile = Profile.objects.get(MoodScore = 2)
         self.assertTrue(testProfile.setMoodScore(3))
@@ -218,16 +232,20 @@ class ProfileTestCase(TestCase):
         self.assertFalse(testProfile.setGender(4))
     def test_getMoodReminder_str(self):
         testProfile = Profile.objects.get(MoodScore = 2)
+        reminders = testProfile.updateReminders(2)
         reminders = testProfile.getMoodReminders()
-        # print('----------------')
-        # print(reminders)
-        # print("-------------------")
         reminders = reminders.split(";")
-        # print(reminders)
         self.assertEqual(reminders[1], "Do not worry about what you cannot control.")
     def test_updateReminder_invalidstr(self):
         testProfile = Profile.objects.get(MoodScore = 2)
         self.assertFalse(testProfile.updateReminders('Tired'))
+    def test_removeReminder_str(self):
+        testProfile = Profile.objects.get(MoodScore = 2)
+        reminders = testProfile.updateReminders(2)
+        testProfile.removeReminder("Do not worry about what you cannot control.")
+        reminders = testProfile.getMoodReminders()
+        reminders = reminders.split(";")
+        self.assertEqual(reminders[1], 'Remember: it’s okay if you don’t know what’s coming next.')
 
 # Observations are asked daily and stored in the database
 class ObservationTestCase(TestCase):
@@ -262,6 +280,17 @@ class ObservationTestCase(TestCase):
         testObservation = Observation.objects.get(sleep = 7)
         testObservation.setExercise(25)
         self.assertEqual(testObservation.exercise, 3)
+    def test_setWeeklyExercise(self):
+        testObservation = Observation.objects.get(sleep = 7)
+        testObservation.setWeeklyExercise(5)
+        self.assertEqual(testObservation.weeklyExercise, 5)
+    def test_setWeeklyExercise_negative(self):
+        testObservation = Observation.objects.get(sleep = 7)
+        testObservation.setExercise(-4)
+        self.assertEqual(testObservation.weeklyExercise, 0)
+    def test_setWeeklyExercise_string(self):
+        testObservation = Observation.objects.get(sleep = 7)
+        self.assertFalse(testObservation.setExercise('25'))
     def test_setMeals(self):
         testObservation = Observation.objects.get(sleep = 7)
         testObservation.setMeals(3)
@@ -270,6 +299,50 @@ class ObservationTestCase(TestCase):
         testObservation = Observation.objects.get(sleep = 7)
         testObservation.setMeals(-3)
         self.assertEqual(testObservation.meals, 2)
+    def test_setGoals(self):
+        testObservation = Observation.objects.get(sleep = 7)
+        testObservation.setNumberOfGoals(3)
+        self.assertEqual(testObservation.numberOfGoals, 3)
+    def test_setGoals_negative(self):
+        testObservation = Observation.objects.get(sleep = 7)
+        testObservation.setNumberOfGoals(-3)
+        self.assertEqual(testObservation.numberOfGoals, 0)
+    def test_setGoalsCompleted(self):
+        testObservation = Observation.objects.get(sleep = 7)
+        testObservation.setGoalsCompleted(3)
+        self.assertEqual(testObservation.goalsCompleted, 3)
+    def test_setGoalsCompleted_negative(self):
+        testObservation = Observation.objects.get(sleep = 7)
+        testObservation.setGoalsCompleted(-3)
+        self.assertEqual(testObservation.goalsCompleted, 0)
+    def test_setGoalsMissed(self):
+        testObservation = Observation.objects.get(sleep = 7)
+        testObservation.setGoalsMissed(3)
+        self.assertEqual(testObservation.goalsMissed, 3)
+    def test_setGoalsMissed_negative(self):
+        testObservation = Observation.objects.get(sleep = 7)
+        testObservation.setGoalsCompleted(-3)
+        self.assertEqual(testObservation.goalsMissed, 0)
+    def test_setGoalsRatio(self):
+        testObservation = Observation.objects.get(sleep = 7)
+        testObservation.setGoalsMissed(3)
+        testObservation.setGoalsCompleted(1)
+        self.assertTrue(testObservation.setGoalsRatio())
+        self.assertEqual(testObservation.goalsRatio, 1/3)
+    def test_setGoalsMissed(self):
+        testObservation = Observation.objects.get(sleep = 7)
+        testObservation.setGoalsMissed(0)
+        testObservation.setGoalsCompleted(3)
+        testObservation.setGoalsRatio()
+        self.assertEqual(testObservation.goalsRatio, 3)
+    def test_setPastMoodScore(self):
+        testObservation = Observation.objects.get(sleep = 7)
+        testObservation.setPastMoodScore(3)
+        self.assertEqual(testObservation.pastMoodScore, 3)
+    def test_setPastMoodScore_negative(self):
+        testObservation = Observation.objects.get(sleep = 7)
+        self.assertFalse(testObservation.setGoalsCompleted(-3))
+        self.assertEqual(testObservation.pastMoodScore, -1)
     def test_setWork(self):
         testObservation = Observation.objects.get(sleep = 7)
         self.assertTrue(testObservation.setWork(7))
@@ -279,9 +352,36 @@ class ObservationTestCase(TestCase):
     def test_setWork_tooHigh(self):
         testObservation = Observation.objects.get(sleep = 7)
         self.assertFalse(testObservation.setWork(25))
+    def test_setWeeklyWork(self):
+        testObservation = Observation.objects.get(sleep = 7)
+        testObservation.setWeeklyWork(5)
+        self.assertEqual(testObservation.weeklyWork, 5)
+    def test_setWeeklyWork_negative(self):
+        testObservation = Observation.objects.get(sleep = 7)
+        testObservation.setExercise(-4)
+        self.assertEqual(testObservation.weeklyWork, 0)
+    def test_setWeeklyWork_string(self):
+        testObservation = Observation.objects.get(sleep = 7)
+        self.assertFalse(testObservation.setExercise('25'))
+
+    def test_setPredictedMood(self):
+        testObservation = Observation.objects.get(sleep = 7)
+        self.assertTrue(testObservation.setPredictedMood(3))
+        self.assertEqual(3, testObservation.predictedMood)
+    def test_setPredictedMood_tooHigh(self):
+        testObservation = Observation.objects.get(sleep = 7)
+        self.assertFalse(testObservation.setPredictedMood(53))
+    def test_setPredictedMood_negative(self):
+        testObservation = Observation.objects.get(sleep = 7)
+        self.assertFalse(testObservation.setPredictedMood(-33))
+    def test_setPredictedMood_wrongType(self):
+        testObservation = Observation.objects.get(sleep = 7)
+        self.assertFalse(testObservation.setPredictedMood("happy"))
+
     def test_setMood(self):
         testObservation = Observation.objects.get(sleep = 7)
         self.assertTrue(testObservation.setMood(3))
+        self.assertEqual(3, testObservation.mood)
     def test_setMood_tooHigh(self):
         testObservation = Observation.objects.get(sleep = 7)
         self.assertFalse(testObservation.setMood(53))
