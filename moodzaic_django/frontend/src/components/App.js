@@ -78,7 +78,7 @@ class App extends Component {
               age: p.age,
               gender: p.gender,
               user: p.user,
-              reminderList: p.reminderList,
+              reminderList: p.reminderList//.split(";"),
             }
           }))
       };

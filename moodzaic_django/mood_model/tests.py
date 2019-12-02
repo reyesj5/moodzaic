@@ -5,7 +5,6 @@ from mood_model.mood_neural_network import MoodNeuralNetwork
 from mood_model.mood_tools import getEmotions
 import numpy as np
 from datetime import datetime
-import pytz
 
 # Create your tests here.
 
@@ -17,10 +16,7 @@ class WeightsTestCase(TestCase):
 
         profile1 = Profile.objects.create(user=user1)
 
-        # marco tryna fix the timezone errors
-        tz = pytz.timezone('US/Central')
-        pytz.utc.localize(datetime.utcnow()).astimezone(tz)
-        Observation.objects.create(date=tz.localize(datetime.strptime('11/20/2019, 10:20', '%m/%d/%Y, %H:%M')).date(), sleep=4.4, exercise=4.1, meals=2, work=1.1, user=profile1, mood=41)
+        Observation.objects.create(date=datetime.strptime('11/20/2019, 10:20', '%m/%d/%Y, %H:%M').time(), sleep=4.4, exercise=4.1, meals=2, work=1.1, user=profile1, mood=41)
 
         Weights.objects.create(
             user=User.objects.get(username="user1"),

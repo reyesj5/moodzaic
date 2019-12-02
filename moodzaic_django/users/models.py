@@ -3,6 +3,7 @@ from datetime import date
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
+from django.utils import timezone
 import pytz
 from django.core.validators import int_list_validator
 import json
@@ -192,8 +193,11 @@ class Profile(models.Model):
     def removeReminder(self, reminder):
         #mood_int can be either the predicted mood or actual mood to get reminder
         try:
+            print(self.reminderList)
             currentReminders = self.reminderList.split(';')
+            print("cur", currentReminders)
             pos = currentReminders.index(reminder)
+            print(pos)
         except:
             return False
         del currentReminders[pos]
@@ -286,7 +290,7 @@ class Profile(models.Model):
             return False
 
 class Observation(models.Model):
-    date = models.DateField('date observed', default=datetime.now(pytz.timezone('US/Central')).date(), blank=True)
+    date = models.DateField('date observed', auto_now_add=True , blank=True)
     sleep = models.FloatField(default=0)
     exercise = models.FloatField(default = 0)
     weeklyExercise = models.FloatField(default = 0)

@@ -53,8 +53,14 @@ class ProfileViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
+        for k in request.data:
+            if k == 'name':
+                if (data[k]==''):
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
         # REMINDERS: my attempt at removing a user, with the function implemented by backend
+        print(request.data)
         if "reminderList" in request.data:
+            print(request.data["reminderList"])
             instance.removeReminder(request.data["reminderList"])
             del request.data["reminderList"]
         # end of attempt
@@ -67,24 +73,20 @@ class ProfileViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.data)
     
-    def partial_update(self, request, username):
-        print('HERE')
-        print(type(request.data))
-        print(request.data)
-        data = request.data
-        for k in data:
-            if k == 'name':
-                print('HERE2')
-                if (data[k]==''):
-                    return Response(status=status.HTTP_400_BAD_REQUEST)
+    # def partial_update(self, request, username):
+    #     print('HERE')
+    #     print(type(request.data))
+    #     print(request.data)
+    #     data = request.data
+        
 
-        serializer = ProfileSerializer(Profile.objects.get(username=username), data=request.data, partial=True)
+    #     serializer = ProfileSerializer(Profile.objects.get(username=username), data=request.data, partial=True)
 
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        print(serializer.errors)
-        return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response(serializer.data)
+    #     print(serializer.errors)
+    #     return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ObservationViewSet(viewsets.ModelViewSet):
@@ -115,8 +117,8 @@ class ObservationViewSet(viewsets.ModelViewSet):
         self.perform_create(serializer)
         # REMINDERS: where the ML should be implemented. commented out because it
         #            is creating observaitons instead of updating
-        # user.MoodScoreCalc()
-        # user.updateReminders(user.MoodScore)
+        user.MoodScoreCalc()
+        user.updateReminders(user.MoodScore)
         # end of attempt
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
@@ -128,7 +130,21 @@ class ObservationViewSet(viewsets.ModelViewSet):
         # serializer.user = Profile.objects.get(username=self.kwargs['username'])
         serializer.save()
 
-    #def partial_update()
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        user = Profile.objects.get(username=self.kwargs['username'])
+
+        user.MoodScoreCalc()
+        user.updateReminders(user.MoodScore)
+        if getattr(instance, '_prefetched_objects_cache', None):
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
 
 # @api_view(['POST'])
 # def setObservation(request, username):

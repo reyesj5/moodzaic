@@ -19,7 +19,7 @@ class Reminders extends React.Component {
     console.log(this.props.profile)
     console.log(this.props.profile.reminderList)
     if (this.props.profile.reminderList || this.props.profile.reminderList === "") {
-      this.setState({myReminders: this.props.profile.reminderList.split(";")})
+      this.setState({myReminders: this.props.profile.reminderList.split(";").filter(d => d != "")})
     } else {
       console.log("No reminder list field in user " + this.props.profile.username)
       this.setState({myReminders:
@@ -47,17 +47,20 @@ class Reminders extends React.Component {
     }))
   }
 
-  removeReminder = (index) => {
-    let reminders = this.props.profile.reminderList;
-    reminders.splice(index, 1);
-    updateProfile(this.props.profile.username, {reminderList: reminders});
+  removeReminder = (r) => {
+    console.log(r);
+    updateProfile(this.props.profile.username, {reminderList: r}).then(response => {
+      console.log(response.data)
+      this.setState({myReminders: response.data.reminderList.split(";").filter(d => d != "")})
+    } );
   }
 
   render() {
     const myReminders = this.state.myReminders;
+    console.log(myReminders);
     const renderNumber = this.state.renderNumber;
     //console.log('rendernumber', renderNumber);
-    if(myReminders.length > 0) {
+    if(myReminders.length < 0) {
       return(
         <div></div>)
       }
@@ -69,7 +72,7 @@ class Reminders extends React.Component {
               <h1>Reminders!</h1>
               {myReminders.slice(0, renderNumber).map((r, i) => {
                 return(
-                  <Message key = {i} color = 'purple' onClick={() => this.removeReminder(i)}>
+                  <Message key = {i} color = 'purple' onClick={() => this.removeReminder(r)}>
                     <p>{r}</p>
                 </Message>
               )})}
