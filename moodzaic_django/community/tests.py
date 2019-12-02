@@ -285,6 +285,7 @@ class ViewsCommunityTests(APITestCase):
         data2 = {'id': '1','name': 'newFitness', 'users': [self.user1]}
         data3 = {'id': '2', 'name': 'cooking', 'users': [self.user1]}
         data4 = {'id': '3','name': 'fitness', 'users': []}
+        data5 = {'id': '4', 'name': 'bad name', 'users': [self.user1]}
 
         response = self.client.post(url, data, format='json')
         response2 = self.client.post(url, data2, format='json')
@@ -303,9 +304,12 @@ class ViewsCommunityTests(APITestCase):
         response5 = self.client.post(url, {}, format='json')
         self.assertEqual(response5.status_code, status.HTTP_400_BAD_REQUEST)
 
-
         # There should still only be three communities
         self.assertEqual(Community.objects.count(), 3)
+
+        # This should fail if the community name is invalid
+        response6 = self.client.post(url, data5, format='json')
+        self.assertEqual(response6.status_code, status.HTTP_400_BAD_REQUEST)
 
     # This function should return an individual community
     def test_communityDetailsGET(self):
