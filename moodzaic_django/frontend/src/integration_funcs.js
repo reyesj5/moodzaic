@@ -79,8 +79,8 @@ const API_URL = 'http://localhost:8000/api/';
 
 
 
-  export function getPosts() {
-      const url = `${API_URL}all/post`;
+  export function getPosts(communityName) {
+      const url = `${API_URL}community/post/${communityName}`;
       return axios.get(url).then(response => response.data);
   }
   export function getPost(id) {
