@@ -78,9 +78,10 @@ class Weights(models.Model):
 
 
     def getWeightBiasDictionaries(self):
-        if not self.weights_int_list or self.bias_int_list:
-            return None, None
-
+        if len(self.weights_int_list) == 0:
+            self.setWeightsWeights()
+        if len(self.bias_int_list) == 0:
+            self.setWeightsBias()
         weights = self.weights_int_list.split(',')
         biases = self.bias_int_list.split(',')
         weightDict = {}
