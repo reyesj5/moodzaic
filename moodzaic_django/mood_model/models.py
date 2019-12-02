@@ -82,14 +82,13 @@ class Weights(models.Model):
         today = obs.date
         timeframe_ago = today - datetime.timedelta(days=timeframe)
         timeframe_data = observations.filter(date__gte=timeframe_ago, date__lte=today)
-
         days_with_obs = timeframe_data.__len__
         if days_with_obs == 0:
             return 0, 0
 
         exercise_sum, work_sum = 0, 0
 
-        for past_obs in timeframe.iterator():
+        for past_obs in timeframe_data.iterator():
             exercise_sum += past_obs.exercise
             work_sum += past_obs.work
 
@@ -99,7 +98,7 @@ class Weights(models.Model):
 
 
     def transformUserData(self, timeframe):
-        self.updateLongtermData(timeframe)
+        #self.updateLongtermData(timeframe)
         profile = self.user.profile
         observations = Observation.objects.filter(user__user__username=profile.user.username)
         observations = observations.order_by("date")
@@ -116,10 +115,10 @@ class Weights(models.Model):
             for obs in timeframe_data.iterator():
 
                 row = [
-                    obs.sleep, obs.exercise, self.weeklyExercise, obs.meals,
+                    obs.sleep, obs.exercise, obs.weeklyExercise, obs.meals,
                     obs.numberOfGoals, obs.goalsCompleted, obs.goalsMissed,
                     obs.goalsRatio, obs.pastMoodScore,
-                    obs.work, self.weeklyWork
+                    obs.work, obs.weeklyWork
                 ]
                 input_data.append(row)
                 mood_data.append(obs.mood)
