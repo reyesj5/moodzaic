@@ -91,6 +91,13 @@ class CommunityPage extends React.Component {
     }))
   }
 
+  updateMyCommunities = () => {
+    // this.setState({ loadingMine: true });
+    usersCommunities(this.props.user.username)
+      .then(mine => this.setState({ MyCommunityList: mine }))
+      // .then(mine => this.setState( {loadingMine: false} ));
+  }
+
   render() {
     const addMode = this.state.AddMode;
     const community = this.state.Community;
@@ -128,7 +135,7 @@ class CommunityPage extends React.Component {
 
     else {
       myPage =
-      <AllCommunities myCommunities = {myCommunityList} user={user}/>;
+      <AllCommunities myCommunities = {myCommunityList} user={user} callback={this.updateMyCommunities}/>;
       myButton = ''
     }
 

@@ -29,6 +29,7 @@ class MakeCommunity extends React.Component {
       createCommunity({name: this.state.name, users: [this.props.user]});
       // this.props.setAllCommunitiesState();
       this.props.callback();
+      this.props.callbackback();
   }
 
 

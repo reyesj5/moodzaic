@@ -20,11 +20,13 @@ class AllCommunities extends React.Component {
     makeMode: false,
     renderNumber: 3,
     loadingAll: false,
-    allCommunities: []
+    allCommunities: [],
+    myCommunities: []
   }
 
   componentDidMount() {
     this.setState({ loadingAll: true });
+    this.setState({ myCommunities: this.props.myCommunities });
     getAllCommunities()
       .then(communities => this.setState({ allCommunities: communities }))
       .then(mine => this.setState( {loadingAll: false} ))
@@ -32,6 +34,16 @@ class AllCommunities extends React.Component {
 
   componentDidUpdate() {
     console.log(this.state, this.props);
+
+  }
+
+  isUserInCommunity = (com) => {
+    for (var i=0; i < this.props.myCommunities.length; i++) {
+        if (this.props.myCommunities[i].name === com.name) {
+            return true;
+        }
+    }
+    return false;
   }
 
   showMore = () => {
@@ -42,8 +54,17 @@ class AllCommunities extends React.Component {
   }
 
   handleAddClick(community) {
-    community.users.push(this.props.user)
-    updateCommunity(community)
+    if (this.isUserInCommunity(community)) {
+      return
+    }
+    community.users.push(this.props.user);
+    updateCommunity(community);
+    this.props.callback()
+    // this.setState({ myCommunities: this.props.myCommunities })
+    // getAllCommunities()
+    //   .then(communities => this.setState(prevState =>
+    //     ({ allCommunities: communities }))
+    //   .then(communities => this.props.callback()))
   }
 
   // setAllCommunitiesState() {
@@ -54,11 +75,11 @@ class AllCommunities extends React.Component {
   //   )
   // }
 
-  toggleMakeMode = () => {
-    this.setState(prevState => ({
-      makeMode: !prevState.makeMode
-    }))
-  }
+  // toggleMakeMode = () => {
+  //   this.setState(prevState => ({
+  //     makeMode: !prevState.makeMode
+  //   }))
+  // }
 
   MakeModeOn = () => {
     this.setState(prevState => ({
@@ -66,14 +87,15 @@ class AllCommunities extends React.Component {
     }))
   }
 
-  isUserInCommunity = (com) => {
-    for (var i=0; i < this.props.myCommunities.length; i++) {
-        if (this.props.myCommunities[i].name === com.name) {
-            return true;
-        }
-    }
-    return false;
-}
+  async MakeModeOff() {
+  let communities = await getAllCommunities()
+  this.props.callback()
+  this.setState(prevState => ({
+      allCommunities: communities,
+      // myCommunities: this.props.myCommunities,
+      makeMode: false } ))
+  }
+
 
   render() {
     const communities = this.state.allCommunities.slice(0, this.state.renderNumber).map((com, i) => {
@@ -102,7 +124,7 @@ class AllCommunities extends React.Component {
     return (
       <div>
         {(this.state.makeMode === true) ?
-          <MakeCommunity callback={this.toggleMakeMode} user={this.props.user}/>
+          <MakeCommunity callback={this.MakeModeOff.bind(this)} callbackback={this.props.callback} user={this.props.user}/>
           :
           <Container text align='center' style={{ marginTop: '1em', marginBottom: '1em' }}>
           {communities}
