@@ -19,7 +19,7 @@ class UserViewSet(viewsets.ModelViewSet):
     def partial_update(self, request, username):
         print(request.data)
         serializer = UserSerializer(User.objects.get(username=username), data=request.data, partial=True)
-        
+
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -30,16 +30,19 @@ class UserViewSet(viewsets.ModelViewSet):
         exists = User.objects.filter(username=request.data["username"]).first()
         if exists is not None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        if (len(request.data["username"])<1):
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         serializer = self.get_serializer(data=request.data)
         print(serializer)
         if not serializer.is_valid():
             print(serializer.errors)
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        
+
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-    
+
 
 class ProfileViewSet(viewsets.ModelViewSet):
     queryset = Profile.objects.all()
@@ -50,9 +53,11 @@ class ProfileViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
+        # REMINDERS: my attempt at removing a user, with the function implemented by backend
         if "reminderList" in request.data:
             instance.removeReminder(request.data["reminderList"])
             del request.data["reminderList"]
+        # end of attempt
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
@@ -63,39 +68,58 @@ class ProfileViewSet(viewsets.ModelViewSet):
             instance._prefetched_objects_cache = {}
 
         return Response(serializer.data)
-    # def partial_update(self, request, username):
-    #     instance = Profile.objects.get(username=username)
+    
+    def partial_update(self, request, username):
+        print('HERE')
+        print(type(request.data))
+        print(request.data)
+        data = request.data
+        for k in data:
+            if k == 'name':
+                print('HERE2')
+                if (data[k]==''):
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    #     if not instance:
-    #         return Response(status=status.HTTP_404_NOT_FOUND)
-        
-    #     serializer = self.get_serializer(
-    #         data=request.data,
-    #         partial=True
-    #     )
-    #     if not serializer.is_valid():
-    #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    #     serializer.save()
-    #     return Response(serializer.data, status=status.HTTP_200_OK)
+        serializer = ProfileSerializer(Profile.objects.get(username=username), data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        print(serializer.errors)
+        return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+
 
 class ObservationViewSet(viewsets.ModelViewSet):
     # queryset = Observation.objects.all()
     serializer_class = ObservationSerializer
+    lookup_field = 'date'
 
     def get_queryset(self):
-        user = User.objects.get(username=self.kwargs['username'])
+        
+        user = Profile.objects.get(username=self.kwargs['username'])
+        profileId = user.id
+        print(user.id)
+
         # username = self.request.user.username
-        return Observation.objects.filter(user__username=self.kwargs.get('username', None))
-    
+        return Observation.objects.filter(user=profileId)
+
     def create(self, request, *args, **kwargs):
         print(request.data)
+        user = Profile.objects.get(username=self.kwargs['username'])
+        profileId = user.id
+        request.data['user'] = profileId
         serializer = self.get_serializer(data=request.data)
         print(serializer)
         if not serializer.is_valid():
-            print(serializer.errors)
+            
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        
+
         self.perform_create(serializer)
+        # REMINDERS: where the ML should be implemented. commented out because it
+        #            is creating observaitons instead of updating
+        # user.MoodScoreCalc()
+        # user.updateReminders(user.MoodScore)
+        # end of attempt
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
@@ -105,30 +129,47 @@ class ObservationViewSet(viewsets.ModelViewSet):
         #TODO: perform ML operation here
         # serializer.user = Profile.objects.get(username=self.kwargs['username'])
         serializer.save()
-        
 
-@api_view(['POST'])
-def setObservation(request, username):
-    #need to serialize profile too?
-    emotions = getEmotions()
-    request.data["mood"] = emotions.index(request.data["mood"])
-    print(request.data)
-    obsSerializer = ObservationSerializer(data = request.data)
-    if obsSerializer.is_valid():
-        obsSerializer.save()
-        profile = Profile.objects.get(username=username)
-        profile.MoodScoreCalc()
-        profile.updateReminders()
-    logger.error(obsSerializer.errors)
-    return Response(obsSerializer.data)
+    #def partial_update()
+
+# @api_view(['POST'])
+# def setObservation(request, username):
+#     #need to serialize profile too?
+#     emotions = getEmotions()
+#     if not(request.data['mood'] in emotions):
+#         return Response(status=status.HTTP_400_BAD_REQUEST)
+#     request.data["mood"] = emotions.index(request.data["mood"])
+#     print(request.data)
+#     obsSerializer = ObservationSerializer(data=request.data)
+#     if obsSerializer.is_valid():
+#         profile = Profile.objects.get(username=username)
+#         obsSerializer.save()
+        
+#         profile.MoodScoreCalc()
+#         profile.updateReminders(profile.MoodScore)
+#     logger.error(obsSerializer.errors)
+#     return Response(obsSerializer.data)
+
+# @api_view(['GET'])
+# def getObservations(request, username):
+#     #need to serialize profile too?
+
+
+#     profile = Profile.objects.get(username=username)
+#     observations = Observation.objects.filter(user__username=profile.username)
+#     serializer = ObservationSerializer(observations, many=True)
+
+#     # print(serializer.data)
+#     # serializer.data["mood"] = emotions[int(serializer.data["mood"])]
+#     return Response(serializer.data)
 
 @api_view(['GET'])
-def getObservations(request, username):
+def getAllObservations(request):
     #need to serialize profile too?
-    
 
-    profileID = Profile.objects.get(username=username).id
-    observations = Observation.objects.filter(user=profileID)
+
+
+    observations = Observation.objects.all()
     serializer = ObservationSerializer(observations, many=True)
 
     # print(serializer.data)
@@ -140,7 +181,7 @@ def allUsers(request):
     """
     List all code snippets, or create a new snippet.
     """
-    
+
     users = User.objects.all()
     serializer = UserSerializer(users, many=True)
     return Response(serializer.data)
@@ -191,6 +232,9 @@ def allProfiles(request):
         return Response(serializer.data)
 
     elif request.method == 'POST':
+        # if (request.data['age'] < 0):
+        #     return Response(status=status.HTTP_404_NOT_FOUND)
+
         serializer = ProfileSerializer(data=request.data)
 
         if serializer.is_valid():
@@ -211,7 +255,7 @@ def profileDetails(request, username):
     if request.method == 'GET':
         serializer = ProfileSerializer(profile, context={'request': request})
         return Response(serializer.data)
-        
+
     elif request.method == 'DELETE':
         profile.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

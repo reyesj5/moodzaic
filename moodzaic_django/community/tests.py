@@ -159,10 +159,10 @@ class ViewsPostTests(APITestCase):
         self.assertEqual(freshPost.community.name, 'fitness')
         self.assertEqual(freshPost.poster.username, 'emil')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-    
+
     def test_createComment(self):
         url = '/api/create/post'
-        data = self.post1        
+        data = self.post1
         self.assertEqual(Post.objects.count(), 0)
         response = self.client.post(url, data, format='json')
 
@@ -195,7 +195,7 @@ class ViewsPostTests(APITestCase):
 
     def test_getOriginPost(self):
         url = '/api/create/post'
-        data = self.post1        
+        data = self.post1
         self.assertEqual(Post.objects.count(), 0)
         response = self.client.post(url, data, format='json')
 
@@ -371,7 +371,7 @@ class PostTestCase(TestCase):
         self.assertEqual("#%()", firstPost.getPost())
 
         firstPost.setPost("   ")
-        self.assertEqual("   ", firstPost.getPost())
+        self.assertNotEqual("   ", firstPost.getPost())
 
         ##tests empty string case
         ##checks that post remains set to previous string if setPost fails
@@ -428,6 +428,8 @@ class CommentTestCase(TestCase):
         Post.objects.create(post = "Bye world", community = fitnessCommunity, poster = fitnessUser)
         p = Post.objects.get(post = "Hello world")
         Comment.objects.create(post = "Wow, hi!", community = fitnessCommunity, poster = fitnessUser2, originalPost = p)
+        Comment.objects.create(post = "Hola", community = fitnessCommunity, poster = fitnessUser2, originalPost = p)
+
 
     def test_getOriginalPost(self):
         firstComment = Comment.objects.get(post = "Wow, hi!")
@@ -439,7 +441,16 @@ class CommentTestCase(TestCase):
         firstComment = Comment.objects.get(post = "Wow, hi!")
         firstPost = Post.objects.get(post = "Hello world")
         secondPost = Post.objects.get(post = "Wow, hi!")
+        secondComment = Comment.objects.get(post = "Hola")
+
 
         self.assertEqual(firstPost, firstComment.getOriginalPost())
         firstComment.setOriginalPost(secondPost)
         self.assertEqual(secondPost, firstComment.getOriginalPost())
+
+
+        firstComment.setOriginalPost(secondComment)
+        self.assertNotEqual(secondComment, firstComment.getOriginalPost())
+
+        firstComment.setOriginalPost('here')
+        self.assertNotEqual('here', firstComment.getOriginalPost())

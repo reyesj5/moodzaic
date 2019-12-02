@@ -3,10 +3,12 @@ from datetime import date
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
+import pytz
 from django.core.validators import int_list_validator
 import json
 import os
 from mood_model import mood_tools
+# from mood_model.models import Weights
 
 #from community.models import Community
 
@@ -135,11 +137,24 @@ class Profile(models.Model):
         related_name='profile'
     )
 
-    def MoodToday(self):
-        return True
+    def getMoodToday(self, MoodScore):
+        try:
+            mood = mood_tools.getEmotions()[MoodScore]
+            return mood
+        except:
+            return False
 
     def MoodScoreCalc(self):
-        weight = self.user.weights_set.get(user = self.user)
+        try:
+            weight = self.user.weights
+        except:
+            from mood_model.models import Weights
+            Weights.objects.create(
+                user=self.user,
+            )
+            weight = self.user.weights
+            weight.setWeightsWeights()
+            weight.setWeightsBias()
         mood = weight.predict()
         self.MoodScore = mood
         self.save()
@@ -174,7 +189,7 @@ class Profile(models.Model):
         self.save()
         return True
 
-    def removeReminder(self, Reminder):
+    def removeReminder(self, reminder):
         #mood_int can be either the predicted mood or actual mood to get reminder
         try:
             currentReminders = self.reminderList.split(';')
@@ -187,7 +202,6 @@ class Profile(models.Model):
         return True
 
     def getMoodReminders(self):
-        self.updateReminders(self.MoodScore)
         return self.reminderList
 
     def setAge(self, age):
@@ -272,7 +286,7 @@ class Profile(models.Model):
             return False
 
 class Observation(models.Model):
-    date = models.DateField('date observed', auto_now_add=True, blank=True)
+    date = models.DateField('date observed', default=datetime.now(pytz.timezone('US/Central')).date(), blank=True)
     sleep = models.FloatField(default=0)
     exercise = models.FloatField(default = 0)
     weeklyExercise = models.FloatField(default = 0)
@@ -281,12 +295,13 @@ class Observation(models.Model):
     goalsCompleted = models.IntegerField(default=0)
     goalsMissed = models.IntegerField(default = 0)
     goalsRatio = models.FloatField(default=0)
-    pastMoodScore = models.IntegerField(default = 0)
+    pastMoodScore = models.IntegerField(default = -1)
     work = models.FloatField(default=0)
     weeklyWork = models.FloatField(default=0)
     user = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True)
     predictedMood = models.IntegerField(default = 0)
     mood = models.IntegerField(default=-1)
+
 
     def setSleep(self, hours):
         if not (isinstance(hours, type(2.0))) and not (isinstance(hours, type(2))):
@@ -363,8 +378,8 @@ class Observation(models.Model):
             if self.goalsMissed < 1:
                 ratio = self.goalsCompleted
             else:
-                ratio = self.goalsCompleted/self.goalsMissed
-            self.goalRatio = ratio
+                ratio = self.goalsCompleted*1.0/self.goalsMissed
+            self.goalsRatio = ratio
             self.save()
             return True
         except:
@@ -394,7 +409,7 @@ class Observation(models.Model):
         if not (isinstance(hours, type(2.0))) and not (isinstance(hours, type(2))):
             return False
         if hours  >= 0:
-            self.work = hours * 1.0
+            self.weeklyWork = hours * 1.0
             self.save()
             return True
         else:
@@ -404,7 +419,7 @@ class Observation(models.Model):
         if not (isinstance(mood_int, type(2))):
             return False
         if mood_int >=0 and mood_int <=len(mood_tools.getEmotions()):
-            self.mood = mood_int
+            self.predictedMood = mood_int
             self.save()
             return True
         else:

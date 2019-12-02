@@ -1,9 +1,11 @@
 Fear
+Sad
+Hesitant
+Calm
+Happy
 Anger
 Surprise
 Disgust
-Sad
-Happy
 Hurt
 Threatened
 Hateful
@@ -39,4 +41,3 @@ Insecure
 Submissive
 Rejected
 Humiliated
-Tired

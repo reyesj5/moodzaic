@@ -17,7 +17,7 @@ import {
   // Route,
   Link
 } from "react-router-dom";
-import {createObservation} from "../integration_funcs"
+import {createObservation, getLastPostDate, updateObservation} from "../integration_funcs"
 
 
 const getDailyQuestions = () => {
@@ -83,7 +83,8 @@ class MoodPage extends React.Component {
   state = {
     QuestionObj: getDailyQuestions(),
     MoodList: getMoods(),
-    errors: []
+    errors: [],
+    validation: ""
   }
 
   handleChange = (name, e) => {
@@ -131,30 +132,51 @@ class MoodPage extends React.Component {
       exercise: this.state.exercise,
       meals: this.state.meals,
       work: this.state.work,
-      mood: this.state.mood
+      mood: this.state.MoodList.indexOf(this.state.mood)
     }
     const errors = this.validate(observation);
     this.setState({ errors });
     if (errors.length > 0) {
       return;
     }
-    createObservation(this.props.profile.username, observation)
-      .then(response => {
-        console.log("Finished sending observation")
-
-      }).catch(error => console.log(error));
+    this.setState({validation: "Sending mood"})
+    getLastPostDate(this.props.profile.username).then(lastDate => {
+      let today = new Date();
+      let dd = today.getDate();
+      if (dd < 10) dd = '0' + dd;
+      let mm = today.getMonth() + 1;
+      if (mm < 10) mm = '0' + mm;
+      let yyyy = today.getFullYear();
+      let date = `${yyyy}-${mm}-${dd}`;
+      if (lastDate != date) {
+        return createObservation(this.props.profile.username, observation)
+        .then(response => {
+          console.log("Finished sending observation")
+          this.setState({validation: "Mood submitted! Come back again tomorrow"})
+        }).catch(error => console.log(error));
+      } else {
+        return updateObservation(this.props.profile.username, observation, date)
+        .then(response => {
+          console.log("Finished updating observation")
+          this.setState({validation: "Mood for today updated!"})
+        }).catch(error => console.log(error));
+      }
+    }).catch(error => console.log(error));
+    
   }
 
   render() {
     const {QuestionObj} = this.state;
     const {MoodList} = this.state;
     const { errors } = this.state;
+    const { validation } = this.state;
     return(
       <div>
         <Container text style={{ marginTop: '7em' }}>
           <Header as='h1'>How are you feeling?</Header>
           <p>Some ~important~ questions for you about your mood today.</p>
           <div>{errors.length > 0 ? <Message color="red">{errors[0]}</Message> : <p></p>}</div>
+          <div>{validation !== "" ? <Message color="green">{validation}</Message> : <p></p>}</div>
           <Form>
             {Object.entries(QuestionObj).map((Question, index) => {
               return (
