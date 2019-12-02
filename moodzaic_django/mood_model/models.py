@@ -20,11 +20,11 @@ class Weights(models.Model):
 
     weights_int_list = models.TextField(
         validators=[int_list_validator],
-        default=""#.join([str(0)] * 208)
+        default=""
     )
     bias_int_list = models.TextField(
         validators=[int_list_validator],
-        default=""#.join([str(0)] * 21)
+        default=""
     )
 
     def setWeightsUser(self, user):
