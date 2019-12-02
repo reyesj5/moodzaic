@@ -52,7 +52,7 @@ class SetupPage extends React.Component {
     if (this.state.first.trim() === "" || this.state.last.trim() === "") {
       errors.push("Please enter your name");
     }
-    if (this.state.age < 0) {
+    if (this.state.age < 0 || this.state.age > 120) {
       errors.push("Please enter your age");
     }
     if (this.state.email.trim() === "") {
