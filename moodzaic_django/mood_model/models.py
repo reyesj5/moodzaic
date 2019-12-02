@@ -123,26 +123,6 @@ class Weights(models.Model):
 
         return np.array(input_data), np.array(mood_data)
 
-
-
-    def getWeightBiasDictionaries(self):
-        if len(self.weights_int_list) == 0:
-            self.setWeightsWeights()
-        if len(self.bias_int_list) == 0:
-            self.setWeightsBias()
-        weights = self.weights_int_list.split(',')
-        biases = self.bias_int_list.split(',')
-        weightDict = {}
-        biasDict = {}
-        print(weights)
-        print(biases)
-        for i in range(len(weights)):
-            if i < 21:
-                
-                biasDict['bias' + str(i)] = float(biases[i])
-            weightDict['weight' + str(i)] = float(weights[i])
-        return weightDict, biasDict
-
     def retrain(self):
         weightDict, biasDict = self.getWeightBiasDictionaries()
         model = MoodNeuralNetwork(weights=weightDict, biases=biasDict)
