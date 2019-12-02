@@ -11,6 +11,8 @@ urlpatterns = [
     path('api/create/comment', views.createComment),
     url(r'^api/post/comments/(?P<pk>[\w]+)$', views.postComments),
     url(r'^api/post/(?P<pk>[\w]+)$', views.postDetails),
+    url(r'^api/community/post/(?P<communityName>[\w]+)$', views.communityPosts),
+
 
     # path('api/delete/community', views.createCommunity),
 

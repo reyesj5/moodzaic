@@ -20,6 +20,7 @@ def allCommunities(request):
     serializer = CommunitySerializer(communities, many=True)
     return Response(serializer.data)
 
+# Get a user's communities
 @api_view(['GET'])
 def usersCommunities(request, username):
     user = User.objects.get(username=username)
@@ -125,6 +126,14 @@ def postComments(request, pk):
 @api_view(['GET'])
 def allPosts(request):
     posts = Post.objects.all()
+    serializer = PostSerializer(posts, many=True)
+    return Response(serializer.data)
+
+# Return community's posts
+@api_view(['GET'])
+def communityPosts(request, communityName):
+    posts = Post.objects.filter(community__name=communityName, comment__isnull=True)
+    logger.error(posts)
     serializer = PostSerializer(posts, many=True)
     return Response(serializer.data)
 
