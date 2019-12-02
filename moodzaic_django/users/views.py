@@ -63,8 +63,6 @@ class ProfileViewSet(viewsets.ModelViewSet):
         self.perform_update(serializer)
 
         if getattr(instance, '_prefetched_objects_cache', None):
-            # If 'prefetch_related' has been applied to a queryset, we need to
-            # forcibly invalidate the prefetch cache on the instance.
             instance._prefetched_objects_cache = {}
 
         return Response(serializer.data)
@@ -166,9 +164,6 @@ class ObservationViewSet(viewsets.ModelViewSet):
 @api_view(['GET'])
 def getAllObservations(request):
     #need to serialize profile too?
-
-
-
     observations = Observation.objects.all()
     serializer = ObservationSerializer(observations, many=True)
 
@@ -176,110 +171,110 @@ def getAllObservations(request):
     # serializer.data["mood"] = emotions[int(serializer.data["mood"])]
     return Response(serializer.data)
 
-@api_view(['GET'])
-def allUsers(request):
-    """
-    List all code snippets, or create a new snippet.
-    """
+# @api_view(['GET'])
+# def allUsers(request):
+#     """
+#     List all code snippets, or create a new snippet.
+#     """
 
-    users = User.objects.all()
-    serializer = UserSerializer(users, many=True)
-    return Response(serializer.data)
+#     users = User.objects.all()
+#     serializer = UserSerializer(users, many=True)
+#     return Response(serializer.data)
 
 
-@api_view(['GET', 'PUT', 'DELETE'])
-def userDetails(request, username):
-    """
- Retrieve, update or delete a customer by id/pk.
- """
-    try:
-        user = User.objects.get(username=username)
-    except User.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+# @api_view(['GET', 'PUT', 'DELETE'])
+# def userDetails(request, username):
+#     """
+#  Retrieve, update or delete a customer by id/pk.
+#  """
+#     try:
+#         user = User.objects.get(username=username)
+#     except User.DoesNotExist:
+#         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    if request.method == 'GET':
-        serializer = UserSerializer(user, context={'request': request})
-        return Response(serializer.data)
+#     if request.method == 'GET':
+#         serializer = UserSerializer(user, context={'request': request})
+#         return Response(serializer.data)
 
-    elif request.method == 'DELETE':
-        user.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+#     elif request.method == 'DELETE':
+#         user.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    elif request.method == 'PUT':
-        serializer = UserSerializer(user, context={'request': request})
+#     elif request.method == 'PUT':
+#         serializer = UserSerializer(user, context={'request': request})
 
-# def updateUser(request, username):
+# # def updateUser(request, username):
+# #     """
+# #     Retrieve, update or delete a customer by id/pk.
+# #     """
+# #     return Response(status=status.HTTP_404_NOT_FOUND)
+
+# @api_view(['POST'])
+# def createUser(request):
 #     """
 #     Retrieve, update or delete a customer by id/pk.
 #     """
 #     return Response(status=status.HTTP_404_NOT_FOUND)
 
-@api_view(['POST'])
-def createUser(request):
-    """
-    Retrieve, update or delete a customer by id/pk.
-    """
-    return Response(status=status.HTTP_404_NOT_FOUND)
+# @api_view(['GET', 'POST'])
+# def allProfiles(request):
+#     """
+#     List all code snippets, or create a new snippet.
+#     """
+#     if request.method == 'GET':
+#         profiles = Profile.objects.all()
+#         serializer = ProfileSerializer(profiles, many=True)
+#         return Response(serializer.data)
 
-@api_view(['GET', 'POST'])
-def allProfiles(request):
-    """
-    List all code snippets, or create a new snippet.
-    """
-    if request.method == 'GET':
-        profiles = Profile.objects.all()
-        serializer = ProfileSerializer(profiles, many=True)
-        return Response(serializer.data)
+#     elif request.method == 'POST':
+#         # if (request.data['age'] < 0):
+#         #     return Response(status=status.HTTP_404_NOT_FOUND)
 
-    elif request.method == 'POST':
-        # if (request.data['age'] < 0):
-        #     return Response(status=status.HTTP_404_NOT_FOUND)
+#         serializer = ProfileSerializer(data=request.data)
 
-        serializer = ProfileSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+# @api_view(['GET', 'DELETE'])
+# def profileDetails(request, username):
+#     """
+#  Retrieve, update or delete a customer by id/pk.
+#  """
+#     try:
+#         profile = Profile.objects.get(username=username)
+#     except Profile.DoesNotExist:
+#         return Response(status=status.HTTP_404_NOT_FOUND)
 
-@api_view(['GET', 'DELETE'])
-def profileDetails(request, username):
-    """
- Retrieve, update or delete a customer by id/pk.
- """
-    try:
-        profile = Profile.objects.get(username=username)
-    except Profile.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+#     if request.method == 'GET':
+#         serializer = ProfileSerializer(profile, context={'request': request})
+#         return Response(serializer.data)
 
-    if request.method == 'GET':
-        serializer = ProfileSerializer(profile, context={'request': request})
-        return Response(serializer.data)
-
-    elif request.method == 'DELETE':
-        profile.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+#     elif request.method == 'DELETE':
+#         profile.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-@api_view(['GET', 'POST'])
-def allUserObservations(request, username):
-    """
-    List all code snippets, or create a new snippet.
-    """
-    # try:
-    #     observations = Observation.objects.filter(user__username=username)
-    # except Profile.DoesNotExist:
-    #     return Response(status=status.HTTP_404_NOT_FOUND)
+# @api_view(['GET', 'POST'])
+# def allUserObservations(request, username):
+#     """
+#     List all code snippets, or create a new snippet.
+#     """
+#     # try:
+#     #     observations = Observation.objects.filter(user__username=username)
+#     # except Profile.DoesNotExist:
+#     #     return Response(status=status.HTTP_404_NOT_FOUND)
 
-    # if request.method == 'GET':
-    #     serializer = ObservationSerializer(observations, many=True)
-    #     return Response(serializer.data)
+#     # if request.method == 'GET':
+#     #     serializer = ObservationSerializer(observations, many=True)
+#     #     return Response(serializer.data)
 
-    # elif request.method == 'POST':
-    #     serializer = ObservationSerializer(data=request.data.observation)
+#     # elif request.method == 'POST':
+#     #     serializer = ObservationSerializer(data=request.data.observation)
 
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    return Response(status=status.HTTP_400_BAD_REQUEST)
+#     #     if serializer.is_valid():
+#     #         serializer.save()
+#     #         return Response(serializer.data, status=status.HTTP_201_CREATED)
+#     #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#     return Response(status=status.HTTP_400_BAD_REQUEST)
