@@ -131,11 +131,6 @@ class MoodVis extends React.Component {
               active={activeItem === 'Daily Habits'}
               onClick={this.handleItemClick}
             />
-            <Menu.Item
-              name='Calendar'
-              active={activeItem === 'Calendar'}
-              onClick={this.handleItemClick}
-            />
           </Menu>
           <Segment fixed='bottom'>
 
