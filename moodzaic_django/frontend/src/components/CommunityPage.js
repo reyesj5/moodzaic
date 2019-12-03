@@ -137,11 +137,7 @@ class CommunityPage extends React.Component {
 
     else {
       myPage =
-<<<<<<< HEAD
-      <AllCommunities myCommunities = {myCommunityList} user={user} callback={this.updateMyCommunities}/>;
-=======
       <AllCommunities myCommunities = {myCommunityList} user={user} updateMyCommunity={this.updateMyCommunities.bind(this)}/>;
->>>>>>> master
       myButton = ''
     }
 
