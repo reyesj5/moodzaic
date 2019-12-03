@@ -16,7 +16,8 @@ import {
   VerticalGridLines,
   HorizontalGridLines,
   LineSeries,
-  VerticalBarSeries
+  VerticalBarSeries,
+  VerticalRectSeries
 } from 'react-vis';
 
 import {
@@ -166,9 +167,9 @@ class HabitChart extends React.Component {
         color="#cd3b54" yDomain={[0,12]}>
           <VerticalGridLines />
           <HorizontalGridLines />
-          <VerticalBarSeries data={sleep} color="blue" />
-          <VerticalBarSeries data={exercise} color="red" />
-          <VerticalBarSeries data={work} color="yellow" />
+          <VerticalRectSeries data={sleep} color="blue" />
+          <VerticalRectSeries data={exercise} color="red" />
+          <VerticalRectSeries data={work} color="yellow" />
           <XAxis title="Days" />
           <YAxis title="Hours per Day"/>
         </XYPlot>
