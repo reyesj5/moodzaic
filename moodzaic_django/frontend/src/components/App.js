@@ -51,8 +51,8 @@ class App extends Component {
     this.setState({user: newUser});
   }
   fetchProfile = () => {
-    getProfile(this.props.profile.username).then(response => {
-      this.setState({profile: response.data})
+    getProfile(this.state.profile.username).then(data => {
+      this.setState({profile: data})
     })
   }
   // LogIn = (u) => {
@@ -125,7 +125,7 @@ class App extends Component {
                   <MyMenu callback={this.LogOut}/>
                   <MoodPage 
                     profile={this.state.profile}
-                    fetchProfile={this.props.fetchProfile}
+                    fetchProfile={this.fetchProfile}
                   />
                   <Footer/>
                 </div> :
