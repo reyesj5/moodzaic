@@ -89,12 +89,12 @@ class AllCommunities extends React.Component {
   }
 
   async MakeModeOff() {
-  let communities = await getAllCommunities()
-  this.props.updateMyCommunity()
-  this.setState(prevState => ({
-      allCommunities: communities,
-      // myCommunities: this.props.myCommunities,
-      makeMode: false } ))
+    this.refreshCommunities()
+    await getAllCommunities()
+      .then(communities => {
+        this.setState(prevState => ({ allCommunities: communities }))})
+      .then(communities => {
+          this.setState(prevState => ({ makeMode: false }))})
   }
 
 
