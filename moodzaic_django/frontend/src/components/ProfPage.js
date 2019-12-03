@@ -39,7 +39,7 @@ class ProfilePage extends React.Component {
     return(
       <div>
       {this.state.editMode ?
-        <UpdateProfile user={user} profile={profile} callback={this.toggleEditMode}/>
+        <UpdateProfile user={user} profile={profile} callback={this.toggleEditMode} callbackback={this.props.callback}/>
         :
         <div>
           <Segment vertical>

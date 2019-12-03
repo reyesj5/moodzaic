@@ -9,7 +9,7 @@ import SetupPage from './AccountSetup.js'
 import MyMenu from './Menu.js';
 import Footer from './Footer.js';
 // import MyMenu from './Menu.js'
-import {getProfile} from '../integration_funcs';
+import {getProfile, getUserByUsername} from '../integration_funcs';
 
 import {
   BrowserRouter as Router,
@@ -86,6 +86,36 @@ class App extends Component {
     console.log('login called', this.state);
   }
 
+  resetProfile = (username) => {
+    getProfile(username).then(p => {
+      if (p) {
+        this.setState(prevState => ({
+          profile: {
+            username: p.username,
+            age: p.age,
+            gender: p.gender,
+            user: p.user,
+            reminderList: p.reminderList//.split(";"),
+          }
+        }))
+    };
+    })
+    getUserByUsername(username).then(u => {
+      if (u) {
+        this.setState(prevState => ({
+          user: {
+            username: u.username,
+            password: u.password,
+            email: u.email,
+            first_name: u.first_name,
+            last_name: u.last_name,
+          }
+        }))
+    };
+    })
+  console.log('resetProfile called', this.state);
+}
+
   LogOut = () => {
       this.setState(prevState => ({
         LoggedIn: false,
@@ -126,7 +156,7 @@ class App extends Component {
               {this.state.LoggedIn ?
                 <div>
                   <MyMenu callback={this.LogOut}/>
-                  <ProfilePage User={this.state.user} Profile={this.state.profile}/>
+                  <ProfilePage callback={this.resetProfile} User={this.state.user} Profile={this.state.profile}/>
                   <Footer/>
                 </div> :
                 <Redirect to="/" />
