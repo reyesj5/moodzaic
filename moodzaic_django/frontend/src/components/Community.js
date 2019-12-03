@@ -35,7 +35,6 @@ class Community extends React.Component {
       }
 
   toggleReplyMode = (i) => {
-    console.log(this.state.replyMode)
     this.setState({
       replyMode: i
     })
@@ -43,14 +42,31 @@ class Community extends React.Component {
 
   handleChange = (e, { name, value }) => this.setState({ [name]: value })
 
-  handleSubmit = () => {
-    createPost({
+  handleSubmit = async () => {
+    await createPost({
       postid: this.state.allPosts.length + 1,
       poster: this.props.user,
       community: this.props.myCommunity,
       post: this.state.message
-    });
-    this.setState({ message: '' });
+    }).then(response => {
+      this.refreshPosts();
+    })
+  }
+
+  refreshPosts = async () => {
+    await getPosts(this.props.myCommunity.name)
+    .then(posts => {
+      this.setState({ allPosts:  posts });
+      posts.map((post) => {
+        getPostComments(post.id).then(comments => {
+          if (comments != []) {
+            let newComments = this.state.comments.concat(comments)
+            this.setState({ comments: newComments });
+            this.setState({ message: '' });
+          }
+        })
+      })
+    })
   }
 
   handleReply = (op) => {
@@ -63,7 +79,9 @@ class Community extends React.Component {
       post: this.state.message,
       originalPost: op
     }).then(response => {
-      this.setState({ message: '' });
+      this.setState({comments: []})
+      this.refreshPosts();
+      this.toggleReplyMode(-1);
     });
 
   }
@@ -76,7 +94,7 @@ class Community extends React.Component {
     const comments = this.state.comments;
 
     console.log("comment start")
-    console.log(comments.filter((comment) => {return comment.originalPostId === 1}))
+    console.log(comments)
     console.log("comment end")
 
     const reply_box = (post) => {
