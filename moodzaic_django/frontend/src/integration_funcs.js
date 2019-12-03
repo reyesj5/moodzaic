@@ -157,10 +157,24 @@ const API_URL = 'http://localhost:8000/api/';
   }
 
   export function createObservation(username, observation) {
-    const url = `${API_URL}observations/create/${username}`;
+    const url = `${API_URL}observations/${username}`;
     return axios.post(url, observation);
   }
 
   export function getUserObservations(username) {
     return axios.get(`${API_URL}observations/${username}`).then(response => response.data).catch(error => console.log(error));
+  }
+  export function getLastPostDate(username) {
+    return getUserObservations(username).then( response => {
+      console.log(response);
+      if (response.length == 0) {
+        return "";
+      } else {
+        return response.pop().date;
+      }
+    })
+  }
+
+  export function updateObservation(username, observation, date) {
+    return axios.patch(`${API_URL}observations/${username}/${date}`, observation);
   }
