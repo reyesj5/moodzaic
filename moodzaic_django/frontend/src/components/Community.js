@@ -62,7 +62,7 @@ class Community extends React.Component {
           if (comments != []) {
             let newComments = this.state.comments.concat(comments)
             this.setState({ comments: newComments });
-            this.setState({ message: '' });
+              this.setState({ message: '' });
           }
         })
       })
