@@ -10,20 +10,20 @@ import {
   Message
   // Rating
 } from 'semantic-ui-react'
-import {createUser, createProfile} from '../integration_funcs.js';
+import {createProfile} from '../integration_funcs.js';
 // import ProfileService from '../ProfileService.js';
-import {Redirect, Route} from "react-router-dom";
+import {Redirect} from "react-router-dom";
 
 
 
 
-import {
-  // BrowserRouter as Router,
-  // Switch,
-  // Route,
-
-  Link
-} from "react-router-dom";
+// import {
+//   // BrowserRouter as Router,
+//   // Switch,
+//   // Route,
+//
+//   Link
+// } from "react-router-dom";
 
 
 
@@ -86,6 +86,7 @@ class SetupPage extends React.Component {
     })
     console.log("No errors, creating account")
     this.setState({finished: true})
+    this.props.callback(this.props.user)
   }
 
   render() {
@@ -126,13 +127,6 @@ class SetupPage extends React.Component {
                 </Form.Field>
                 <Form.Field name='email' onChange={this.handleEmailChange}>
                   <label>Email</label>
-                  <input />
-                </Form.Field>
-                </div>
-                <div>
-                <Form.Field name='goals'>
-                  <label>What are your mood-related goals?</label>
-                  {/* note: this will probably be a predetermined checklist of some sort*/}
                   <input />
                 </Form.Field>
                 </div>

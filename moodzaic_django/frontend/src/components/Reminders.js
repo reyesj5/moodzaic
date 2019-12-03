@@ -47,10 +47,11 @@ class Reminders extends React.Component {
     }))
   }
 
-  removeReminder = (r) => {
+  removeReminder = async (r) => {
     console.log(r);
-    updateProfile(this.props.profile.username, {reminderList: r}).then(response => {
+    await updateProfile(this.props.profile.username, {reminderList: r}).then(response => {
       console.log(response.data)
+      this.props.updateProfile(response.data);
       this.setState({myReminders: response.data.reminderList.split(";").filter(d => d != "")})
     } );
   }

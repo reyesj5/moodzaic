@@ -126,7 +126,7 @@ class MoodPage extends React.Component {
     return errors;
   }
 
-  handleClick = () => {
+  handleClick = async () => {
     var observation = {
       sleep: this.state.sleep,
       exercise: this.state.exercise,
@@ -140,7 +140,7 @@ class MoodPage extends React.Component {
       return;
     }
     this.setState({validation: "Sending mood"})
-    getLastPostDate(this.props.profile.username).then(lastDate => {
+    await getLastPostDate(this.props.profile.username).then(async lastDate => {
       let today = new Date();
       let dd = today.getDate();
       if (dd < 10) dd = '0' + dd;
@@ -149,16 +149,18 @@ class MoodPage extends React.Component {
       let yyyy = today.getFullYear();
       let date = `${yyyy}-${mm}-${dd}`;
       if (lastDate != date) {
-        return createObservation(this.props.profile.username, observation)
+        await createObservation(this.props.profile.username, observation)
         .then(response => {
-          console.log("Finished sending observation")
-          this.setState({validation: "Mood submitted! Come back again tomorrow"})
+          console.log("Finished sending observation");
+          this.setState({validation: "Mood submitted! Come back again tomorrow"});
+          this.props.fetchProfile();
         }).catch(error => console.log(error));
       } else {
-        return updateObservation(this.props.profile.username, observation, date)
+        await updateObservation(this.props.profile.username, observation, date)
         .then(response => {
-          console.log("Finished updating observation")
-          this.setState({validation: "Mood for today updated!"})
+          console.log("Finished updating observation");
+          this.setState({validation: "Mood for today updated!"});
+          this.props.fetchProfile();
         }).catch(error => console.log(error));
       }
     }).catch(error => console.log(error));
