@@ -2,7 +2,7 @@ import numpy as np
 import random
 import json
 import csv
-from mood_model.mood_tools import getEmotions
+from mood_model.mood_tools import getEmotions, getEmotionMap
 
 class MoodNeuralNetwork:
     '''
@@ -247,10 +247,10 @@ class MoodNeuralNetwork:
         return True
 
     def normalize(self, data):
-        averages = [8,1,4,3,3,0,0,0,0,5,20]
+        averages = [8,0.5,4,3,4,2,2,0.5,21,6,30]
         for i in range(data.shape[0]):
             for j in range(data.shape[1]):
-                data[i][j] -= averages[j]*2
+                data[i][j] -= averages[j]
         return data
 
 
@@ -258,7 +258,7 @@ if __name__ == "__main__":
     # Reading in emotions
     baseModel = MoodNeuralNetwork()
     emotions = baseModel.getEmotions()
-    emotion_map = mood_tools.getEmotionMap()
+    emotion_map = getEmotionMap()
     # with open('emotions.json', 'w') as fp:
     #     json.dump(emotions), fp)
 
@@ -293,7 +293,7 @@ if __name__ == "__main__":
         result = baseModel.feedforward(data[i])
         print(result)
         print("Actual mood:",true_mood[i], "Predicted mood:", baseModel.roundClass(result))
-        print("Actual mood:",emotions[true_mood[i]], "Predicted mood:", emotions[int(baseModel.roundClass(result)[0])])
+        print("Actual mood:",emotions[true_mood[i]], "Predicted mood:", emotions[int(baseModel.roundClass(result))])
     print('-------------beggining training-------------------------')
     baseModel.train(data, true_mood)
     print('--------------------end---------------------------------')
@@ -301,7 +301,7 @@ if __name__ == "__main__":
         result = baseModel.feedforward(data[i])
         print(result)
         print("Actual mood:",true_mood[i], "Predicted mood:", baseModel.roundClass(result))
-        print("Actual mood:",emotions[true_mood[i]], "Predicted mood:", emotions[int(baseModel.roundClass(result)[0])])
+        print("Actual mood:",emotions[true_mood[i]], "Predicted mood:", emotions[int(baseModel.roundClass(result))])
     # baseModel.saveModel("base")
     # print(true_mood)
     # print(data)
