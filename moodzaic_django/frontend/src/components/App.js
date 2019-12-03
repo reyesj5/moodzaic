@@ -105,7 +105,7 @@ class App extends Component {
         <Router>
           <Switch>
           <Route path="/signup">
-            <SignUpForm />
+            <SignUpForm callback={this.LogIn}/>
           </Route>
             <Route path="/MyMood">
               {this.state.LoggedIn ?

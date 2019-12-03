@@ -59,7 +59,8 @@ class AllCommunities extends React.Component {
     }
     community.users.push(this.props.user);
     updateCommunity(community);
-    this.props.callback()
+    this.props.callback();
+    console.log('my communities?', this.props.myCommunities)
     // this.setState({ myCommunities: this.props.myCommunities })
     // getAllCommunities()
     //   .then(communities => this.setState(prevState =>

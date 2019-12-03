@@ -2,14 +2,14 @@ import React from 'react'
 import {
   Container,
   Button,
-  Loader
+  // Loader
 } from 'semantic-ui-react'
 import Community from './Community.js'
 import CommunitiesPage from './MyCommunities.js'
 import AllCommunities from './AllCommunities.js'
 // import { getMyCommunityList, getAllCommunities } from '../integration_funcs.js'
 // import CommunityService from '../CommunityService.js';
-import {getAllCommunities, usersCommunities} from '../integration_funcs'
+import {usersCommunities} from '../integration_funcs'
 
 
 
@@ -143,12 +143,17 @@ class CommunityPage extends React.Component {
     return (
       <div>
         <Container text style={{ marginTop: '7em' }}>
+        {community !== '' ?
+        '' :
+        <div>
         <Button color='teal' fluid size='large' onClick = {this.AddModeOff}>
           See My Communities
         </Button>
         <Button color='teal' fluid size='large' onClick = {this.AddModeOn}>
           See All Communities
         </Button>
+        </div>
+        }
           {myPage}
           {myButton}
         </Container>
