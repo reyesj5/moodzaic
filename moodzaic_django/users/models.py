@@ -3,6 +3,7 @@ from datetime import date
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
+from django.utils import timezone
 import pytz
 from django.core.validators import int_list_validator
 import json
@@ -161,7 +162,7 @@ class Profile(models.Model):
         return self.MoodScore
 
     def setMoodScore(self, MoodScore):
-        if (MoodScore >= 0 and MoodScore <=len(mood_tools.getEmotions())):
+        if (MoodScore >= 0 and MoodScore <len(mood_tools.getEmotions())):
             self.MoodScore = MoodScore
             self.save()
             return True
@@ -192,8 +193,11 @@ class Profile(models.Model):
     def removeReminder(self, reminder):
         #mood_int can be either the predicted mood or actual mood to get reminder
         try:
+            print(self.reminderList)
             currentReminders = self.reminderList.split(';')
+            print("cur", currentReminders)
             pos = currentReminders.index(reminder)
+            print(pos)
         except:
             return False
         del currentReminders[pos]
@@ -286,7 +290,7 @@ class Profile(models.Model):
             return False
 
 class Observation(models.Model):
-    date = models.DateField('date observed', default=datetime.now(pytz.timezone('US/Central')).date(), blank=True)
+    date = models.DateField('date observed', auto_now_add=True , blank=True)
     sleep = models.FloatField(default=0)
     exercise = models.FloatField(default = 0)
     weeklyExercise = models.FloatField(default = 0)
@@ -388,7 +392,7 @@ class Observation(models.Model):
     def setPastMoodScore(self, mood_int):
         if not (isinstance(mood_int, type(2))):
             return False
-        if mood_int >=0 and mood_int <=len(mood_tools.getEmotions()):
+        if mood_int >=0 and mood_int <len(mood_tools.getEmotions()):
             self.pastMoodScore = mood_int
             self.save()
             return True
@@ -418,7 +422,7 @@ class Observation(models.Model):
     def setPredictedMood(self, mood_int):
         if not (isinstance(mood_int, type(2))):
             return False
-        if mood_int >=0 and mood_int <=len(mood_tools.getEmotions()):
+        if mood_int >=0 and mood_int <len(mood_tools.getEmotions()):
             self.predictedMood = mood_int
             self.save()
             return True
@@ -428,7 +432,7 @@ class Observation(models.Model):
     def setMood(self, mood_int):
         if not (isinstance(mood_int, type(2))):
             return False
-        if mood_int >=0 and mood_int <=len(mood_tools.getEmotions()):
+        if mood_int >=0 and mood_int <len(mood_tools.getEmotions()):
             self.mood = mood_int
             self.save()
             return True

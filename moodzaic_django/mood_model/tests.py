@@ -5,7 +5,6 @@ from mood_model.mood_neural_network import MoodNeuralNetwork
 from mood_model.mood_tools import getEmotions
 import numpy as np
 from datetime import datetime
-import pytz
 
 # Create your tests here.
 
@@ -17,10 +16,7 @@ class WeightsTestCase(TestCase):
 
         profile1 = Profile.objects.create(user=user1)
 
-        # marco tryna fix the timezone errors
-        tz = pytz.timezone('US/Central')
-        pytz.utc.localize(datetime.utcnow()).astimezone(tz)
-        Observation.objects.create(date=tz.localize(datetime.strptime('11/20/2019, 10:20', '%m/%d/%Y, %H:%M')).date(), sleep=4.4, exercise=4.1, meals=2, work=1.1, user=profile1, mood=41)
+        Observation.objects.create(date=datetime.strptime('11/28/2019, 10:20', '%m/%d/%Y, %H:%M').time(), sleep=4.4, exercise=4.1, meals=2, work=1.1, user=profile1, mood=41)
 
         Weights.objects.create(
             user=User.objects.get(username="user1"),
@@ -127,27 +123,35 @@ class WeightsTestCase(TestCase):
         testWeights = Weights.objects.first()
         user = testWeights.user
         profile = user.profile
-        obs = Observation.objects.filter(user__user__username=profile.user.username).first()
+        observations = Observation.objects.filter(user__user__username=profile.user.username)
+        observations = observations.order_by("date")
+        obs = observations.first()
         #goals, goals completed, goals missed, goals ratio, past mood score
         obs.numberOfGoals = 5
         obs.goalsMissed = 2
         obs.goalsRatio = 2/5
-        obs.pastMoodScore = 4
+        obs.predictedMood = 4
+        obs.save()
         self.assertEqual(0.0,obs.weeklyExercise)
         self.assertEqual(0.0,obs.weeklyWork)
         self.assertNotEqual(3,obs.numberOfGoals)
-        self.assertTrue(5,obs.numberOfGoals)
-        self.assertFalse(0,obs.goalsMissed)
-        self.assertTrue(2,obs.goalsMissed)
+        self.assertEqual(5,obs.numberOfGoals)
+        self.assertNotEqual(0,obs.goalsMissed)
+        self.assertEqual(2,obs.goalsMissed)
         self.assertEqual(0.4,obs.goalsRatio)
-        self.assertTrue(2/5,obs.goalsRatio)
+        self.assertEqual(2/5,obs.goalsRatio)
+        self.assertEqual(-1,obs.pastMoodScore)
+        self.assertNotEqual(8,obs.pastMoodScore)
+
+        Observation.objects.create(date=datetime.strptime('11/28/2019, 10:20', '%m/%d/%Y, %H:%M').time(), sleep=4.4, exercise=4.1, meals=2, work=1.1, user=profile, mood=41, predictedMood=4)
+        self.assertTrue(testWeights.updateLongtermData(7))
+
+        observations = Observation.objects.filter(user__user__username=profile.user.username)
+        observations = observations.order_by("date")
+        obs = observations[len(observations)-1]
+        self.assertEqual(8.2,obs.weeklyExercise)
+        self.assertTrue(2.2,obs.weeklyWork)
         self.assertEqual(4,obs.pastMoodScore)
-        self.assertTrue(8,obs.pastMoodScore)
-        
-        self.assertTrue(testWeights.updateLongtermData(2))
-        obs = Observation.objects.filter(user__user__username=profile.user.username).first()
-        self.assertEqual(4.1,obs.weeklyExercise)
-        self.assertTrue(1.1,obs.weeklyWork)
 
 
     def test_updateMoodPrediction(self):
@@ -159,7 +163,7 @@ class WeightsTestCase(TestCase):
         testWeights.updateMoodPrediction(25)
         self.assertEqual(oldMood,user.profile.getMoodToday(obs1.mood))
         obs2 = Observation.objects.filter(user__user__username=profile.user.username).last()
-        self.assertEqual(25,obs2.pastMoodScore)
+        self.assertEqual(25,obs2.predictedMood)
 
 
 # Testing the methods for our neural network to predict moods

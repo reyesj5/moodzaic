@@ -63,6 +63,11 @@ class CommunityPage extends React.Component {
   //   // }))
   // }
 
+  async updateMyCommunities() {
+    let mine = await usersCommunities(this.props.user.username);
+    this.setState({ MyCommunityList: mine });
+  }
+
 
   AddModeOn = () => {
     this.setState(prevState => ({
@@ -108,10 +113,7 @@ class CommunityPage extends React.Component {
     console.log(this.state)
 
     if (this.state.loadingMine) {
-      myPage =
-      <div>
-      <p>Reaching out to others is a necessary part of caring for the self.</p>
-      </div>
+      myPage = ''
       myButton = ''
     }
 
@@ -135,7 +137,11 @@ class CommunityPage extends React.Component {
 
     else {
       myPage =
+<<<<<<< HEAD
       <AllCommunities myCommunities = {myCommunityList} user={user} callback={this.updateMyCommunities}/>;
+=======
+      <AllCommunities myCommunities = {myCommunityList} user={user} updateMyCommunity={this.updateMyCommunities.bind(this)}/>;
+>>>>>>> master
       myButton = ''
     }
 

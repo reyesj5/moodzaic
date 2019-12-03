@@ -17,7 +17,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ('username', 'age', 'gender', 'user',)
+        fields = ('username', 'age', 'gender', 'user', 'reminderList')
         extra_kwargs = {
             'url': {'lookup_field': 'username'}
         }

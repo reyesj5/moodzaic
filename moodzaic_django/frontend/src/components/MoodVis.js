@@ -55,10 +55,13 @@ class MoodVis extends React.Component {
     }
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     console.log("Mounted")
-    const observations = getUserObservations(this.props.profile.username)
-    this.setState({pastObservations: observations})
+    await getUserObservations(this.props.profile.username)
+      .then(observations => {
+        this.setState({pastObservations: observations})
+      })
+    const observations = this.state.pastObservations
   }
 
   handleItemClick = (e, { name }) => {
@@ -103,11 +106,11 @@ class MoodVis extends React.Component {
     return retData;
   }
 
-  organizeCalData(observations) {}
+  // organizeCalData(observations) {}
 
   render () {
-    var fakeHabits = this.organizeHabitData([this.state.sampleObs, this.state.sampleObs, this.state.sampleObs]);
-    var fakeMood = this.organizeMoodData([this.state.sampleObs, this.state.sampleObs, this.state.sampleObs]);
+    var fakeHabits = this.organizeHabitData(this.state.pastObservations);
+    var fakeMood = this.organizeMoodData(this.state.pastObservations);
     var activeItem = this.state.activeItem;
     console.log("rendering: " + activeItem)
     return(
