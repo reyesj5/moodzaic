@@ -113,15 +113,12 @@ class WeightsTestCase(TestCase):
         user = testWeights.user
         profile = user.profile
 
-        data = [4.5,-20,0,35,30]
+        data = [0,12,0,12,32]
         Observation.objects.create(date=datetime.strptime('11/28/2019, 10:20', '%m/%d/%Y, %H:%M').time(), sleep=data[0], exercise=data[1], meals=data[2], work=data[3], user=profile, mood=data[4])
 
         mood = testWeights.predict()
         input_data, mood_data = testWeights.transformUserData(1)
         actualMood = mood_data[0]
-        print(input_data)
-        print(mood_data)
-        print(mood)
         self.assertEqual(actualMood, mood)
         #sleep=4.4, exercise=4.1, meals=2, work=1.1, user=profile1, mood=41)
 
