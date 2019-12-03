@@ -51,7 +51,7 @@ class UpdateProfile extends React.Component {
           this.setState({confirming: false});
         })
       }
-      this.props.callbackback(this.props.user.username);
+      // this.props.callbackback(this.props.user.username);
       this.props.callback();
     }
     else {

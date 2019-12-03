@@ -87,7 +87,7 @@ class AllCommunities extends React.Component {
 
   async MakeModeOff() {
   let communities = await getAllCommunities()
-  this.props.callback()
+  this.props.updateMyCommunity()
   this.setState(prevState => ({
       allCommunities: communities,
       // myCommunities: this.props.myCommunities,
@@ -122,7 +122,7 @@ class AllCommunities extends React.Component {
     return (
       <div>
         {(this.state.makeMode === true) ?
-          <MakeCommunity callback={this.MakeModeOff.bind(this)} callbackback={this.props.callback} user={this.props.user}/>
+          <MakeCommunity callback={this.MakeModeOff.bind(this)} callbackback={this.props.updateMyCommunity} user={this.props.user}/>
           :
           <Container text align='center' style={{ marginTop: '1em', marginBottom: '1em' }}>
           {communities}
