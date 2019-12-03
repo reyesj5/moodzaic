@@ -27,7 +27,7 @@ import {
 } from "react-router-dom";
 import {getUserObservations} from '../integration_funcs';
 // import '...../node_modules/react-vis/dist/style.css';
-import '../../../../node_modules/react-vis/dist/style.css';
+import 'react-vis/dist/style.css';
 
 
 class MoodVis extends React.Component {
