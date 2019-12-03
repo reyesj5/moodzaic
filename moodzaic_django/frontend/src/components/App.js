@@ -96,6 +96,36 @@ class App extends Component {
     console.log('login called', this.state);
   }
 
+  // resetProfile = (username) => {
+  //   getProfile(username).then(p => {
+  //     if (p) {
+  //       this.setState(prevState => ({
+  //         profile: {
+  //           username: p.username,
+  //           age: p.age,
+  //           gender: p.gender,
+  //           user: p.user,
+  //           reminderList: p.reminderList//.split(";"),
+  //         }
+  //       }))
+  //   };
+  //   })
+  //   getUserByUsername(username).then(u => {
+  //     if (u) {
+  //       this.setState(prevState => ({
+  //         user: {
+  //           username: u.username,
+  //           password: u.password,
+  //           email: u.email,
+  //           first_name: u.first_name,
+  //           last_name: u.last_name,
+  //         }
+  //       }))
+  //   };
+    // })
+//   console.log('resetProfile called', this.state);
+// }
+
   LogOut = () => {
       this.setState(prevState => ({
         LoggedIn: false,
@@ -117,7 +147,7 @@ class App extends Component {
         <Router>
           <Switch>
           <Route path="/signup">
-            <SignUpForm />
+            <SignUpForm callback={this.LogIn}/>
           </Route>
             <Route path="/MyMood">
               {this.state.LoggedIn ?

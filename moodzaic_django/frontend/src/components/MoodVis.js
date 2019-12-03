@@ -115,7 +115,6 @@ class MoodVis extends React.Component {
     console.log("rendering: " + activeItem)
     return(
       <div>
-        <p>Mood visualizations will go here.</p>
         <div>
           <Menu pointing>
             <Menu.Item
