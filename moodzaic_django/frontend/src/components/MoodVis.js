@@ -29,6 +29,7 @@ import {getUserObservations} from '../integration_funcs';
 // import '...../node_modules/react-vis/dist/style.css';
 import '../../../../node_modules/react-vis/dist/style.css';
 
+
 class MoodVis extends React.Component {
   state = {
     activeItem: "Your Mood",
@@ -54,7 +55,8 @@ class MoodVis extends React.Component {
       user: {},
       predictedMood: 5, //I think it's between 0 and 5,
       mood: 4
-    }
+    },
+    numDays: 10
   }
 
   componentDidMount() {
@@ -135,9 +137,9 @@ class MoodVis extends React.Component {
           <Segment fixed='bottom'>
 
             {activeItem === 'Your Mood' ?
-              <MoodChart data={fakeMood}/> : <div/>}
+              <MoodChart data={fakeMood} numDays={this.state.numDays}/> : <div/>}
             {activeItem === 'Daily Habits' ?
-              <HabitChart data={fakeHabits}/> : <div/>}
+              <HabitChart data={fakeHabits} numDays={this.state.numDays}/> : <div/>}
             {activeItem === 'Calendar' ?
               <CalChart data={this.state.sampleData}/> : <div/>}
           </ Segment>
@@ -157,9 +159,10 @@ class MoodChart extends React.Component {
     return(
       <div>
         <h3>MoodChart</h3>
-        <XYPlot height={300} width= {400}>
-          <XAxis />
-          <YAxis tickValues={[0, 1, 3, 4, 5]} title="Mood Level"/>
+        <p>Your mood, ranked (behind the scenes) from 0-5, over the past 10 days</p>
+        <XYPlot height={300} width= {400} yDomain={[0,5]} xDomain={[0, this.props.numDays-1]}>
+          <XAxis title="Days"/>
+          <YAxis title="Scaled Mood" />
           <VerticalGridLines />
           <HorizontalGridLines />
           <LineSeries data={this.props.data} color="blue"/>
@@ -176,14 +179,15 @@ class HabitChart extends React.Component {
     return(
       <div>
         <h3>HabitChart</h3>
-        <XYPlot height={300} width= {400} color="#cd3b54">
+        <p>Your sleep, exercise, and work hours over the past 10 days</p>
+        <XYPlot height={300} width= {400} color="#cd3b54" yDomain={[0,12]} xDomain={[0, this.props.numDays-1]}>
           <VerticalGridLines />
           <HorizontalGridLines />
           <VerticalBarSeries data={sleep} color="blue" />
           <VerticalBarSeries data={exercise} color="red" />
           <VerticalBarSeries data={work} color="yellow" />
-          <XAxis />
-          <YAxis />
+          <XAxis title="Days" />
+          <YAxis title="Hours per Day"/>
         </XYPlot>
       </div>
     )
@@ -198,8 +202,8 @@ class CalChart extends React.Component {
           <VerticalGridLines />
           <HorizontalGridLines />
           <VerticalBarSeries data={this.props.data} />
-          <XAxis />
-          <YAxis />
+          <XAxis title="Days"/>
+          <YAxis/>
         </XYPlot>
       </div>
     )
