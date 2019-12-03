@@ -9,7 +9,7 @@ import SetupPage from './AccountSetup.js'
 import MyMenu from './Menu.js';
 import Footer from './Footer.js';
 // import MyMenu from './Menu.js'
-import {getProfile} from '../integration_funcs';
+import {getProfile, getLastPostDate} from '../integration_funcs';
 
 import {
   BrowserRouter as Router,
@@ -44,7 +44,17 @@ class App extends Component {
         ProgressScore: 0
   }
 
-
+  updateProfile = (newProfile) => {
+    this.setState({profile: newProfile});
+  }
+  updateUser = (newUser) => {
+    this.setState({user: newUser});
+  }
+  fetchProfile = () => {
+    getProfile(this.props.profile.username).then(response => {
+      this.setState({profile: response.data})
+    })
+  }
   // LogIn = (u) => {
   //   this.setState(prevState => ({
   //     LoggedIn: true,
@@ -78,7 +88,7 @@ class App extends Component {
               age: p.age,
               gender: p.gender,
               user: p.user,
-              reminderList: p.reminderList//.split(";"),
+              reminderList: p.reminderList
             }
           }))
       };
@@ -113,7 +123,10 @@ class App extends Component {
               {this.state.LoggedIn ?
                 <div>
                   <MyMenu callback={this.LogOut}/>
-                  <MoodPage profile={this.state.profile}/>
+                  <MoodPage 
+                    profile={this.state.profile}
+                    fetchProfile={this.props.fetchProfile}
+                  />
                   <Footer/>
                 </div> :
                 <Redirect to="/" />
@@ -126,7 +139,12 @@ class App extends Component {
               {this.state.LoggedIn ?
                 <div>
                   <MyMenu callback={this.LogOut}/>
-                  <ProfilePage User={this.state.user} Profile={this.state.profile}/>
+                  <ProfilePage 
+                    User={this.state.user} 
+                    Profile={this.state.profile} 
+                    updateProfile={this.updateProfile}
+                    updateUser={this.updateUser}
+                  />
                   <Footer/>
                 </div> :
                 <Redirect to="/" />

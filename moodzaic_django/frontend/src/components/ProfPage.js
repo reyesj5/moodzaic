@@ -11,7 +11,7 @@ import {
 // import Footer from './Footer.js';
 import Reminders from './Reminders.js';
 import UpdateProfile from './UpdateProfile.js';
-import {getProfile} from '../integration_funcs.js'
+import {getProfile, updateObservation} from '../integration_funcs.js'
 import MoodVis from './MoodVis.js'
 
 class ProfilePage extends React.Component {
@@ -36,10 +36,17 @@ class ProfilePage extends React.Component {
     //const profile = this.gettingProf;
     var profile = this.props.Profile;
 
+
     return(
       <div>
       {this.state.editMode ?
-        <UpdateProfile user={user} profile={profile} callback={this.toggleEditMode}/>
+        <UpdateProfile 
+          user={user} 
+          profile={profile} 
+          callback={this.toggleEditMode}
+          updateProfile={this.props.updateProfile}
+          updateUser={this.props.updateUser}
+        />
         :
         <div>
           <Segment vertical>
@@ -61,7 +68,11 @@ class ProfilePage extends React.Component {
                 </Container>
               </Grid.Column>
               <Grid.Column width = {5} style={{ margin: '4.5em 0em 0em', padding: '0em 0em' }}>
-                <Reminders profile={profile}/>
+                <Reminders 
+                  profile={profile} 
+                  updateProfile={this.props.updateProfile}
+                  updateUser={this.props.updateUser}
+                />
               </Grid.Column>
             </Grid>
           </Segment>

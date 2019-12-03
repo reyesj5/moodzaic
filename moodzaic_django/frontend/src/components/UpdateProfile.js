@@ -44,14 +44,16 @@ class UpdateProfile extends React.Component {
     if(this.state.password === this.state.confirmp) {
       if (this.state.user != {}) {
         updateUser(username, this.state.user).then(response => {
-
+          console.log(response.data);
+          this.props.updateUser(response.data);
         }).catch(error => {
           this.setState({confirming: false});
         })
       }
       if (this.state.profile != {}) {
         updateProfile(username, this.state.profile).then(response => {
-
+          console.log(response.data);
+          this.props.updateProfile(response.data);
         }).catch(error => {
           this.setState({confirming: false});
         })
