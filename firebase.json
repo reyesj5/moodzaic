@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "public",
+    "public": "moodzaic_django/assets/bundles",
     "ignore": [
       "firebase.json",
       "**/.*",
