@@ -20,11 +20,11 @@ class Weights(models.Model):
 
     weights_int_list = models.TextField(
         validators=[int_list_validator],
-        default=""#.join([str(0)] * 208)
+        default=""
     )
     bias_int_list = models.TextField(
         validators=[int_list_validator],
-        default=""#.join([str(0)] * 21)
+        default=""
     )
 
     def setWeightsUser(self, user):
@@ -122,26 +122,6 @@ class Weights(models.Model):
                 mood_data.append(obs.mood)
 
         return np.array(input_data), np.array(mood_data)
-
-
-
-    def getWeightBiasDictionaries(self):
-        if len(self.weights_int_list) == 0:
-            self.setWeightsWeights()
-        if len(self.bias_int_list) == 0:
-            self.setWeightsBias()
-        weights = self.weights_int_list.split(',')
-        biases = self.bias_int_list.split(',')
-        weightDict = {}
-        biasDict = {}
-        print(weights)
-        print(biases)
-        for i in range(len(weights)):
-            if i < 21:
-                
-                biasDict['bias' + str(i)] = float(biases[i])
-            weightDict['weight' + str(i)] = float(weights[i])
-        return weightDict, biasDict
 
     def retrain(self):
         weightDict, biasDict = self.getWeightBiasDictionaries()

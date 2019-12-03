@@ -41,9 +41,16 @@ class AllCommunities extends React.Component {
     }))
   }
 
-  handleAddClick(community) {
+  async handleAddClick(community) {
     community.users.push(this.props.user)
-    updateCommunity(community)
+    await updateCommunity(community).then(response =>
+    {
+      this.refreshCommunities()
+    })
+  }
+
+  async refreshCommunities() {
+    this.props.updateMyCommunity();
   }
 
   // setAllCommunitiesState() {

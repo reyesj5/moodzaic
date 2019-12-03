@@ -44,6 +44,11 @@ class CommunitySerializer(serializers.ModelSerializer):
 
         return community
 
+    def validate(self, data):
+        value = data['name']
+        if (value == '') or (len(value) > 30) or (" " in value) or value.isspace():
+            raise serializers.ValidationError("Community name invalid")
+        return data
 
 class PostSerializer(serializers.ModelSerializer):
     poster = UserSerializer()
@@ -84,7 +89,7 @@ class CommentSerializer(serializers.ModelSerializer):
     def to_internal_value(self, data):
         internal_value = super(CommentSerializer, self).to_internal_value(data)
         ogpostid = data["originalPost"]["id"]
-        
+
         internal_value.update({
             "ogpostid": ogpostid
         })
