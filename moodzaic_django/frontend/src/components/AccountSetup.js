@@ -52,8 +52,8 @@ class SetupPage extends React.Component {
     if (this.state.first.trim() === "" || this.state.last.trim() === "") {
       errors.push("Please enter your name");
     }
-    if (this.state.age < 0) {
-      errors.push("Please enter your age");
+    if (this.state.age < 18 || this.state.age > 120) {
+      errors.push("Please enter a valid age (18 - 120)");
     }
     if (this.state.email.trim() === "") {
       errors.push("Please enter a valid email address");
@@ -122,7 +122,7 @@ class SetupPage extends React.Component {
                   <input type='number' />
                 </Form.Field>
                 <Form.Field name='gender' onChange={this.handleGenderChange}>
-                  <label>Gender</label>
+                  <label>Gender Identity</label>
                   <input />
                 </Form.Field>
                 <Form.Field name='email' onChange={this.handleEmailChange}>
