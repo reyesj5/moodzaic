@@ -54,6 +54,9 @@ class AllCommunities extends React.Component {
   }
 
   async handleAddClick(community) {
+    if(this.isUserInCommunity(community)) {
+      return;
+    }
     community.users.push(this.props.user)
     await updateCommunity(community).then(response =>
     {
