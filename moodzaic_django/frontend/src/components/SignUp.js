@@ -68,7 +68,7 @@ class SignUpForm extends React.Component {
     const {redirect} = this.state;
     if (redirect) {
        // return <Redirect to='/Welcome'/>;
-       return <SetupPage user={this.state.user}/>
+       return <SetupPage user={this.state.user} callback={this.props.callback}/>
      }
     return(
       <Grid textAlign='center' style={{ height: '100vh' }} verticalAlign='middle'>

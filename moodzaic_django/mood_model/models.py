@@ -98,7 +98,7 @@ class Weights(models.Model):
 
 
     def transformUserData(self, timeframe):
-        #self.updateLongtermData(timeframe)
+        self.updateLongtermData(timeframe)
         profile = self.user.profile
         observations = Observation.objects.filter(user__user__username=profile.user.username)
         observations = observations.order_by("-date")
@@ -166,12 +166,13 @@ class Weights(models.Model):
                     timeframe_data = observations[len(observations)-timeframe-1:]
                 else:
                     timeframe_data = observations[:]
-                for i in range(1,len(timeframe_data)):
+                for i in range(len(timeframe_data)):
                     obs = timeframe_data[i]
                     weekly_exercise, weekly_work = self.getData(obs, observations, 7)
                     obs.setWeeklyExercise(weekly_exercise)
                     obs.setWeeklyWork(weekly_work)
-                    obs.setPastMoodScore(timeframe_data[i-1].predictedMood)
+                    if i > 0:
+                        obs.setPastMoodScore(timeframe_data[i-1].predictedMood)
                     obs.save()
                 return True
             return False

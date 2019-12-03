@@ -9,7 +9,7 @@ import SetupPage from './AccountSetup.js'
 import MyMenu from './Menu.js';
 import Footer from './Footer.js';
 // import MyMenu from './Menu.js'
-import {getProfile} from '../integration_funcs';
+import {getProfile, getLastPostDate} from '../integration_funcs';
 
 import {
   BrowserRouter as Router,
@@ -33,7 +33,8 @@ class App extends Component {
           username: '',
           age: 0,
           gender: '',
-          user: {}
+          user: {},
+          reminderList: [],
         },
         MyCommunityList: [],
         MyObservationList: [],
@@ -43,7 +44,17 @@ class App extends Component {
         ProgressScore: 0
   }
 
-
+  updateProfile = (newProfile) => {
+    this.setState({profile: newProfile});
+  }
+  updateUser = (newUser) => {
+    this.setState({user: newUser});
+  }
+  fetchProfile = () => {
+    getProfile(this.state.profile.username).then(data => {
+      this.setState({profile: data})
+    })
+  }
   // LogIn = (u) => {
   //   this.setState(prevState => ({
   //     LoggedIn: true,
@@ -76,13 +87,44 @@ class App extends Component {
               username: p.username,
               age: p.age,
               gender: p.gender,
-              user: p.user
+              user: p.user,
+              reminderList: p.reminderList
             }
           }))
       };
       })
     console.log('login called', this.state);
   }
+
+  // resetProfile = (username) => {
+  //   getProfile(username).then(p => {
+  //     if (p) {
+  //       this.setState(prevState => ({
+  //         profile: {
+  //           username: p.username,
+  //           age: p.age,
+  //           gender: p.gender,
+  //           user: p.user,
+  //           reminderList: p.reminderList//.split(";"),
+  //         }
+  //       }))
+  //   };
+  //   })
+  //   getUserByUsername(username).then(u => {
+  //     if (u) {
+  //       this.setState(prevState => ({
+  //         user: {
+  //           username: u.username,
+  //           password: u.password,
+  //           email: u.email,
+  //           first_name: u.first_name,
+  //           last_name: u.last_name,
+  //         }
+  //       }))
+  //   };
+    // })
+//   console.log('resetProfile called', this.state);
+// }
 
   LogOut = () => {
       this.setState(prevState => ({
@@ -105,13 +147,16 @@ class App extends Component {
         <Router>
           <Switch>
           <Route path="/signup">
-            <SignUpForm />
+            <SignUpForm callback={this.LogIn}/>
           </Route>
             <Route path="/MyMood">
               {this.state.LoggedIn ?
                 <div>
                   <MyMenu callback={this.LogOut}/>
-                  <MoodPage profile={this.state.profile}/>
+                  <MoodPage 
+                    profile={this.state.profile}
+                    fetchProfile={this.fetchProfile}
+                  />
                   <Footer/>
                 </div> :
                 <Redirect to="/" />
@@ -124,7 +169,12 @@ class App extends Component {
               {this.state.LoggedIn ?
                 <div>
                   <MyMenu callback={this.LogOut}/>
-                  <ProfilePage User={this.state.user} Profile={this.state.profile}/>
+                  <ProfilePage 
+                    User={this.state.user} 
+                    Profile={this.state.profile} 
+                    updateProfile={this.updateProfile}
+                    updateUser={this.updateUser}
+                  />
                   <Footer/>
                 </div> :
                 <Redirect to="/" />

@@ -17,7 +17,7 @@ import {
   // Route,
   Link
 } from "react-router-dom";
-import {createObservation} from "../integration_funcs"
+import {createObservation, getLastPostDate, updateObservation} from "../integration_funcs"
 
 
 const getDailyQuestions = () => {
@@ -126,13 +126,13 @@ class MoodPage extends React.Component {
     return errors;
   }
 
-  handleClick = () => {
+  handleClick = async () => {
     var observation = {
       sleep: this.state.sleep,
       exercise: this.state.exercise,
       meals: this.state.meals,
       work: this.state.work,
-      mood: this.state.mood
+      mood: this.state.MoodList.indexOf(this.state.mood)
     }
     const errors = this.validate(observation);
     this.setState({ errors });
@@ -140,11 +140,31 @@ class MoodPage extends React.Component {
       return;
     }
     this.setState({validation: "Sending mood"})
-    createObservation(this.props.profile.username, observation)
-      .then(response => {
-        console.log("Finished sending observation")
-        this.setState({validation: "Mood submitted! Come back again tomorrow"})
-      }).catch(error => console.log(error));
+    await getLastPostDate(this.props.profile.username).then(async lastDate => {
+      let today = new Date();
+      let dd = today.getDate();
+      if (dd < 10) dd = '0' + dd;
+      let mm = today.getMonth() + 1;
+      if (mm < 10) mm = '0' + mm;
+      let yyyy = today.getFullYear();
+      let date = `${yyyy}-${mm}-${dd}`;
+      if (lastDate != date) {
+        await createObservation(this.props.profile.username, observation)
+        .then(response => {
+          console.log("Finished sending observation");
+          this.setState({validation: "Mood submitted! Come back again tomorrow"});
+          this.props.fetchProfile();
+        }).catch(error => console.log(error));
+      } else {
+        await updateObservation(this.props.profile.username, observation, date)
+        .then(response => {
+          console.log("Finished updating observation");
+          this.setState({validation: "Mood for today updated!"});
+          this.props.fetchProfile();
+        }).catch(error => console.log(error));
+      }
+    }).catch(error => console.log(error));
+    
   }
 
   render() {

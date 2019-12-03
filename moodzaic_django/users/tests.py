@@ -621,12 +621,12 @@ class ViewsObservationsTest(APITestCase):
         self.observation1 = {'sleep': '7',
             'exercise':'3',
             'meals':'2',
-            'mood': 'Fear',
+            'mood': '4',
             'user': userId}
         self.observation2 = {'sleep': '9',
             'exercise':'4',
             'meals':'3',
-            'mood': 'Anger',
+            'mood': '6',
             'user': userId}
 
         self.observation3 = {'sleep': '9',
@@ -636,7 +636,7 @@ class ViewsObservationsTest(APITestCase):
             'user': userId}
 
     def test_getAllUserObservation(self):
-        url = '/api/observations/create/emil'
+        url = '/api/observations/emil'
 
         data = self.observation2
         response = self.client.post(url, data, format="json")
@@ -651,19 +651,19 @@ class ViewsObservationsTest(APITestCase):
         self.assertEqual(len(json.loads(response.content)), 2)
 
     def test_postObservation(self):
-        url = '/api/observations/create/emil'
+        url = '/api/observations/emil'
         data = self.observation2
         response = self.client.post(url, data, format="json")
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         observation = Observation.objects.get()
         self.assertEqual(observation.sleep, 9)
         self.assertEqual(observation.exercise, 4)
-        self.assertEqual(observation.mood, 5)
+        self.assertEqual(observation.mood, 6)
 
         data = self.observation1
         response = self.client.post(url, data, format="json")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         data = self.observation3
         response = self.client.post(url, data, format="json")

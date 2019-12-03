@@ -12,13 +12,6 @@ import {
 
 import {updateProfile, updateUser} from '../integration_funcs.js'
 
-// const GenderOptions = [
-//   { key: 'F', text: 'Female', value: 'F' },
-//   { key: 'M', text: 'Male', value: 'M' },
-//   { key: 'Other', text: 'Other', value: 'O' },
-//   { key: 'NA', text: 'Prefer Not To Answer', value: 'NA' }
-// ]
-
 class UpdateProfile extends React.Component {
   state = {
     user: {},
@@ -42,20 +35,23 @@ class UpdateProfile extends React.Component {
     let username = this.props.user.username;
     console.log(username);
     if(this.state.password === this.state.confirmp) {
-      if (this.state.user != {}) {
+      if (this.state.user !== {}) {
         updateUser(username, this.state.user).then(response => {
-
+          console.log(response.data);
+          this.props.updateUser(response.data);
         }).catch(error => {
           this.setState({confirming: false});
         })
       }
-      if (this.state.profile != {}) {
+      if (this.state.profile !== {}) {
         updateProfile(username, this.state.profile).then(response => {
-
+          console.log(response.data);
+          this.props.updateProfile(response.data);
         }).catch(error => {
           this.setState({confirming: false});
         })
       }
+      // this.props.callbackback(this.props.user.username);
       this.props.callback();
     }
     else {
@@ -120,13 +116,6 @@ class UpdateProfile extends React.Component {
                   <input error/>
                 </Form.Field>
               }
-              </div>
-              <div>
-              <Form.Field name='goals'>
-                <label>Goals</label>
-                {/* note: this will probably be a predetermined checklist of some sort*/}
-                <input />
-              </Form.Field>
               </div>
             </Form>
             <Button color='teal' fluid size='large' onClick={this.handleSubmit}>

@@ -17,7 +17,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ('username', 'age', 'gender', 'user',)
+        fields = ('username', 'age', 'gender', 'user', 'reminderList')
         extra_kwargs = {
             'url': {'lookup_field': 'username'}
         }
@@ -34,19 +34,8 @@ class ProfileSerializer(serializers.ModelSerializer):
         profile = Profile.objects.create(user=user, **validated_data)
         return profile
 
-    # def update(self, instance, validated_data):
-    #     print(instance)
-    #     print(validated_data)
-    #     user_data = validated_data.pop("user")
-    #     instance.user.email = user_data.email
-    #     instance.user.first_name = user_data.first_name
-    #     instance.user.last_name = user_data.last_name
-    #     instance.user.password = user_data.password
-    #     instance.age = validated_data.age
-    #     instance.gender = validated_data.gender
-    #     instance.user.save()
-    #     instance.save()
-    #     return instance
+
+    
 
     # def validate(self, data):
     #     p = Profile()

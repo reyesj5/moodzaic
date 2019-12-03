@@ -15,6 +15,7 @@ class WeightsTestCase(TestCase):
         user2 = User.objects.create(username="user2", password="password2")
 
         profile1 = Profile.objects.create(user=user1)
+        profile2 = Profile.objects.create(user=user2)
 
         Observation.objects.create(date=datetime.strptime('11/28/2019, 10:20', '%m/%d/%Y, %H:%M').time(), sleep=4.4, exercise=4.1, meals=2, work=1.1, user=profile1, mood=41)
 
@@ -103,11 +104,23 @@ class WeightsTestCase(TestCase):
         self.assertNotEqual(old_biases, testWeights.bias_int_list)
 
     def test_predict(self):
-        testWeights = Weights.objects.first()
+        Weights.objects.create(
+            user=User.objects.get(username="user2"),
+            weights_int_list='',
+            bias_int_list=''
+        )
+        testWeights = Weights.objects.last()
+        user = testWeights.user
+        profile = user.profile
+
+        data = [0,12,0,12,32]
+        Observation.objects.create(date=datetime.strptime('11/28/2019, 10:20', '%m/%d/%Y, %H:%M').time(), sleep=data[0], exercise=data[1], meals=data[2], work=data[3], user=profile, mood=data[4])
+
+        mood = testWeights.predict()
         input_data, mood_data = testWeights.transformUserData(1)
         actualMood = mood_data[0]
-        mood = testWeights.predict()
         self.assertEqual(actualMood, mood)
+        #sleep=4.4, exercise=4.1, meals=2, work=1.1, user=profile1, mood=41)
 
     def test_getWeightBiasDictionaries(self):
         testWeights = Weights.objects.first()
@@ -238,7 +251,7 @@ class MoodNeuralNetworkTestCase(TestCase):
                 biasDict['bias' + str(i)] = i/8
         network = MoodNeuralNetwork(weights=weightDict, biases=biasDict)
         sample_data = [2,1,4,5,6,2,6,7,3,6,6]
-        self.assertEqual(1, int(network.feedforward(sample_data)))
+        self.assertEqual(42, network.roundClass(network.feedforward(sample_data)))
         weightDict, biasDict = {}, {}
         for i in range(208):
             weightDict['weight' + str(i)] = i/208
@@ -246,7 +259,14 @@ class MoodNeuralNetworkTestCase(TestCase):
                 biasDict['bias' + str(i)] = i/208
         network = MoodNeuralNetwork(weights=weightDict, biases=biasDict)
         sample_data = list(range(11))
-        self.assertEqual(0, int(network.feedforward(sample_data)))
+        self.assertEqual(40, network.roundClass(network.feedforward(sample_data)))
+
+        network = MoodNeuralNetwork()
+        sample_data = [4.51,0,0,0,0,0,0,0,-1,8,35]
+        self.assertEqual(26, network.roundClass(network.feedforward(sample_data)))
+        sample_data = [15,25,50,0,0,0,0,0,-1,-100,0]
+        self.assertEqual(34, network.roundClass(network.feedforward(sample_data)))
+
 
     def test_roundClass(self):
         network = MoodNeuralNetwork()

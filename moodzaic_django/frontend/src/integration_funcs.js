@@ -1,6 +1,8 @@
 import axios from 'axios';
-
+// developement settings
 const API_URL = 'http://localhost:8000/api/';
+// production settings
+//const API_URL = 'http://159.89.133.73/api/';
 
   export function getUsers() {
     return axios.get(`${API_URL}users`).then(response => response.data).catch(error => console.log(error));
@@ -157,10 +159,24 @@ const API_URL = 'http://localhost:8000/api/';
   }
 
   export function createObservation(username, observation) {
-    const url = `${API_URL}observations/create/${username}`;
+    const url = `${API_URL}observations/${username}`;
     return axios.post(url, observation);
   }
 
   export function getUserObservations(username) {
     return axios.get(`${API_URL}observations/${username}`).then(response => response.data).catch(error => console.log(error));
+  }
+  export function getLastPostDate(username) {
+    return getUserObservations(username).then( response => {
+      console.log(response);
+      if (response.length == 0) {
+        return "";
+      } else {
+        return response.pop().date;
+      }
+    })
+  }
+
+  export function updateObservation(username, observation, date) {
+    return axios.patch(`${API_URL}observations/${username}/${date}`, observation);
   }
