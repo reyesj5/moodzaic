@@ -21,6 +21,7 @@
 16. Log back in to joe and navigate to “My Community”.
 17. Click reply, and type a reply to the post. Click submit to submit.
 18. Click on “My Moodzaic”, then navigate back to “My Community”. There, you will find the reply.
+19. Log in with username "bob" and password "password" to see a profile with more data!
 
 ## Text Description of Implementation
 
