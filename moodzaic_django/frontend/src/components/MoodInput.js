@@ -33,48 +33,54 @@ const getDailyQuestions = () => {
 const getMoods = () => {
 
   const moods = [
-    "Fear",
-    "Anger",
-    "Surprise",
-    "Disgust",
-    "Sad",
+    "Joyful",
     "Happy",
-    "Hurt",
-    "Threatened",
-    "Hateful",
-    "Mad",
-    "Aggressive",
-    "Frustrated",
-    "Distant",
-    "Critical",
-    "Disapproval",
-    "Awful",
-    "Avoidance",
-    "Guilty",
-    "Abandoned",
-    "Despair",
-    "Depressed",
-    "Lonely",
-    "Bored",
     "Optimistic",
-    "Intimate",
-    "Peaceful",
+    "Amazed",
     "Powerful",
     "Accepted",
+    "Excited",
     "Proud",
     "Interested",
-    "Joyful",
-    "Excited",
-    "Amazed",
-    "Confused",
-    "Startled",
-    "Scared",
-    "Anxious",
-    "Insecure",
-    "Submissive",
-    "Rejected",
-    "Humiliated",
+    "Intimate",
+    "Peaceful",
+    "Surprise",
+    "Distant",
+    "Bored",
     "Tired",
+    "Confused",
+    "Avoidance",
+    "Startled",
+    "Insecure",
+    "Threatened",
+    "Frustrated",
+    "Submissive",
+    "Guilty",
+    "Mad",
+    "Aggressive",
+    "Critical",
+    "Lonely",
+    "Disgust",
+    "Disapproval",
+    "Anger",
+    "Hateful",
+    "Scared",
+    "Fear",
+    "Anxious",
+    "Abandoned",
+    "Rejected",
+    "Despair",
+    "Sad",
+    "Hurt",
+    "Humiliated",
+    "Depressed",
+    "Awful",
+
+
+
+
+
+
   ]
   return moods;
 }
@@ -164,7 +170,7 @@ class MoodPage extends React.Component {
         }).catch(error => console.log(error));
       }
     }).catch(error => console.log(error));
-    
+
   }
 
   render() {

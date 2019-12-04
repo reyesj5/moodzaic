@@ -152,7 +152,7 @@ class MoodChart extends React.Component {
     return(
       <div>
         <h3>MoodChart</h3>
-        <p>Your mood, ranked (behind the scenes) from 0-5, over the past 10 days</p>
+        <p>Your mood, ranked (behind the scenes) from 1-50, over the past 10 days</p>
         {this.props.noObs ? <p>~A chart will appear here once you've begun recording your moods~</p> :
           <XYPlot height={300} width= {400} yDomain={[0,50]} xDomain={[0, this.props.numDays-1]}>
             <XAxis title="Days"/>
