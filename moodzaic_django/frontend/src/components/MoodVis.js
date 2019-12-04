@@ -137,9 +137,9 @@ class MoodVis extends React.Component {
           <Segment fixed='bottom'>
 
             {activeItem === 'Your Mood' ?
-              <MoodChart data={fakeMood} numDays={this.state.numDays} noObs={this.state}/> : <div/>}
+              <MoodChart data={fakeMood} numDays={this.state.numDays} noObs={this.state.noObs}/> : <div/>}
             {activeItem === 'Daily Habits' ?
-              <HabitChart data={fakeHabits} dMin={this.state.earliestDay} noObs={this.state}/> : <div/>}
+              <HabitChart data={fakeHabits} dMin={this.state.earliestDay} noObs={this.state.noObs}/> : <div/>}
           </ Segment>
         </div>
       </div>
@@ -178,14 +178,14 @@ class HabitChart extends React.Component {
         <p>Your sleep, exercise, and work hours over the past 10 days</p>
         {this.props.noObs ? <p>~A chart will appear here once you've begun recording your moods~</p> :
           <XYPlot height={300} width= {400} xType="time"
-          color="#cd3b54" yDomain={[0,12]} xDomain={[this.props.dMin, new Date()]}>
+          color="#cd3b54" yDomain={[0,12]} xDomain={[this.props.dMin, new Date().setHours(23,59,59,999)]}>
             <VerticalGridLines />
-            <XAxis title="Days" />
-            <YAxis title="Hours per Day"/>
             <HorizontalGridLines />
             <VerticalRectSeries data={sleep} color="#37268E" />
             <VerticalRectSeries data={exercise} color="#F9454B" />
             <VerticalRectSeries data={work} color="#EDCB68" />
+            <XAxis title="Days" />
+            <YAxis title="Hours per Day"/>
           </XYPlot>
         }
         <DiscreteColorLegend
