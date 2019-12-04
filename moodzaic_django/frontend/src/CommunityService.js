@@ -1,7 +1,10 @@
 // Module to call REST API from Django back-end
 
 import axios from 'axios';
+// developement settings
 const API_URL = 'http://localhost:8000/api/community/';
+// production settings
+//const API_URL = 'http://159.89.133.73/api/community/';
 
 export default class CommunityService{
 

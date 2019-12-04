@@ -4,6 +4,7 @@ import {
   Header,
   Form,
   Grid,
+  Message
 } from 'semantic-ui-react'
 
 // import {setAllCommunitiesState} from './AllCommunities.js'
@@ -17,12 +18,18 @@ import {createCommunity} from '../integration_funcs'
 class MakeCommunity extends React.Component {
   state = {
     name: '',
-    allCommunities: []
+    allCommunities: [],
+    errors: []
   }
 
   handleChange = (e) => this.setState({ name: e.target.value });
 
-  handleSubmit = async (event) => {
+  handleSubmit = (event) => {
+      const errors = this.validate();
+      this.setState({ errors });
+      if (errors.length > 0) {
+        return;
+      }
       event.preventDefault();
       console.log('new name:', this.state.name);
       console.log('user from props', this.props.user);
@@ -33,20 +40,27 @@ class MakeCommunity extends React.Component {
         })
       })
       // this.props.setAllCommunitiesState();
+      this.props.callback();
+      this.props.callbackback();
   }
 
-  async refreshComm() {
-    this.props.updateAllComm();
+  validate = () => {
+    const errors = [];
+    if (/\s/.test(this.state.name)) {
+      errors.push("Community names cannot include spaces");
+    }
+    return errors;
   }
-
 
   render() {
+    const {errors} = this.state;
     return(
       <div>
       <Grid textAlign='center' style={{ height: '100vh' }}>
         <Grid.Column style={{ maxWidth: 1000 }}>
           <Container>
             <Header as='h1'>Creating A New Community</Header>
+            <div>{errors.length > 0 ? <Message color="red">{errors[0]}</Message> : <p></p>}</div>
             <p>Your community needs a name to get started.
             After your community is created, anyone can join and post!
             </p>

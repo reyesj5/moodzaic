@@ -10,20 +10,20 @@ import {
   Message
   // Rating
 } from 'semantic-ui-react'
-import {createUser, createProfile} from '../integration_funcs.js';
+import {createProfile} from '../integration_funcs.js';
 // import ProfileService from '../ProfileService.js';
-import {Redirect, Route} from "react-router-dom";
+import {Redirect} from "react-router-dom";
 
 
 
 
-import {
-  // BrowserRouter as Router,
-  // Switch,
-  // Route,
-
-  Link
-} from "react-router-dom";
+// import {
+//   // BrowserRouter as Router,
+//   // Switch,
+//   // Route,
+//
+//   Link
+// } from "react-router-dom";
 
 
 
@@ -52,8 +52,8 @@ class SetupPage extends React.Component {
     if (this.state.first.trim() === "" || this.state.last.trim() === "") {
       errors.push("Please enter your name");
     }
-    if (this.state.age < 0) {
-      errors.push("Please enter your age");
+    if (this.state.age < 18 || this.state.age > 120) {
+      errors.push("Please enter a valid age (18 - 120)");
     }
     if (this.state.email.trim() === "") {
       errors.push("Please enter a valid email address");
@@ -86,6 +86,7 @@ class SetupPage extends React.Component {
     })
     console.log("No errors, creating account")
     this.setState({finished: true})
+    this.props.callback(this.props.user)
   }
 
   render() {
@@ -121,18 +122,11 @@ class SetupPage extends React.Component {
                   <input type='number' />
                 </Form.Field>
                 <Form.Field name='gender' onChange={this.handleGenderChange}>
-                  <label>Gender</label>
+                  <label>Gender Identity</label>
                   <input />
                 </Form.Field>
                 <Form.Field name='email' onChange={this.handleEmailChange}>
                   <label>Email</label>
-                  <input />
-                </Form.Field>
-                </div>
-                <div>
-                <Form.Field name='goals'>
-                  <label>What are your mood-related goals?</label>
-                  {/* note: this will probably be a predetermined checklist of some sort*/}
                   <input />
                 </Form.Field>
                 </div>
