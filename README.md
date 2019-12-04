@@ -52,15 +52,9 @@ Added additional unit tests as requested in milestone 4a email (to check for neg
 
 On the front end, we added a unit test for UpdateProfile, which previously did not have its own file.
 
-On the back end, we refactored the Goals and Moods in the User “app” to not be Model classes. They are now direct properties of other Model classes.
+On the back end, we refactored the Moods in the User “app” to not be Model classes. They are now direct properties of other Model classes.
 
-We have not made any design changes from what we said we would accomplish in milestone 4a. What we were not able to accomplish is described in the following section.
-
-## Small Tasks to Finish by Milestone 5
-- Error messages in Update Profile menu, specifically for negative ages or mismatched in puts in the Password and Verify Password sections.
-- My Moodzaic page’s visualizations need to be based on actual user data
-- Users need to be able to join communities besides on creation
-- Application will be online
+On the front and back end, we have removed the goals, so they no longer appear or can be interacted with.
 
 ## Usage Instructions
 
