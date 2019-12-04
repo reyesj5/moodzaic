@@ -6,10 +6,12 @@ import {
   Button
 } from 'semantic-ui-react'
 import { updateProfile } from '../integration_funcs'
+import { getMoods } from './MoodInput'
 
 
 class Reminders extends React.Component {
   state = {
+    myEmotion: "",
     myReminders: [],
     renderNumber: 3
   }
@@ -18,6 +20,7 @@ class Reminders extends React.Component {
     console.log(this.props.profile.username)
     console.log(this.props.profile)
     console.log(this.props.profile.reminderList)
+    console.log(this.props.profile.MoodScore)
     if (this.props.profile.reminderList || this.props.profile.reminderList === "") {
       this.setState({myReminders: this.props.profile.reminderList.split(";").filter(d => d != "")})
     } else {
@@ -32,6 +35,11 @@ class Reminders extends React.Component {
         "You are in control.", "You still need the rest.",
         "You can pray, someone will listen.", "Loving is amazing.",
         "But never ever ever forget to love yourself as well."]})
+    }
+    if (this.props.profile.MoodScore >= 0 && this.props.profile.MoodScore <= 40){
+      this.setState({myEmotion: getMoods()[this.props.profile.MoodScore-2]})
+    }else{
+     this.setState({myEmotion: "No Predicted Mood Yet"})
     }
   }
 
@@ -60,13 +68,15 @@ class Reminders extends React.Component {
     const myReminders = this.state.myReminders;
     console.log(myReminders);
     const renderNumber = this.state.renderNumber;
-    //console.log('rendernumber', renderNumber);
-    
+    const myEmotion = this.state.myEmotion;
+    console.log('rendernumber', renderNumber);
+
     return(
       <div>
       <Container>
         <Segment placeholder>
             <h1>Reminders!</h1>
+            <h4>Predicted Mood for Today: {myEmotion}</h4>
             {myReminders.slice(0, renderNumber).map((r, i) => {
               return(
                 <Message key = {i} color = 'purple' onClick={() => this.removeReminder(r)}>

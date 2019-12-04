@@ -17,7 +17,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ('username', 'age', 'gender', 'user', 'reminderList')
+        fields = ('username', 'age', 'gender', 'user', 'reminderList', 'MoodScore')
         extra_kwargs = {
             'url': {'lookup_field': 'username'}
         }
@@ -35,7 +35,7 @@ class ProfileSerializer(serializers.ModelSerializer):
         return profile
 
 
-    
+
 
     # def validate(self, data):
     #     p = Profile()
@@ -52,5 +52,3 @@ class ObservationSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'url': {'lookup_field': 'username'}
         }
-
-        
