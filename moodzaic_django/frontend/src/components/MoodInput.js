@@ -79,6 +79,9 @@ const getMoods = () => {
   return moods;
 }
 
+//exports getMoods() to access array
+export { getMoods }
+
 class MoodPage extends React.Component {
   state = {
     QuestionObj: getDailyQuestions(),
@@ -164,7 +167,7 @@ class MoodPage extends React.Component {
         }).catch(error => console.log(error));
       }
     }).catch(error => console.log(error));
-    
+
   }
 
   render() {

@@ -157,6 +157,7 @@ class Profile(models.Model):
             weight.setWeightsWeights()
             weight.setWeightsBias()
         mood = weight.predict()
+        print("made it to here bois")
         self.MoodScore = mood
         self.save()
         return self.MoodScore

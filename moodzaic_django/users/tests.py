@@ -137,16 +137,46 @@ class ProfileTestCase(TestCase):
         testProfile = Profile.objects.get(MoodScore = 2)
         self.assertEqual("Calm", testProfile.getMoodToday(3))
     def test_MoodScoreCalc(self):
-        testProfile = Profile.objects.get(MoodScore = 2)
-        self.assertEqual(-1, testProfile.MoodScoreCalc())
-        Observation.objects.create(
-            sleep = 7,
-            exercise = 3,
-            meals = 2,
-            mood = 1,
-            user = testProfile
-        )
-        self.assertEqual(33, testProfile.MoodScoreCalc())
+                testProfile = Profile.objects.get(MoodScore = 2)
+                self.assertEqual(-1, testProfile.MoodScoreCalc())
+                o2 = Observation.objects.create(
+                    date = date(2019, 12, 1),
+                    sleep = 40,
+                    exercise = 60,
+                    meals = -10,
+                    work= 32,
+                    mood = -1,
+                    user = testProfile
+                )
+                o2.save()
+                o1 = Observation.objects.create(
+                    sleep = 0,
+                    exercise = 12,
+                    meals = 20,
+                    work= 12,
+                    user = testProfile
+                )
+                #put back auto_now_add is true
+                #o2.date = date(2019, 12, 1)
+                #2.save()
+                observations = Observation.objects.filter(user__user__username=testProfile.user.username)
+                observations = observations.order_by("date")
+                print("this does not work sadly")
+                print(len(observations))
+                print(observations[0].date)
+                o1.save()
+                #print(o2.date)
+                print("Here is your original MoodScore:", testProfile.MoodScore)
+                calc = testProfile.MoodScoreCalc()
+                #print(o2.work)
+                #print("\nHere is weekly work: ", observations[1].weeklyWork)
+                print("\nHere is weekly work: ", observations[0].weeklyWork)
+                print(o1.date)
+                #d = date('2019-12-01')
+                print(date(2019, 12, 1))
+                print("This is changing?1")
+                print("Here is your updated MoodScore:", testProfile.MoodScore)
+                self.assertEqual(33, calc)
     def test_setMoodScore(self):
         testProfile = Profile.objects.get(MoodScore = 2)
         self.assertTrue(testProfile.setMoodScore(3))
