@@ -35,6 +35,7 @@ class App extends Component {
           gender: '',
           user: {},
           reminderList: [],
+          MoodScore: 0,
         },
         MyCommunityList: [],
         MyObservationList: [],
@@ -88,7 +89,8 @@ class App extends Component {
               age: p.age,
               gender: p.gender,
               user: p.user,
-              reminderList: p.reminderList
+              reminderList: p.reminderList,
+              MoodScore: p.MoodScore,
             }
           }))
       };
@@ -153,7 +155,7 @@ class App extends Component {
               {this.state.LoggedIn ?
                 <div>
                   <MyMenu callback={this.LogOut}/>
-                  <MoodPage 
+                  <MoodPage
                     profile={this.state.profile}
                     fetchProfile={this.fetchProfile}
                   />
@@ -169,9 +171,9 @@ class App extends Component {
               {this.state.LoggedIn ?
                 <div>
                   <MyMenu callback={this.LogOut}/>
-                  <ProfilePage 
-                    User={this.state.user} 
-                    Profile={this.state.profile} 
+                  <ProfilePage
+                    User={this.state.user}
+                    Profile={this.state.profile}
                     updateProfile={this.updateProfile}
                     updateUser={this.updateUser}
                   />
