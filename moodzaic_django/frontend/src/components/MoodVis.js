@@ -33,7 +33,7 @@ import 'react-vis/dist/style.css';
 
 class MoodVis extends React.Component {
   state = {
-    activeItem: "Your Mood",
+    activeItem: "Daily Habits",
     pastObservations: [],
     sampleObs: {
       date: "00:55:11:27:11:19", //my guess at formatting Nov. 27 2019, 11:55 PM
@@ -92,9 +92,11 @@ class MoodVis extends React.Component {
     for (i = 0; i < habits.length; i++) {
       var hab = habits[habits.length - i - 1]
       retData.sleep[i] = {x0: hab.date,
-        x: new Date(hab.date).setHours(hab.date.getHours() + 1), y: hab.sleep}
-      retData.exercise[i] = {x0: hab.date, x: hab.date, y: hab.exercise}
-      retData.work[i] = {x0: hab.date, x: hab.date, y: hab.work}
+        x: new Date(hab.date).setHours(7), y: hab.sleep}
+      retData.exercise[i] = {x0: new Date(hab.date).setHours(7),
+        x: new Date(hab.date).setHours(14), y: hab.exercise}
+      retData.work[i] = {x0: new Date(hab.date).setHours(14),
+        x: new Date(hab.date).setHours(21), y: hab.work}
       if (hab.date.getTime() < this.state.earliestDay) {
         this.setState({earliestDay: hab.date})
       }
@@ -172,9 +174,9 @@ class HabitChart extends React.Component {
           <XAxis title="Days" />
           <YAxis title="Hours per Day"/>
           <HorizontalGridLines />
-          <VerticalRectSeries data={sleep} color="blue" />
-          <VerticalRectSeries data={exercise} color="red" />
-          <VerticalRectSeries data={work} color="yellow" />
+          <VerticalRectSeries data={sleep} color="#37268E" />
+          <VerticalRectSeries data={exercise} color="#F9454B" />
+          <VerticalRectSeries data={work} color="#EDCB68" />
         </XYPlot>
       </div>
     )
