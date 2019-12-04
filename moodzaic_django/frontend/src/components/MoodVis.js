@@ -16,7 +16,7 @@ import {
   VerticalGridLines,
   HorizontalGridLines,
   LineSeries,
-  VerticalBarSeries,
+  DiscreteColorLegend,
   VerticalRectSeries
 } from 'react-vis';
 
@@ -178,6 +178,25 @@ class HabitChart extends React.Component {
           <VerticalRectSeries data={exercise} color="#F9454B" />
           <VerticalRectSeries data={work} color="#EDCB68" />
         </XYPlot>
+        <DiscreteColorLegend
+          onItemClick={this.clickHandler}
+          width={320}
+          orientation="horizontal"
+          items={[
+            {
+              title: "Hours of Sleep",
+              color: "#37268E"
+            },
+            {
+              title: "Hours of Exercise",
+              color: "#F9454B"
+            },
+            {
+              title: "Hours of Work",
+              color: "#EDCB68"
+            }
+          ]}
+        />
       </div>
     )
   }
