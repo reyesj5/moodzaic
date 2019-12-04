@@ -159,6 +159,7 @@ class MoodChart extends React.Component {
     )
   }
 }
+
 class HabitChart extends React.Component {
   render() {
     var sleep = this.props.data.sleep
@@ -183,18 +184,9 @@ class HabitChart extends React.Component {
           width={320}
           orientation="horizontal"
           items={[
-            {
-              title: "Hours of Sleep",
-              color: "#37268E"
-            },
-            {
-              title: "Hours of Exercise",
-              color: "#F9454B"
-            },
-            {
-              title: "Hours of Work",
-              color: "#EDCB68"
-            }
+            { title: "Hours of Sleep", color: "#37268E" },
+            { title: "Hours of Exercise", color: "#F9454B" },
+            { title: "Hours of Work", color: "#EDCB68" }
           ]}
         />
       </div>
