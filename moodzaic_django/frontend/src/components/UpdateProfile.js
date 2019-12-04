@@ -66,13 +66,15 @@ class UpdateProfile extends React.Component {
 
   validate = (observation) => {
     const errors = [];
-    if (!(typeof(observation.exercise) === 'undefined')&&  (!(0 <= observation.sleep)|| !(24 >= observation.sleep))) {
+    console.log(observation.meals)
+    console.log(Number.isInteger(observation.meals))
+    if (!(typeof(observation.sleep) === 'undefined')&&  (!(0 <= observation.sleep)|| !(24 >= observation.sleep))) {
       errors.push("Please enter a value between 0 and 24 for hours of sleep");
     }
     if (!(typeof(observation.exercise) === 'undefined')&&  (!(0 <= parseInt (observation.exercise))|| !(24 >= observation.exercise))) {
       errors.push("Please enter a value between 0 and 24 for hours of exercise");
     }
-    if (!(typeof(observation.meals) === 'undefined')&& (!(0 <= observation.meals))) {
+    if (!(typeof(observation.meals) === 'undefined')&& (!(0 <= observation.meals) || !(Number.isInteger(observation.meals)))) {
       errors.push("Please enter a positive value for number of meals");
     }
     if (!(typeof(observation.work) === 'undefined')&& (!(0 <= observation.work)|| !(24 >= observation.work))) {
@@ -88,7 +90,7 @@ class UpdateProfile extends React.Component {
 
 
   handleChange = (e, object, attribute) => {
-    console.log(object, attribute, e.target.value);
+  //  console.log(object, attribute, e.target.value);
     let obj = this.state[object];
     obj[attribute] = e.target.value;
     this.setState(prevState => ({
@@ -103,6 +105,8 @@ class UpdateProfile extends React.Component {
       () => console.log(this.state)
     )
   }
+
+
 
   handlegoalChange = (e, object, attribute, num) => {
     const q = this.goalChange(num, e);
