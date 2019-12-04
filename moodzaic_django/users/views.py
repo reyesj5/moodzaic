@@ -72,13 +72,13 @@ class ProfileViewSet(viewsets.ModelViewSet):
             instance._prefetched_objects_cache = {}
 
         return Response(serializer.data)
-    
+
     # def partial_update(self, request, username):
     #     print('HERE')
     #     print(type(request.data))
     #     print(request.data)
     #     data = request.data
-        
+
 
     #     serializer = ProfileSerializer(Profile.objects.get(username=username), data=request.data, partial=True)
 
@@ -95,7 +95,7 @@ class ObservationViewSet(viewsets.ModelViewSet):
     lookup_field = 'date'
 
     def get_queryset(self):
-        
+
         user = Profile.objects.get(username=self.kwargs['username'])
         profileId = user.id
         print(user.id)
@@ -111,7 +111,7 @@ class ObservationViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         print(serializer)
         if not serializer.is_valid():
-            
+
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         self.perform_create(serializer)
@@ -138,8 +138,9 @@ class ObservationViewSet(viewsets.ModelViewSet):
         self.perform_update(serializer)
         user = Profile.objects.get(username=self.kwargs['username'])
 
-        # user.MoodScoreCalc()
-        # user.updateReminders(user.MoodScore)
+        user.MoodScoreCalc()
+        user.updateReminders(user.MoodScore)
+
         if getattr(instance, '_prefetched_objects_cache', None):
             instance._prefetched_objects_cache = {}
 
@@ -157,7 +158,7 @@ class ObservationViewSet(viewsets.ModelViewSet):
 #     if obsSerializer.is_valid():
 #         profile = Profile.objects.get(username=username)
 #         obsSerializer.save()
-        
+
 #         profile.MoodScoreCalc()
 #         profile.updateReminders(profile.MoodScore)
 #     logger.error(obsSerializer.errors)

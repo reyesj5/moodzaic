@@ -82,6 +82,14 @@ class AllCommunities extends React.Component {
   //   }))
   // }
 
+  updateAllCommunities = async () => {
+    await getAllCommunities()
+      .then(communities => this.setState({ allCommunities: communities }))
+      .then(response => {
+        this.refreshCommunities()
+      })
+  }
+
   MakeModeOn = () => {
     this.setState(prevState => ({
       makeMode: true
