@@ -55,7 +55,7 @@ class SetupPage extends React.Component {
     if (this.state.age < 18 || this.state.age > 120) {
       errors.push("Please enter a valid age (18 - 120)");
     }
-    if (this.state.email.trim() === "") {
+    if (!this.state.email.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)) {
       errors.push("Please enter a valid email address");
     }
     // if (this.state.goals.trim() === "") {
@@ -65,14 +65,14 @@ class SetupPage extends React.Component {
     return errors;
   }
 
-  handleSubmit = () => {
+  handleSubmit = async () => {
     const errors = this.validate();
     this.setState({ errors });
     console.log(this.state.errors)
     if (errors.length > 0) {
       return;
     }
-    createProfile({
+    await createProfile({
       username: this.props.user.username,
       age: this.state.age,
       gender: this.state.gender.value,
