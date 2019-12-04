@@ -17,8 +17,8 @@ class MoodNeuralNetwork:
     _biases = {}
     _network = []
     _emotions = []
-    epochs = 1000
-    learn_rate = 0.1 # number of times to loop through the entire dataset
+    epochs = 100
+    learn_rate = 0.01 # number of times to loop through the entire dataset
 
     def __init__(self, weights = None, biases = None):
         self._emotions = getEmotions()

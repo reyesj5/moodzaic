@@ -113,7 +113,7 @@ class WeightsTestCase(TestCase):
         user = testWeights.user
         profile = user.profile
 
-        data = [0,12,0,12,32]
+        data = [0,12,0,12,31]
         Observation.objects.create(date=datetime.strptime('11/28/2019, 10:20', '%m/%d/%Y, %H:%M').time(), sleep=data[0], exercise=data[1], meals=data[2], work=data[3], user=profile, mood=data[4])
 
         mood = testWeights.predict()
@@ -172,7 +172,7 @@ class WeightsTestCase(TestCase):
         user = testWeights.user
         profile = user.profile
         obs1 = Observation.objects.filter(user__user__username=profile.user.username).first()
-        oldMood = "Rejected"
+        oldMood = "Awful"
         testWeights.updateMoodPrediction(25)
         self.assertEqual(oldMood,user.profile.getMoodToday(obs1.mood))
         obs2 = Observation.objects.filter(user__user__username=profile.user.username).last()
@@ -251,7 +251,7 @@ class MoodNeuralNetworkTestCase(TestCase):
                 biasDict['bias' + str(i)] = i/8
         network = MoodNeuralNetwork(weights=weightDict, biases=biasDict)
         sample_data = [2,1,4,5,6,2,6,7,3,6,6]
-        self.assertEqual(42, network.roundClass(network.feedforward(sample_data)))
+        self.assertEqual(41, network.roundClass(network.feedforward(sample_data)))
         weightDict, biasDict = {}, {}
         for i in range(208):
             weightDict['weight' + str(i)] = i/208
@@ -259,22 +259,22 @@ class MoodNeuralNetworkTestCase(TestCase):
                 biasDict['bias' + str(i)] = i/208
         network = MoodNeuralNetwork(weights=weightDict, biases=biasDict)
         sample_data = list(range(11))
-        self.assertEqual(40, network.roundClass(network.feedforward(sample_data)))
+        self.assertEqual(39, network.roundClass(network.feedforward(sample_data)))
 
         network = MoodNeuralNetwork()
         sample_data = [4.51,0,0,0,0,0,0,0,-1,8,35]
-        self.assertEqual(26, network.roundClass(network.feedforward(sample_data)))
+        self.assertEqual(25, network.roundClass(network.feedforward(sample_data)))
         sample_data = [15,25,50,0,0,0,0,0,-1,-100,0]
-        self.assertEqual(34, network.roundClass(network.feedforward(sample_data)))
+        self.assertEqual(33, network.roundClass(network.feedforward(sample_data)))
 
 
     def test_roundClass(self):
         network = MoodNeuralNetwork()
         self.assertEqual(0, int(network.roundClass(0)))
-        self.assertEqual(42, int(network.roundClass(0.999)))
+        self.assertEqual(41, int(network.roundClass(0.999)))
         self.assertEqual(8, int(network.roundClass(0.2)))
-        self.assertEqual(13, int(network.roundClass(0.3)))
-        self.assertEqual(21, int(network.roundClass(0.5)))
+        self.assertEqual(12, int(network.roundClass(0.3)))
+        self.assertEqual(20, int(network.roundClass(0.5)))
         self.assertEqual(29, int(network.roundClass(0.7)))
 
     def test_activation(self):
