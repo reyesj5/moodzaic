@@ -49,6 +49,7 @@ class Community extends React.Component {
       community: this.props.myCommunity,
       post: this.state.message
     }).then(response => {
+      this.setState({comments: []})
       this.refreshPosts();
     })
   }
