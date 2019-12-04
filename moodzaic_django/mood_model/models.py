@@ -149,10 +149,13 @@ class Weights(models.Model):
         try:
             output = model.feedforward(input_data[0])
         except:
-            return -1
+            return -1, 0
         mood = model.roundClass(output)
         self.updateMoodPrediction(mood)
-        return mood
+        profile = self.user.profile
+        obs = Observation.objects.filter(user__user__username=profile.user.username)
+        print("\n\n\n\n",obs,"\n\n\n\n")
+        return mood, len(obs)
         #self.user.profile.setNotifications()
 
     def updateLongtermData(self, timeframe):

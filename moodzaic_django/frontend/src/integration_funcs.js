@@ -2,7 +2,7 @@ import axios from 'axios';
 // developement settings
 const API_URL = 'http://localhost:8000/api/';
 // production settings
-//const API_URL = 'http://159.89.133.73/api/';
+//const API_URL = 'https://159.89.133.73/api/';
 
   export function getUsers() {
     return axios.get(`${API_URL}users`).then(response => response.data).catch(error => console.log(error));

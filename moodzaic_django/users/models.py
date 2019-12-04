@@ -156,11 +156,25 @@ class Profile(models.Model):
             weight = self.user.weights
             weight.setWeightsWeights()
             weight.setWeightsBias()
-        mood = weight.predict()
-    
+        mood, obs = weight.predict()
+
         self.MoodScore = mood
         self.save()
-        return self.MoodScore
+        return self.MoodScore, obs
+
+    def retrainModel(self):
+        try:
+            weight = self.user.weights
+        except:
+            from mood_model.models import Weights
+            Weights.objects.create(
+                user=self.user,
+            )
+            weight = self.user.weights
+            weight.setWeightsWeights()
+            weight.setWeightsBias()
+        weight.retrain()
+        return True
 
     def setMoodScore(self, MoodScore):
         if (MoodScore >= 0 and MoodScore <len(mood_tools.getEmotions())):

@@ -5,7 +5,7 @@ import axios from 'axios';
 // developement settings
 const API_URL = 'http://localhost:8000/api/profile/';
 // production settings
-//const API_URL = 'http://159.89.133.73/api/profile/';
+//const API_URL = 'https://159.89.133.73/api/profile/';
 
 export default class ProfileService{
 

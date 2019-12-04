@@ -116,8 +116,10 @@ class ObservationViewSet(viewsets.ModelViewSet):
 
         self.perform_create(serializer)
         # REMINDERS
-        user.MoodScoreCalc()
+        mood, days = user.MoodScoreCalc()
         user.updateReminders(user.MoodScore)
+        if days >= 10:
+            user.retrain()
         # end of attempt
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
@@ -138,8 +140,10 @@ class ObservationViewSet(viewsets.ModelViewSet):
         self.perform_update(serializer)
         user = Profile.objects.get(username=self.kwargs['username'])
 
-        user.MoodScoreCalc()
+        mood, days = user.MoodScoreCalc()
         user.updateReminders(user.MoodScore)
+        if days >= 10:
+            user.retrain()
 
         if getattr(instance, '_prefetched_objects_cache', None):
             instance._prefetched_objects_cache = {}
