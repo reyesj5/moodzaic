@@ -135,48 +135,21 @@ class ProfileTestCase(TestCase):
         p1_id = p1.id
     def test_getMoodToday(self):
         testProfile = Profile.objects.get(MoodScore = 2)
-        self.assertEqual("Calm", testProfile.getMoodToday(3))
+        self.assertEqual("Amazed", testProfile.getMoodToday(3))
     def test_MoodScoreCalc(self):
                 testProfile = Profile.objects.get(MoodScore = 2)
                 self.assertEqual(-1, testProfile.MoodScoreCalc())
-                o2 = Observation.objects.create(
-                    date = date(2019, 12, 1),
-                    sleep = 40,
-                    exercise = 60,
-                    meals = -10,
-                    work= 32,
-                    mood = -1,
-                    user = testProfile
-                )
-                o2.save()
                 o1 = Observation.objects.create(
-                    sleep = 0,
-                    exercise = 12,
-                    meals = 20,
-                    work= 12,
+                    sleep = 6,
+                    exercise = 2,
+                    meals = 4,
+                    work= 6,
                     user = testProfile
                 )
-                #put back auto_now_add is true
-                #o2.date = date(2019, 12, 1)
-                #2.save()
-                observations = Observation.objects.filter(user__user__username=testProfile.user.username)
-                observations = observations.order_by("date")
-                print("this does not work sadly")
-                print(len(observations))
-                print(observations[0].date)
-                o1.save()
-                #print(o2.date)
-                print("Here is your original MoodScore:", testProfile.MoodScore)
+
                 calc = testProfile.MoodScoreCalc()
-                #print(o2.work)
-                #print("\nHere is weekly work: ", observations[1].weeklyWork)
-                print("\nHere is weekly work: ", observations[0].weeklyWork)
-                print(o1.date)
-                #d = date('2019-12-01')
-                print(date(2019, 12, 1))
-                print("This is changing?1")
-                print("Here is your updated MoodScore:", testProfile.MoodScore)
-                self.assertEqual(33, calc)
+
+                self.assertEqual(32, calc)
     def test_setMoodScore(self):
         testProfile = Profile.objects.get(MoodScore = 2)
         self.assertTrue(testProfile.setMoodScore(3))
@@ -265,7 +238,7 @@ class ProfileTestCase(TestCase):
         reminders = testProfile.updateReminders(2)
         reminders = testProfile.getMoodReminders()
         reminders = reminders.split(";")
-        self.assertEqual(reminders[1], "Do not worry about what you cannot control.")
+        self.assertEqual(reminders[1],'Keep up the optimism!')
     def test_updateReminder_invalidstr(self):
         testProfile = Profile.objects.get(MoodScore = 2)
         self.assertFalse(testProfile.updateReminders('Tired'))
@@ -275,7 +248,7 @@ class ProfileTestCase(TestCase):
         testProfile.removeReminder("Do not worry about what you cannot control.")
         reminders = testProfile.getMoodReminders()
         reminders = reminders.split(";")
-        self.assertEqual(reminders[1], 'Remember: it’s okay if you don’t know what’s coming next.')
+        self.assertEqual(reminders[1], 'Keep up the optimism!')
 
 # Observations are asked daily and stored in the database
 class ObservationTestCase(TestCase):

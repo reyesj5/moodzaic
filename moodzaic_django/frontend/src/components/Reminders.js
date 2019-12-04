@@ -37,7 +37,7 @@ class Reminders extends React.Component {
         "But never ever ever forget to love yourself as well."]})
     }
     if (this.props.profile.MoodScore >= 0 && this.props.profile.MoodScore <= 40){
-      this.setState({myEmotion: getMoods()[this.props.profile.MoodScore-2]})
+      this.setState({myEmotion: getMoods()[this.props.profile.MoodScore]})
     }else{
      this.setState({myEmotion: "No Predicted Mood Yet"})
     }
