@@ -131,6 +131,10 @@ class Profile(models.Model):
         validators=[int_list_validator],
         default= "-1,-1,-1,-1"
     )
+    sleep_goal=models.FloatField(default=8)
+    exercise_goal = models.FloatField(default=8)
+    work_goal = models.FloatField(default = 1.5)
+    meal_goal = models.IntegerField(default = 3)
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,

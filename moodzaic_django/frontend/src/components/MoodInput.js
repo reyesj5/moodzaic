@@ -107,16 +107,16 @@ class MoodPage extends React.Component {
 
   validate = (observation) => {
     const errors = [];
-    if (typeof(observation.sleep) === 'undefined' || !(0 <= observation.sleep <= 24)) {
+    if (typeof(observation.sleep) === 'undefined' || !(0 <= observation.sleep)|| !(24 >= observation.sleep)) {
       errors.push("Please enter a value between 0 and 24 for hours of sleep");
     }
-    if (typeof(observation.exercise) === 'undefined' || !(0 <= parseInt (observation.exercise) <= 24)) {
+    if (typeof(observation.exercise) === 'undefined' || !(0 <= parseInt (observation.exercise))|| !(24 >= observation.exercise)) {
       errors.push("Please enter a value between 0 and 24 for hours of exercise");
     }
-    if (typeof(observation.meals) === 'undefined') {
-      errors.push("Please enter a value for number of meals");
+    if (typeof(observation.meals) === 'undefined' || !(0 <= observation.meals)) {
+      errors.push("Please enter a positive value for number of meals");
     }
-    if (typeof(observation.work) === 'undefined' || !(0 <= observation.work <= 24)) {
+    if (typeof(observation.work) === 'undefined' || !(0 <= observation.work)|| !(24 >= observation.work)) {
       errors.push("Please enter a value between 0 and 24 for hours of work");
     }
     if (typeof(observation.mood) === 'undefined') {
