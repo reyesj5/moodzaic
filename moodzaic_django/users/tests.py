@@ -138,7 +138,7 @@ class ProfileTestCase(TestCase):
         self.assertEqual("Amazed", testProfile.getMoodToday(3))
     def test_MoodScoreCalc(self):
                 testProfile = Profile.objects.get(MoodScore = 2)
-                self.assertEqual(-1, testProfile.MoodScoreCalc())
+                self.assertEqual((-1,0), testProfile.MoodScoreCalc())
                 o1 = Observation.objects.create(
                     sleep = 6,
                     exercise = 2,
@@ -149,7 +149,7 @@ class ProfileTestCase(TestCase):
 
                 calc = testProfile.MoodScoreCalc()
 
-                self.assertEqual(32, calc)
+                self.assertEqual((32,1), calc)
     def test_setMoodScore(self):
         testProfile = Profile.objects.get(MoodScore = 2)
         self.assertTrue(testProfile.setMoodScore(3))

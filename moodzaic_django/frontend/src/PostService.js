@@ -4,7 +4,7 @@ import axios from 'axios';
 // developement settings
 const API_URL = 'http://localhost:8000/api/posts/';
 // production settings
-//const API_URL = 'http://159.89.133.73/api/posts/';
+//const API_URL = 'https://159.89.133.73/api/posts/';
 
 export default class PostService{
 
