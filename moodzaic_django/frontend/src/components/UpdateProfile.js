@@ -5,7 +5,8 @@ import {
   Header,
   Form,
   // Dropdown,
-  Button
+  Button,
+  Message
 } from 'semantic-ui-react'
 // import MyMenu from './Menu.js';
 // import Footer from './Footer.js';
@@ -16,7 +17,8 @@ class UpdateProfile extends React.Component {
   state = {
     user: {},
     profile: {},
-    confirming: true
+    confirming: true,
+    errors: []
   }
   handleChange = (e, object, attribute) => {
     console.log(object, attribute, e.target.value);
@@ -26,18 +28,35 @@ class UpdateProfile extends React.Component {
         [object]: obj
       }), () => console.log(this.state));
   }
-
+  validate = () => {
+    const errors = [];
+    if (this.state.user.password !== this.state.user.confirmp) {
+      errors.push("Please make sure your passwords match");
+    }
+    let newAge = Number(this.state.profile.age);
+    if (newAge && ((typeof newAge !== "number") || newAge < 18 || newAge > 120)) {
+      errors.push("Please enter a valid age (18 - 120)");
+    }
+    let newEmail = this.state.user.email;
+    if (newEmail && (!newEmail.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i))) {
+      errors.push("Please enter a valid email address");
+    }
+    return errors;
+  }
   handleSubmit = () => {
+    const errors = this.validate();
+    this.setState({errors});
+    if (errors.length > 0) {
+      return;
+    }
     this.setState(prevState => ({
       confirming: true
     }))
 
     let username = this.props.user.username;
-    console.log(username);
     if(this.state.password === this.state.confirmp) {
       if (this.state.user !== {}) {
         updateUser(username, this.state.user).then(response => {
-          console.log(response.data);
           this.props.updateUser(response.data);
         }).catch(error => {
           this.setState({confirming: false});
@@ -45,7 +64,6 @@ class UpdateProfile extends React.Component {
       }
       if (this.state.profile !== {}) {
         updateProfile(username, this.state.profile).then(response => {
-          console.log(response.data);
           this.props.updateProfile(response.data);
         }).catch(error => {
           this.setState({confirming: false});
@@ -65,6 +83,7 @@ class UpdateProfile extends React.Component {
 
   render() {
     const user = this.props.user;
+    const errors = this.state.errors;
     //const profile = this.gettingProf;
     // const profile = this.props.profile;
 
@@ -75,6 +94,7 @@ class UpdateProfile extends React.Component {
           <Container text style={{ marginTop: '-1' }}>
             <Header as='h1'>Editing {user.username}'s profile</Header>
             <p>Fill in anything about your profile you want to change!</p>
+            <div>{errors.length > 0 ? <Message color="red">{errors[0]}</Message> : <p></p>}</div>
             <Form>
               <div className="two fields">
                 <Form.Field name='first_name' onChange={(e) => this.handleChange(e, "user", "first_name")}>
