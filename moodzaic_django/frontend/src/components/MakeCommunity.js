@@ -22,13 +22,21 @@ class MakeCommunity extends React.Component {
 
   handleChange = (e) => this.setState({ name: e.target.value });
 
-  handleSubmit = (event) => {
+  handleSubmit = async (event) => {
       event.preventDefault();
       console.log('new name:', this.state.name);
       console.log('user from props', this.props.user);
-      createCommunity({name: this.state.name, users: [this.props.user]});
+      await createCommunity({name: this.state.name, users: [this.props.user]})
+      .then(response => {
+        this.props.updateAllComm().then(response => {
+          this.props.callback();
+        })
+      })
       // this.props.setAllCommunitiesState();
-      this.props.callback();
+  }
+
+  async refreshComm() {
+    this.props.updateAllComm();
   }
 
 

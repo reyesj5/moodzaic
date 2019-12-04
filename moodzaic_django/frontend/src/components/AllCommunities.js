@@ -67,6 +67,14 @@ class AllCommunities extends React.Component {
     }))
   }
 
+  updateAllCommunities = async () => {
+    await getAllCommunities()
+      .then(communities => this.setState({ allCommunities: communities }))
+      .then(response => {
+        this.refreshCommunities()
+      })
+  }
+
   MakeModeOn = () => {
     this.setState(prevState => ({
       makeMode: true
@@ -109,7 +117,7 @@ class AllCommunities extends React.Component {
     return (
       <div>
         {(this.state.makeMode === true) ?
-          <MakeCommunity callback={this.toggleMakeMode} user={this.props.user}/>
+          <MakeCommunity callback={this.toggleMakeMode} updateAllComm={this.updateAllCommunities} user={this.props.user}/>
           :
           <Container text align='center' style={{ marginTop: '1em', marginBottom: '1em' }}>
           {communities}
