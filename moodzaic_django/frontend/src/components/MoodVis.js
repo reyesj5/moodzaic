@@ -46,13 +46,18 @@ class MoodVis extends React.Component {
       mood: 4
     },
     numDays: 10,
-    earliestDay: new Date()
+    earliestDay: new Date(),
+    noObs: false
   }
 
   async componentDidMount() {
     await getUserObservations(this.props.profile.username)
       .then(observations => {
         this.setState({pastObservations: observations})
+        if(observations.length === 0) {
+          this.setState({noObs: true})
+          console.log("No observations yet for user")
+        }
       })
     const observations = this.state.pastObservations
   }
@@ -132,9 +137,9 @@ class MoodVis extends React.Component {
           <Segment fixed='bottom'>
 
             {activeItem === 'Your Mood' ?
-              <MoodChart data={fakeMood} numDays={this.state.numDays}/> : <div/>}
+              <MoodChart data={fakeMood} numDays={this.state.numDays} noObs={this.state}/> : <div/>}
             {activeItem === 'Daily Habits' ?
-              <HabitChart data={fakeHabits} dMin={this.state.earliestDay}/> : <div/>}
+              <HabitChart data={fakeHabits} dMin={this.state.earliestDay} noObs={this.state}/> : <div/>}
           </ Segment>
         </div>
       </div>
@@ -148,13 +153,15 @@ class MoodChart extends React.Component {
       <div>
         <h3>MoodChart</h3>
         <p>Your mood, ranked (behind the scenes) from 0-5, over the past 10 days</p>
-        <XYPlot height={300} width= {400} yDomain={[0,50]} xDomain={[0, this.props.numDays-1]}>
-          <XAxis title="Days"/>
-          <YAxis title="Scaled Mood" />
-          <VerticalGridLines />
-          <HorizontalGridLines />
-          <LineSeries data={this.props.data} color="blue"/>
-        </XYPlot>
+        {this.props.noObs ? <p>~A chart will appear here once you've begun recording your moods~</p> :
+          <XYPlot height={300} width= {400} yDomain={[0,50]} xDomain={[0, this.props.numDays-1]}>
+            <XAxis title="Days"/>
+            <YAxis title="Scaled Mood" />
+            <VerticalGridLines />
+            <HorizontalGridLines />
+            <LineSeries data={this.props.data} color="blue"/>
+          </XYPlot>
+      }
       </div>
     )
   }
@@ -169,16 +176,18 @@ class HabitChart extends React.Component {
       <div>
         <h3>HabitChart</h3>
         <p>Your sleep, exercise, and work hours over the past 10 days</p>
-        <XYPlot height={300} width= {400} xType="time"
-        color="#cd3b54" yDomain={[0,12]} xDomain={[this.props.dMin, new Date()]}>
-          <VerticalGridLines />
-          <XAxis title="Days" />
-          <YAxis title="Hours per Day"/>
-          <HorizontalGridLines />
-          <VerticalRectSeries data={sleep} color="#37268E" />
-          <VerticalRectSeries data={exercise} color="#F9454B" />
-          <VerticalRectSeries data={work} color="#EDCB68" />
-        </XYPlot>
+        {this.props.noObs ? <p>~A chart will appear here once you've begun recording your moods~</p> :
+          <XYPlot height={300} width= {400} xType="time"
+          color="#cd3b54" yDomain={[0,12]} xDomain={[this.props.dMin, new Date()]}>
+            <VerticalGridLines />
+            <XAxis title="Days" />
+            <YAxis title="Hours per Day"/>
+            <HorizontalGridLines />
+            <VerticalRectSeries data={sleep} color="#37268E" />
+            <VerticalRectSeries data={exercise} color="#F9454B" />
+            <VerticalRectSeries data={work} color="#EDCB68" />
+          </XYPlot>
+        }
         <DiscreteColorLegend
           onItemClick={this.clickHandler}
           width={320}
