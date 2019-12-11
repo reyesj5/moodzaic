@@ -119,7 +119,7 @@ class ObservationViewSet(viewsets.ModelViewSet):
         # REMINDERS
         mood, days = user.MoodScoreCalc()
         user.updateReminders(user.MoodScore)
-        if days >= retrainWhenAtLeastNObservations:
+        if days >= self.retrainWhenAtLeastNObservations:
             user.retrain()
         # end of attempt
         headers = self.get_success_headers(serializer.data)
@@ -143,7 +143,7 @@ class ObservationViewSet(viewsets.ModelViewSet):
 
         mood, days = user.MoodScoreCalc()
         user.updateReminders(user.MoodScore)
-        if days >= retrainWhenAtLeastNObservations:
+        if days >= self.retrainWhenAtLeastNObservations:
             user.retrain()
 
         if getattr(instance, '_prefetched_objects_cache', None):
